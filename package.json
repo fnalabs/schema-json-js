@@ -1,0 +1,99 @@
+{
+  "name": "js-schema-json",
+  "version": "0.0.0",
+  "description": "A Schema class that implements the JSON Schema specification.",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "del dist",
+    "build": "NODE_ENV=production bash ./bin/build",
+    "coverage": "NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "dev": "nodemon -e js,json -w src -w conf -x \"npm run build\" & nodemon -e js -w tst -x \"npm test\"",
+    "fix": "standard --fix",
+    "prerelease": "del package.tar.gz",
+    "release": "NODE_ENV=production npm test && npm run build && node ./bin/compress",
+    "pretest": "del coverage coverage.lcov .nyc_output",
+    "test": "standard",
+    "posttest": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --recursive --exit 'tst/unit/**/*.spec.js'",
+    "test:functional": "NODE_ENV=production mocha --require 'babel-register' --exit 'tst/**/*.spec.js'",
+    "version": "npm run release && git add --all",
+    "postversion": "git push && git push --tags && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aeilers/js-schema-json.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aeilers/js-schema-json/issues"
+  },
+  "homepage": "https://github.com/aeilers/js-schema-json#readme",
+  "author": "Adam Eilers <adam.eilers@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "archiver": "~2.1.0",
+    "babel-cli": "~6.26.0",
+    "babel-core": "~6.26.0",
+    "babel-eslint": "~8.0.3",
+    "babel-plugin-add-module-exports": "~0.2.1",
+    "babel-plugin-istanbul": "~4.1.5",
+    "babel-plugin-syntax-object-rest-spread": "~6.13.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "~6.26.0",
+    "babel-register": "~6.26.0",
+    "chai": "~4.1.2",
+    "chai-as-promised": "~7.1.1",
+    "codecov": "~3.0.0",
+    "del-cli": "~1.1.0",
+    "dirty-chai": "~2.0.1",
+    "json-schema-test-suite": "0.0.10",
+    "mocha": "~4.0.1",
+    "nock": "~9.1.5",
+    "nodemon": "~1.14.0",
+    "nyc": "~11.4.1",
+    "proxyquire": "~1.8.0",
+    "sinon": "~4.1.3",
+    "standard": "~10.0.3",
+    "uglify-es": "~3.2.2"
+  },
+  "nyc": {
+    "check-coverage": true,
+    "per-file": true,
+    "lines": 75,
+    "statements": 75,
+    "functions": 75,
+    "branches": 75,
+    "watermarks": {
+      "lines": [
+        80,
+        90
+      ],
+      "functions": [
+        80,
+        90
+      ],
+      "branches": [
+        80,
+        90
+      ],
+      "statements": [
+        80,
+        90
+      ]
+    },
+    "require": [
+      "babel-register"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": [
+      "JSON-Schema-Test-Suite/",
+      "tst/"
+    ]
+  }
+}
