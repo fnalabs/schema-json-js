@@ -51,6 +51,7 @@ export default class AssertArray {
             // asserts [items, additionalItems, contains]
             if (innerList.length) await assertOptimized([i, value], ref, innerList, errors)
           }
+          if (length === 0 && isSchema(ref.contains)) errors.push('#contains: value does not contain element matching the Schema')
         }
 
         // asserts [uniqueItems, maxItems, minItems]
@@ -74,14 +75,14 @@ export default class AssertArray {
     return async ([key, val], ref, errors) => {
       if (!containsFlag) {
         const err = []
-        await assertOptimized([key, val], ref.contains, ref.contains[OPTIMIZED], err)
+        await assertOptimized(val[key], ref.contains, ref.contains[OPTIMIZED], err)
 
         if (!err.length) containsFlag = true
-        if (key === val.length - 1) {
-          errors.push(`#contains: '${key}' does not contain a valid value`)
+        else if (key === val.length - 1) {
+          errors.push('#contains: value does not contain element matching the Schema')
           containsFlag = false
         }
-      }
+      } else if (key === val.length - 1) containsFlag = false
     }
   }
 
