@@ -3,7 +3,7 @@ import * as builders from './assertions/builders'
 import {
   OPTIMIZED, assertOptimized,
   isArray, isEnum, isNull, isObject, isParentKeyword, isPathFragment,
-  isRef, isSchemaType, isSubSchema, isString, isUndefined
+  isRef, isSchema, isSchemaType, isSubSchema, isString, isUndefined
 } from './assertions/types'
 import { getSchema } from './utils'
 
@@ -47,7 +47,7 @@ export default class Schema {
    */
   async validate (data, schema = this) {
     this[ERRORS].length = 0
-    if (schema[OPTIMIZED]) await assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
+    await assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
     return !this[ERRORS].length
   }
 
@@ -66,7 +66,7 @@ export default class Schema {
   }
 
   [ASSIGN_SCHEMA] (root, schema) {
-    if (!isObject(schema)) throw new TypeError('JSON Schemas must be an object')
+    if (!isSchema(schema)) throw new TypeError('JSON Schemas must be an object|boolean')
 
     // iterate over object/array passed as source schema
     const assign = (object, source, path = []) => {

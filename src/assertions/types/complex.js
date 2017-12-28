@@ -1,4 +1,4 @@
-import { isArray, isObject } from './primitive'
+import { isArray, isBoolean, isObject } from './primitive'
 
 /*
  * complex type assertions
@@ -54,6 +54,10 @@ export function isPathFragment ($ref) {
 
 export function isRef (ref) {
   return /^(?:((?:(http|https):\/\/)(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9])(?:\.(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]))*(?::\d+)?\/)?((?:~(?=[01])|[^~])*)|#(?:~(?=[01])|[^~])*)$/.exec(decodeURI(ref))
+}
+
+export function isSchema (schema) {
+  return isObject(schema) || isBoolean(schema)
 }
 
 export function isSchemaType (type) {

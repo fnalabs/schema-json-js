@@ -223,7 +223,7 @@ describe('AssertObject', () => {
       try {
         assertions = AssertObject.optimize({ dependencies: { foo: null } })
       } catch (e) {
-        expect(e.message).to.equal('#dependencies: all dependencies must either be schemas|enums')
+        expect(e.message).to.equal('#dependencies: all dependencies must either be Schemas|enums')
       }
     })
   })
@@ -253,7 +253,7 @@ describe('AssertObject', () => {
       try {
         assertions = AssertObject.optimize({ propertyNames: null })
       } catch (e) {
-        expect(e.message).to.equal('#propertyNames: must be an object')
+        expect(e.message).to.equal('#propertyNames: must be a Schema')
       }
     })
   })

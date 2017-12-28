@@ -79,7 +79,7 @@ describe('Schema', () => {
       try {
         schema = await new Schema().assign(null)
       } catch (e) {
-        expect(e.message).to.equal('JSON Schemas must be an object')
+        expect(e.message).to.equal('JSON Schemas must be an object|boolean')
       }
     })
   })

@@ -50,13 +50,13 @@ describe('AssertLogical', () => {
       try {
         assertions = AssertLogical.optimizeAllOf({ allOf: null })
       } catch (e) {
-        expect(e.message).to.equal('#allOf: keyword should be an array of objects')
+        expect(e.message).to.equal('#allOf: keyword should be an array of Schemas')
       }
 
       try {
         assertions = AssertLogical.optimizeAllOf({ allOf: [null] })
       } catch (e) {
-        expect(e.message).to.equal('#allOf: keyword should be an array of objects')
+        expect(e.message).to.equal('#allOf: keyword should be an array of Schemas')
       }
     })
   })
@@ -95,13 +95,13 @@ describe('AssertLogical', () => {
       try {
         assertions = AssertLogical.optimizeAnyOf({ anyOf: null })
       } catch (e) {
-        expect(e.message).to.equal('#anyOf: keyword should be an array of objects')
+        expect(e.message).to.equal('#anyOf: keyword should be an array of Schemas')
       }
 
       try {
         assertions = AssertLogical.optimizeAnyOf({ anyOf: [null] })
       } catch (e) {
-        expect(e.message).to.equal('#anyOf: keyword should be an array of objects')
+        expect(e.message).to.equal('#anyOf: keyword should be an array of Schemas')
       }
     })
   })
@@ -131,7 +131,7 @@ describe('AssertLogical', () => {
       try {
         assertions = AssertLogical.optimizeNot({ not: null })
       } catch (e) {
-        expect(e.message).to.equal('#not: keyword should be an object')
+        expect(e.message).to.equal('#not: keyword should be a Schema')
       }
     })
   })
@@ -180,13 +180,13 @@ describe('AssertLogical', () => {
       try {
         assertions = AssertLogical.optimizeOneOf({ oneOf: null })
       } catch (e) {
-        expect(e.message).to.equal('#oneOf: keyword should be an array of objects')
+        expect(e.message).to.equal('#oneOf: keyword should be an array of Schemas')
       }
 
       try {
         assertions = AssertLogical.optimizeOneOf({ oneOf: [null] })
       } catch (e) {
-        expect(e.message).to.equal('#oneOf: keyword should be an array of objects')
+        expect(e.message).to.equal('#oneOf: keyword should be an array of Schemas')
       }
     })
   })

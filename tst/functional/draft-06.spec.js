@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import nock from 'nock'
-// import { getTests, runTests } from '../utils'
+import { getTests, runTests } from '../utils'
 
 import draft04Schema from '../refs/json-schema-draft-04.json'
 import draft06Schema from '../refs/json-schema-draft-06.json'
@@ -10,8 +10,7 @@ import nameSchema from '../JSON-Schema-Test-Suite/remotes/name.json'
 import folderSchema from '../JSON-Schema-Test-Suite/remotes/folder/folderInteger.json'
 
 describe('functional tests for draft-06 specification', async () => {
-  // TODO: fix errors in Schema implementation
-  // const draft6Tests = await getTests('./tst/JSON-Schema-Test-Suite/tests/draft6')
+  const draft6Tests = await getTests('./tst/JSON-Schema-Test-Suite/tests/draft6', ['boolean_schema.json'])
 
   after(() => {
     nock.cleanAll()
@@ -39,5 +38,5 @@ describe('functional tests for draft-06 specification', async () => {
       .reply(200, folderSchema)
   })
 
-  // await runTests(draft6Tests)
+  await runTests(draft6Tests)
 })

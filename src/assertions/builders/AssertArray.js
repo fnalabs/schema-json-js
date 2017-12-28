@@ -1,6 +1,6 @@
 import {
   OPTIMIZED, assertOptimized, assertSizeMax, assertSizeMin,
-  isArray, isBoolean, isObject, isUndefined
+  isArray, isBoolean, isObject, isSchema, isUndefined
 } from '../types'
 
 // private methods
@@ -66,8 +66,8 @@ export default class AssertArray {
   }
 
   static [ASSERT_CONTAINS] (contains) {
-    if (!isObject(contains)) {
-      throw new TypeError('#contains: keyword should be an object')
+    if (!isSchema(contains)) {
+      throw new TypeError('#contains: keyword should be a Schema')
     }
 
     let containsFlag = false
@@ -86,32 +86,33 @@ export default class AssertArray {
   }
 
   static [ASSERT_ITEMS] (schema) {
+    const { items, additionalItems } = schema
     const list = []
 
     // attach properties validations if keyword set
-    if (isObject(schema.items)) {
+    if (isSchema(items)) {
       list.push(async ([key, val], ref, errors) =>
         assertOptimized(val[key], ref.items, ref.items[OPTIMIZED], errors))
-    } else if (isArray(schema.items)) {
+    } else if (isArray(items)) {
       list.push(async ([key, val], ref, errors) =>
         assertOptimized(val[key], ref.items[key], ref.items[key][OPTIMIZED], errors))
 
       // attach additionalItems validations if keyword set
-      if (isObject(schema.additionalItems)) {
+      if (isObject(additionalItems)) {
         list.push(async ([key, val], ref, errors) =>
           assertOptimized(val[key], ref.additionalItems, ref.additionalItems[OPTIMIZED], errors))
-      } else if (isBoolean(schema.additionalItems) && schema.additionalItems === false) {
+      } else if (isBoolean(additionalItems) && additionalItems === false) {
         list.push(async ([key, val], ref, errors) =>
           errors.push(`#additionalItems: '${key}' additional items not allowed`))
-      } else if (!isUndefined(schema.additionalItems)) throw new TypeError('#additionalItems: must be either a Schema or Boolean')
-    } else if (!isUndefined(schema.items)) throw new TypeError('#items: must be either a Schema or an Array of Schemas')
+      } else if (!isUndefined(additionalItems)) throw new TypeError('#additionalItems: must be either a Schema or Boolean')
+    } else if (!isUndefined(items)) throw new TypeError('#items: must be either a Schema or an Array of Schemas')
 
     if (list.length === 2) {
       return [async ([key, val], ref, errors) => {
         if (key < ref.items.length) await list[0]([key, val], ref, errors)
         else await list[1]([key, val], ref, errors)
       }]
-    } else if (schema.items && isArray(schema.items)) {
+    } else if (items && isArray(items)) {
       return [async ([key, val], ref, errors) => {
         if (key < ref.items.length) await list[0]([key, val], ref, errors)
       }]

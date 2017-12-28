@@ -187,7 +187,7 @@ describe('AssertArray', () => {
       try {
         assertions = AssertArray.optimize({ contains: null })
       } catch (e) {
-        expect(e.message).to.equal('#contains: keyword should be an object')
+        expect(e.message).to.equal('#contains: keyword should be a Schema')
       }
     })
   })

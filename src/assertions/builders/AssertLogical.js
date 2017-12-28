@@ -1,4 +1,4 @@
-import { OPTIMIZED, assertOptimized, isArray, isObject, isTypedArray, isUndefined } from '../types'
+import { OPTIMIZED, assertOptimized, isArray, isSchema, isTypedArray, isUndefined } from '../types'
 
 export default class AssertLogical {
   constructor () {
@@ -12,8 +12,8 @@ export default class AssertLogical {
     const { allOf } = schema
     if (isUndefined(allOf)) return []
 
-    if (!isArray(allOf) || !isTypedArray(allOf, isObject)) {
-      throw new TypeError('#allOf: keyword should be an array of objects')
+    if (!isArray(allOf) || !isTypedArray(allOf, isSchema)) {
+      throw new TypeError('#allOf: keyword should be an array of Schemas')
     }
 
     return [async (value, ref, errors) => {
@@ -27,8 +27,8 @@ export default class AssertLogical {
     const { anyOf } = schema
     if (isUndefined(anyOf)) return []
 
-    if (!isArray(anyOf) || !isTypedArray(anyOf, isObject)) {
-      throw new TypeError('#anyOf: keyword should be an array of objects')
+    if (!isArray(anyOf) || !isTypedArray(anyOf, isSchema)) {
+      throw new TypeError('#anyOf: keyword should be an array of Schemas')
     }
 
     return [async (value, ref, errors) => {
@@ -47,8 +47,8 @@ export default class AssertLogical {
     const { not } = schema
     if (isUndefined(not)) return []
 
-    if (!isObject(not)) {
-      throw new TypeError('#not: keyword should be an object')
+    if (!isSchema(not)) {
+      throw new TypeError('#not: keyword should be a Schema')
     }
 
     return [async (value, ref, errors) => {
@@ -62,8 +62,8 @@ export default class AssertLogical {
     const { oneOf } = schema
     if (isUndefined(oneOf)) return []
 
-    if (!isArray(oneOf) || !isTypedArray(oneOf, isObject)) {
-      throw new TypeError('#oneOf: keyword should be an array of objects')
+    if (!isArray(oneOf) || !isTypedArray(oneOf, isSchema)) {
+      throw new TypeError('#oneOf: keyword should be an array of Schemas')
     }
 
     return [async (value, ref, errors) => {

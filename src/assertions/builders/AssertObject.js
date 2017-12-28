@@ -1,6 +1,6 @@
 import {
   OPTIMIZED, assertOptimized, assertSizeMax, assertSizeMin,
-  isArray, isBoolean, isEnum, isObject, isString, isTypedArray, isUndefined
+  isArray, isBoolean, isEnum, isObject, isSchema, isString, isTypedArray, isUndefined
 } from '../types'
 
 // private methods
@@ -74,8 +74,8 @@ export default class AssertObject {
     const keys = Object.keys(dependencies)
     for (let k of keys) {
       const value = dependencies[k]
-      if (!(isEnum(value, isString) || isObject(value))) {
-        throw new TypeError('#dependencies: all dependencies must either be schemas|enums')
+      if (!(isEnum(value, isString) || isSchema(value))) {
+        throw new TypeError('#dependencies: all dependencies must either be Schemas|enums')
       }
     }
 
@@ -93,8 +93,8 @@ export default class AssertObject {
   }
 
   static [ASSERT_KEYS] (propertyNames) {
-    if (!isObject(propertyNames)) {
-      throw new TypeError('#propertyNames: must be an object')
+    if (!isSchema(propertyNames)) {
+      throw new TypeError('#propertyNames: must be a Schema')
     }
     return async ([value, key, val], ref, errors) =>
       assertOptimized(key, ref.propertyNames, ref.propertyNames[OPTIMIZED], errors)

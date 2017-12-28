@@ -4,8 +4,10 @@ import { isInteger } from './primitive'
  * optimized assertions
  */
 export const OPTIMIZED = Symbol('cache of thunked methods to validate a value')
-export async function assertOptimized (value, schema, optimized, errors) {
-  return Promise.all(optimized.map(fn => fn(value, schema, errors)))
+export async function assertOptimized (value, schema, optimized = [], errors) {
+  return schema === false
+    ? errors.push('\'false\' Schema invalidates all values')
+    : Promise.all(optimized.map(fn => fn(value, schema, errors)))
 }
 
 export function assertSizeMax (size, key) {
