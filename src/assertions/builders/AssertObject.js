@@ -74,7 +74,7 @@ export default class AssertObject {
     const keys = Object.keys(dependencies)
     for (let k of keys) {
       const value = dependencies[k]
-      if (!(isEnum(value, isString) || isSchema(value))) {
+      if (!((isArray(value) && !value.length) || isEnum(value, isString) || isSchema(value))) {
         throw new TypeError('#dependencies: all dependencies must either be Schemas|enums')
       }
     }
@@ -101,19 +101,20 @@ export default class AssertObject {
   }
 
   static [ASSERT_PROPERTIES] (schema) {
+    const { properties, patternProperties, additionalProperties } = schema
     const patternProps = {}
     const list = []
     let patternMatch = false
 
     // attach properties validations if keyword set
-    if (isObject(schema.properties)) {
+    if (isObject(properties)) {
       list.push(async ([value, key, val], ref, errors) =>
-        ref.properties[key] &&
+        isSchema(ref.properties[key]) &&
           assertOptimized(val, ref.properties[key], ref.properties[key][OPTIMIZED], errors))
-    } else if (!isUndefined(schema.properties)) throw new TypeError('#properties: must be an Object')
+    } else if (!isUndefined(properties)) throw new TypeError('#properties: must be an Object')
 
-    if (isObject(schema.patternProperties)) {
-      const keys = Object.keys(schema.patternProperties)
+    if (isObject(patternProperties)) {
+      const keys = Object.keys(patternProperties)
       for (let k of keys) {
         patternProps[k] = new RegExp(k)
       }
@@ -126,18 +127,18 @@ export default class AssertObject {
           }
         }
       })
-    } else if (!isUndefined(schema.patternProperties)) throw new TypeError('#patternProperties: must be an Object')
+    } else if (!isUndefined(patternProperties)) throw new TypeError('#patternProperties: must be an Object')
 
     // attach additionalProperties validations if keyword set
-    if (isObject(schema.additionalProperties)) {
+    if (isObject(additionalProperties)) {
       list.push(async ([value, key, val], ref, errors) =>
         (!(ref.properties && ref.properties[key]) && !patternMatch) &&
           assertOptimized(val, ref.additionalProperties, ref.additionalProperties[OPTIMIZED], errors))
-    } else if (isBoolean(schema.additionalProperties) && schema.additionalProperties === false) {
+    } else if (isBoolean(additionalProperties) && additionalProperties === false) {
       list.push(async ([value, key, val], ref, errors) =>
         (!(ref.properties && ref.properties[key]) && !patternMatch) &&
           errors.push('#additionalProperties: additional properties not allowed'))
-    } else if (!isUndefined(schema.additionalProperties)) throw new TypeError('#additionalProperties: must be either a Schema or Boolean')
+    } else if (!isUndefined(additionalProperties)) throw new TypeError('#additionalProperties: must be either a Schema or Boolean')
 
     return list
   }

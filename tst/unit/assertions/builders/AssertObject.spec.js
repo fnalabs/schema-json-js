@@ -41,24 +41,56 @@ describe('AssertObject', () => {
   })
 
   describe('properties keyword', () => {
-    const schema = { properties: { property: typeSchema } }
+    context('with standard schemas', () => {
+      const schema = { properties: { property: typeSchema } }
 
-    beforeEach(() => (assertions = AssertObject.optimize(schema)))
+      beforeEach(() => (assertions = AssertObject.optimize(schema)))
 
-    it('should create optimized assertions successfully', () => {
-      expect(assertions).to.be.an('array')
-      expect(assertions.length).to.equal(1)
-      expect(assertions[0]).to.be.a('function')
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with valid value successfully', async () => {
+        await assertOptimized({ property: {} }, schema, assertions, errors)
+        expect(errors.length).to.equal(0)
+      })
+
+      it('should assert optimized with invalid value unsuccessfully', async () => {
+        await assertOptimized({ property: null }, schema, assertions, errors)
+        expect(errors.length).to.equal(1)
+      })
     })
 
-    it('should assert optimized with valid value successfully', async () => {
-      await assertOptimized({ property: {} }, schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-    })
+    context('with boolean schemas', () => {
+      const schema = { properties: { foo: true, bar: false } }
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await assertOptimized({ property: null }, schema, assertions, errors)
-      expect(errors.length).to.equal(1)
+      beforeEach(() => (assertions = AssertObject.optimize(schema)))
+
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with valid value successfully', async () => {
+        await assertOptimized({}, schema, assertions, errors)
+        expect(errors.length).to.equal(0)
+
+        await assertOptimized({ foo: 1 }, schema, assertions, errors)
+        expect(errors.length).to.equal(0)
+      })
+
+      it('should assert optimized with one invalid value unsuccessfully', async () => {
+        await assertOptimized({ bar: 2 }, schema, assertions, errors)
+        expect(errors.length).to.equal(1)
+      })
+
+      it('should assert optimized with both values (one invalid) unsuccessfully', async () => {
+        await assertOptimized({ foo: 1, bar: 2 }, schema, assertions, errors)
+        expect(errors.length).to.equal(1)
+      })
     })
 
     it('should throw an error on invalid type', () => {

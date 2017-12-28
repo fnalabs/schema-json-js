@@ -79,7 +79,7 @@ describe('Schema', () => {
       try {
         schema = await new Schema().assign(null)
       } catch (e) {
-        expect(e.message).to.equal('JSON Schemas must be an object|boolean')
+        expect(e.message).to.equal('JSON Schemas must be an Object at root')
       }
     })
   })
@@ -159,6 +159,14 @@ describe('Schema', () => {
       schema = await new Schema().assign(test)
 
       expect(schema).to.deep.equal(test)
+    })
+
+    it('should assign and validate refs to boolean schemas', async () => {
+      const test = { $ref: '#/definitions/bool', definitions: { bool: false } }
+      schema = await new Schema().assign(test)
+
+      expect(schema).to.deep.equal(test)
+      expect(await schema.validate('foo')).to.be.false()
     })
 
     it('should throw an error on invalid $ref value', async () => {

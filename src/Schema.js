@@ -3,7 +3,7 @@ import * as builders from './assertions/builders'
 import {
   OPTIMIZED, assertOptimized,
   isArray, isEnum, isNull, isObject, isParentKeyword, isPathFragment,
-  isRef, isSchema, isSchemaType, isSubSchema, isString, isUndefined
+  isRef, isSchemaType, isSubSchema, isString, isUndefined
 } from './assertions/types'
 import { getSchema } from './utils'
 
@@ -66,7 +66,7 @@ export default class Schema {
   }
 
   [ASSIGN_SCHEMA] (root, schema) {
-    if (!isSchema(schema)) throw new TypeError('JSON Schemas must be an object|boolean')
+    if (!isObject(schema)) throw new TypeError('JSON Schemas must be an Object at root')
 
     // iterate over object/array passed as source schema
     const assign = (object, source, path = []) => {
@@ -152,6 +152,10 @@ export default class Schema {
     if (list.length && isObject(referred)) {
       return [async (value, ref, errors) => {
         return assertOptimized(value, referred, list, errors)
+      }]
+    } else if (referred === false) {
+      return [async (value, ref, errors) => {
+        return errors.push('\'false\' Schema invalidates all values')
       }]
     }
     return []
