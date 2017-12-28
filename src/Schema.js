@@ -58,7 +58,7 @@ export default class Schema {
     if (isObject(refs)) await this[ASSIGN_REFS](refs)
 
     this[ASSIGN_SCHEMA](this, schema)
-    const schemaId = schema.id || schema.$id
+    const schemaId = schema.$id || schema.id
     if (isString(schemaId)) Object.defineProperty(this[REFS], schemaId, { value: this, enumerable: true })
 
     await this[ASSIGN_OPTIMIZED](this)
@@ -81,7 +81,7 @@ export default class Schema {
         } else Object.defineProperty(object, key, { value, enumerable: true })
       }
 
-      const tempId = source.id || source.$id
+      const tempId = source.$id || source.id
       if (isString(tempId) && isSubSchema(tempId, path)) {
         Object.defineProperty(this[REFS], tempId, { value: object, enumerable: true })
       }
@@ -104,7 +104,7 @@ export default class Schema {
   }
 
   async [ASSIGN_OPTIMIZED] (schema) {
-    const schemaId = schema.id || schema.$id
+    const schemaId = schema.$id || schema.id
 
     const assign = async (source, path = []) => {
       if (isObject(source) && !isParentKeyword(path)) {
@@ -115,7 +115,7 @@ export default class Schema {
         else {
           value.push(...this[ASSERT_SCHEMA](source))
 
-          const tempId = id || $id
+          const tempId = $id || id
           if (!isUndefined(tempId) && tempId !== schemaId) {
             value.push(...(await this[ASSERT_REF](tempId, schema, path)))
           }
@@ -189,8 +189,8 @@ export default class Schema {
     let index = root
     for (let key of path) {
       index = index[key]
-      if (isString(index.id) && isPathFragment(index.id)) temp = `${temp}${index.id}`
       if (isString(index.$id) && isPathFragment(index.$id)) temp = `${temp}${index.$id}`
+      else if (isString(index.id) && isPathFragment(index.id)) temp = `${temp}${index.id}`
     }
 
     absMatch[0] = `${temp}${match[0]}`
