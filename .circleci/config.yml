@@ -7,6 +7,7 @@ jobs:
     working_directory: ~/js-schema-json
     steps:
       - checkout
+      - run: git submodule update --init --recursive
       - save_cache:
           key: repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
