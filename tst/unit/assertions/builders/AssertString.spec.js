@@ -1,18 +1,18 @@
 /* eslint-env mocha */
 import chai, { expect } from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 import dirtyChai from 'dirty-chai'
 
 import AssertString from '../../../../src/assertions/builders/AssertString'
 import { assertOptimized } from '../../../../src/assertions/types'
 
+chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 describe('AssertString', () => {
-  const errors = []
   let assertions
 
   afterEach(() => {
-    errors.length = 0
     assertions = null
   })
 
@@ -28,13 +28,11 @@ describe('AssertString', () => {
     })
 
     it('should assert optimized with valid value successfully', async () => {
-      await assertOptimized('', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
+      await expect(assertOptimized('', schema, assertions)).to.be.fulfilled()
     })
 
     it('should assert optimized with invalid value unsuccessfully', async () => {
-      await assertOptimized(null, schema, assertions, errors)
-      expect(errors.length).to.equal(1)
+      await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
     })
   })
 
@@ -51,13 +49,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('1963-06-19T08:30:06.283185Z', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('1963-06-19T08:30:06.283185Z', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('06/19/1963 08:30:06 PST', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('06/19/1963 08:30:06 PST', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -73,13 +69,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('joe.bloggs@example.com', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('joe.bloggs@example.com', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('2962', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('2962', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -95,13 +89,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('192.168.0.1', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('192.168.0.1', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('127.0', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('127.0', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -117,13 +109,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('::1', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('::1', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('12345::', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('12345::', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -139,13 +129,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('www.example.com', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('www.example.com', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('-a-host-name-that-starts-with--', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('-a-host-name-that-starts-with--', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -161,13 +149,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('/foo/bar~0/baz~1/%a', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('/foo/bar~0/baz~1/%a', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('/foo/bar~', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('/foo/bar~', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -183,18 +169,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('^a', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('^a', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('[', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
-      })
-
-      it('should assert optimized with invalid \\Z anchor value unsuccessfully', async () => {
-        await assertOptimized('^\\S(|(.|\\n)*\\S)\\Z', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('[', schema, assertions)).to.be.rejected()
+        await expect(assertOptimized('^\\S(|(.|\\n)*\\S)\\Z', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -210,13 +190,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('http://foo.bar/?baz=qux#quux', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('http://foo.bar/?baz=qux#quux', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('//foo.bar/?baz=qux#quux', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('//foo.bar/?baz=qux#quux', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -232,13 +210,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('/abc', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('/abc', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('\\\\WINDOWS\\fileshare', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('\\\\WINDOWS\\fileshare', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -254,13 +230,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('http://example.com/dictionary/{term:1}/{term}', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('http://example.com/dictionary/{term:1}/{term}', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized('http://example.com/dictionary/{term:1}/{term', schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized('http://example.com/dictionary/{term:1}/{term', schema, assertions)).to.be.rejected()
       })
     })
 
@@ -290,31 +264,17 @@ describe('AssertString', () => {
       expect(assertions[0]).to.be.a('function')
     })
 
-    it('should assert optimized with valid value successfully', async () => {
-      await assertOptimized('', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-
-      await assertOptimized('1', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-
-      await assertOptimized('12', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-
-      await assertOptimized('\uD83D\uDCA9', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-
-      await assertOptimized('\uD83D\uDCA9\uD83D\uDCA9', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
+    it('should assert optimized with valid values successfully', async () => {
+      await expect(assertOptimized('', schema, assertions)).to.be.fulfilled()
+      await expect(assertOptimized('1', schema, assertions)).to.be.fulfilled()
+      await expect(assertOptimized('12', schema, assertions)).to.be.fulfilled()
+      await expect(assertOptimized('\uD83D\uDCA9', schema, assertions)).to.be.fulfilled()
+      await expect(assertOptimized('\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.be.fulfilled()
     })
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await assertOptimized('123', schema, assertions, errors)
-      expect(errors.length).to.equal(1)
-    })
-
-    it('should assert optimized with invalid utf8 value unsuccessfully', async () => {
-      await assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions, errors)
-      expect(errors.length).to.equal(1)
+    it('should assert optimized with invalid values unsuccessfully', async () => {
+      await expect(assertOptimized('123', schema, assertions)).to.be.rejected()
+      await expect(assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.be.rejected()
     })
 
     it('should throw an error on invalid type', () => {
@@ -337,28 +297,16 @@ describe('AssertString', () => {
       expect(assertions[0]).to.be.a('function')
     })
 
-    it('should assert optimized with valid value successfully', async () => {
-      await assertOptimized('12', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-
-      await assertOptimized('123', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-
-      await assertOptimized('\uD83D\uDCA9\uD83D\uDCA9', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-
-      await assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
+    it('should assert optimized with valid values successfully', async () => {
+      await expect(assertOptimized('12', schema, assertions)).to.be.fulfilled()
+      await expect(assertOptimized('123', schema, assertions)).to.be.fulfilled()
+      await expect(assertOptimized('\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.be.fulfilled()
+      await expect(assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.be.fulfilled()
     })
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await assertOptimized('1', schema, assertions, errors)
-      expect(errors.length).to.equal(1)
-    })
-
-    it('should assert optimized with invalid utf8 value unsuccessfully', async () => {
-      await assertOptimized('\uD83D\uDCA9', schema, assertions, errors)
-      expect(errors.length).to.equal(1)
+    it('should assert optimized with invalid values unsuccessfully', async () => {
+      await expect(assertOptimized('1', schema, assertions)).to.be.rejected()
+      await expect(assertOptimized('\uD83D\uDCA9', schema, assertions)).to.be.rejected()
     })
 
     it('should throw an error on invalid type', () => {
@@ -382,13 +330,11 @@ describe('AssertString', () => {
     })
 
     it('should assert optimized with valid value successfully', async () => {
-      await assertOptimized('aaa', schema, assertions, errors)
-      expect(errors.length).to.equal(0)
+      await expect(assertOptimized('aaa', schema, assertions)).to.be.fulfilled()
     })
 
     it('should assert optimized with invalid value unsuccessfully', async () => {
-      await assertOptimized('abc', schema, assertions, errors)
-      expect(errors.length).to.equal(1)
+      await expect(assertOptimized('abc', schema, assertions)).to.be.rejected()
     })
 
     it('should throw an error on invalid type', () => {
@@ -413,13 +359,11 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('1', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized('1', schema, assertions)).to.be.fulfilled()
       })
 
       it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized(null, schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+        await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
       })
     })
 
@@ -434,14 +378,9 @@ describe('AssertString', () => {
         expect(assertions[0]).to.be.a('function')
       })
 
-      it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized('1', schema, assertions, errors)
-        expect(errors.length).to.equal(0)
-      })
-
-      it('should assert optimized with non-array successfully', async () => {
-        await assertOptimized(null, schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+      it('should assert optimized with valid values successfully', async () => {
+        await expect(assertOptimized('1', schema, assertions)).to.be.fulfilled()
+        await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
       })
     })
   })

@@ -8,8 +8,9 @@ export class AssertBoolean {
   static optimize (schema) {
     if (schema.type !== 'boolean') return []
 
-    return [async (value, ref, errors) =>
-      !isBoolean(value) && errors.push('#type: value is not a boolean')]
+    return [async (value, ref) => {
+      if (!isBoolean(value)) throw new Error('#type: value is not a boolean')
+    }]
   }
 }
 
@@ -21,8 +22,9 @@ export class AssertNull {
   static optimize (schema) {
     if (schema.type !== 'null') return []
 
-    return [async (value, ref, errors) =>
-      value !== null && errors.push('#type: value is not null')]
+    return [async (value, ref) => {
+      if (value !== null) throw new Error('#type: value is not null')
+    }]
   }
 }
 

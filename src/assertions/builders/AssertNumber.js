@@ -32,16 +32,17 @@ export default class AssertNumber {
 
     // return validations based on defined keywords
     if (list.length) {
-      return [async (value, ref, errors) => {
+      return [async (value, ref) => {
         if (!assertion(value)) {
-          if (/^(?:integer|number)$/.test(ref.type)) errors.push(`#type: value is not a(n) ${ref.type}`)
+          if (/^(?:integer|number)$/.test(ref.type)) throw new Error(`#type: value is not a(n) ${ref.type}`)
           return
         }
-        await assertOptimized(value, ref, list, errors)
+        return assertOptimized(value, ref, list)
       }]
     } else if (type && assertion.name.search(new RegExp(type, 'i')) !== -1) {
-      return [async (value, ref, errors) =>
-        !assertion(value) && errors.push(`#type: value is not a(n) ${ref.type}`)]
+      return [async (value, ref) => {
+        if (!assertion(value)) throw new Error(`#type: value is not a(n) ${ref.type}`)
+      }]
     }
     return []
   }
@@ -57,18 +58,24 @@ export default class AssertNumber {
     }
 
     return exclusive
-      ? async (value, ref, errors) =>
-          value >= ref.maximum &&
-            errors.push(`#maximum: value is greater than or equal to ${ref.maximum}`)
-      : async (value, ref, errors) =>
-          value > ref.maximum &&
-            errors.push(`#maximum: value is greater than ${ref.maximum}`)
+      ? async (value, ref) => {
+        if (value >= ref.maximum) {
+          throw new Error(`#maximum: value is greater than or equal to ${ref.maximum}`)
+        }
+      }
+      : async (value, ref) => {
+        if (value > ref.maximum) {
+          throw new Error(`#maximum: value is greater than ${ref.maximum}`)
+        }
+      }
   }
 
   static [ASSERT_MAX_EXCLUDE] () {
-    return async (value, ref, errors) =>
-        value >= ref.exclusiveMaximum &&
-          errors.push(`#exclusiveMaximum: value is greater than or equal to ${ref.exclusiveMaximum}`)
+    return async (value, ref) => {
+      if (value >= ref.exclusiveMaximum) {
+        throw new Error(`#exclusiveMaximum: value is greater than or equal to ${ref.exclusiveMaximum}`)
+      }
+    }
   }
 
   static [ASSERT_MIN] (minimum, exclusive = false, assertion) {
@@ -82,27 +89,34 @@ export default class AssertNumber {
     }
 
     return exclusive
-      ? async (value, ref, errors) =>
-          value <= ref.minimum &&
-            errors.push(`#minimum: value is less than or equal to ${ref.minimum}`)
-      : async (value, ref, errors) =>
-          value < ref.minimum &&
-            errors.push(`#minimum: value is less than ${ref.minimum}`)
+      ? async (value, ref) => {
+        if (value <= ref.minimum) {
+          throw new Error(`#minimum: value is less than or equal to ${ref.minimum}`)
+        }
+      }
+      : async (value, ref) => {
+        if (value < ref.minimum) {
+          throw new Error(`#minimum: value is less than ${ref.minimum}`)
+        }
+      }
   }
 
   static [ASSERT_MIN_EXCLUDE] () {
-    return async (value, ref, errors) =>
-        value <= ref.exclusiveMinimum &&
-          errors.push(`#exclusiveMinimum: value is less than or equal to ${ref.exclusiveMinimum}`)
+    return async (value, ref) => {
+      if (value <= ref.exclusiveMinimum) {
+        throw new Error(`#exclusiveMinimum: value is less than or equal to ${ref.exclusiveMinimum}`)
+      }
+    }
   }
 
   static [ASSERT_MULTIPLE] (multipleOf, assertion) {
     if (!assertion(multipleOf)) {
       throw new TypeError('#multipleOf: keyword is not the right type')
     }
-    return async (value, ref, errors) => {
-      return (value / ref.multipleOf) % 1 !== 0 &&
-        errors.push(`#multipleOf: value is not a multiple of ${ref.multipleOf}`)
+    return async (value, ref) => {
+      if ((value / ref.multipleOf) % 1 !== 0) {
+        throw new Error(`#multipleOf: value is not a multiple of ${ref.multipleOf}`)
+      }
     }
   }
 }

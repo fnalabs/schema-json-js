@@ -3,10 +3,11 @@ version: 2.0
 jobs:
   checkout_code:
     docker:
-      - image: circleci/node:8.7.0
+      - image: circleci/node:8.9.3
     working_directory: ~/js-schema-json
     steps:
       - checkout
+      - run: git submodule update --init --recursive
       - save_cache:
           key: repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -14,7 +15,7 @@ jobs:
 
   install_dependencies:
     docker:
-      - image: circleci/node:8.7.0
+      - image: circleci/node:8.9.3
     working_directory: ~/js-schema-json
     steps:
       - restore_cache:
@@ -31,7 +32,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:8.7.0
+      - image: circleci/node:8.9.3
     working_directory: ~/js-schema-json
     steps:
       - restore_cache:
@@ -42,7 +43,7 @@ jobs:
             - dependencies-{{ .Branch }}-{{ checksum "package.json" }}
       - run:
           name: Run lint and unit tests
-          command: npm test
+          command: npm run test:all && npm test
       - run:
           name: Run coverage report
           command: npm run coverage
@@ -53,7 +54,7 @@ jobs:
 
   build:
     docker:
-      - image: circleci/node:8.7.0
+      - image: circleci/node:8.9.3
     working_directory: ~/js-schema-json
     steps:
       - restore_cache:

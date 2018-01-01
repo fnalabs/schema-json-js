@@ -22,11 +22,11 @@ export default class AssertGeneric {
   }
 
   static [ASSERT_CONST] (schema) {
-    return async (value, ref, errors) => {
+    return async (value, ref) => {
       if (ref.const && typeof ref.const === 'object' && deepEqual(value, ref.const)) return
       else if (value === ref.const) return
 
-      errors.push(`#const: value does not match the const '${ref.const}'`)
+      throw new Error('#const: value does not match the defined const')
     }
   }
 
@@ -35,12 +35,12 @@ export default class AssertGeneric {
       throw new TypeError('#enum: invalid enum, check format and for duplicates')
     }
 
-    return async (value, ref, errors) => {
+    return async (value, ref) => {
       for (let enumVal of ref.enum) {
         if (enumVal && typeof enumVal === 'object' && deepEqual(value, enumVal)) return
         else if (!(value && typeof value === 'object') && value === enumVal) return
       }
-      errors.push('#enum: value does not match anything in the enum')
+      throw new Error('#enum: value does not match anything in the enum')
     }
   }
 }

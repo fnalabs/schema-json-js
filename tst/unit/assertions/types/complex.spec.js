@@ -67,6 +67,13 @@ describe('primitive assertions', () => {
     expect(complex.isRef('http://localhos~t:1234/node#something')).to.not.be.ok()
   })
 
+  it('should test for Schemas successfully', () => {
+    expect(complex.isSchema({})).to.be.true()
+    expect(complex.isSchema(true)).to.be.true()
+    expect(complex.isSchema(false)).to.be.true()
+    expect(complex.isSchema(null)).to.be.false()
+  })
+
   it('should test for valid schema types successfully', () => {
     expect(complex.isSchemaType('array')).to.be.true()
     expect(complex.isSchemaType('boolean')).to.be.true()
