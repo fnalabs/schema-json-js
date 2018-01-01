@@ -1,18 +1,18 @@
 /* eslint-env mocha */
 import chai, { expect } from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 import dirtyChai from 'dirty-chai'
 
 import AssertGeneric from '../../../../src/assertions/builders/AssertGeneric'
 import { assertOptimized } from '../../../../src/assertions/types'
 
+chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 describe('AssertGeneric', () => {
-  const errors = []
   let assertions
 
   afterEach(() => {
-    errors.length = 0
     assertions = null
   })
 
@@ -28,18 +28,12 @@ describe('AssertGeneric', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized(1, schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
       })
 
-      it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized(2, schema, assertions, errors)
-        expect(errors.length).to.equal(1)
-      })
-
-      it('should assert optimized with invalid value type unsuccessfully', async () => {
-        await assertOptimized(null, schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+      it('should assert optimized with invalid values unsuccessfully', async () => {
+        await expect(assertOptimized(2, schema, assertions)).to.be.rejected()
+        await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
       })
     })
 
@@ -54,18 +48,12 @@ describe('AssertGeneric', () => {
       })
 
       it('should assert optimized with valid value successfully', async () => {
-        await assertOptimized({ complex: 'object' }, schema, assertions, errors)
-        expect(errors.length).to.equal(0)
+        await expect(assertOptimized({ complex: 'object' }, schema, assertions)).to.be.fulfilled()
       })
 
-      it('should assert optimized with invalid value unsuccessfully', async () => {
-        await assertOptimized({ another: 'object' }, schema, assertions, errors)
-        expect(errors.length).to.equal(1)
-      })
-
-      it('should assert optimized with invalid value type unsuccessfully', async () => {
-        await assertOptimized(null, schema, assertions, errors)
-        expect(errors.length).to.equal(1)
+      it('should assert optimized with invalid values unsuccessfully', async () => {
+        await expect(assertOptimized({ another: 'object' }, schema, assertions)).to.be.rejected()
+        await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
       })
     })
   })
@@ -80,22 +68,14 @@ describe('AssertGeneric', () => {
       expect(assertions.length).to.equal(1)
     })
 
-    it('should assert optimized with valid value successfully', async () => {
-      await assertOptimized(1, schema, assertions, errors)
-      expect(errors.length).to.equal(0)
-
-      await assertOptimized({ complex: 'object' }, schema, assertions, errors)
-      expect(errors.length).to.equal(0)
+    it('should assert optimized with valid values successfully', async () => {
+      await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
+      await expect(assertOptimized({ complex: 'object' }, schema, assertions)).to.be.fulfilled()
     })
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await assertOptimized({ another: 'object' }, schema, assertions, errors)
-      expect(errors.length).to.equal(1)
-    })
-
-    it('should assert optimized with invalid value type unsuccessfully', async () => {
-      await assertOptimized(null, schema, assertions, errors)
-      expect(errors.length).to.equal(1)
+    it('should assert optimized with invalid values unsuccessfully', async () => {
+      await expect(assertOptimized({ another: 'object' }, schema, assertions)).to.be.rejected()
+      await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
     })
 
     it('should throw an error on invalid enum', () => {

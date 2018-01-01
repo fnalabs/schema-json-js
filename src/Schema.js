@@ -47,7 +47,13 @@ export default class Schema {
    */
   async validate (data, schema = this) {
     this[ERRORS].length = 0
-    await assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
+
+    try {
+      await assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
+    } catch (e) {
+      this[ERRORS].push(e.message)
+    }
+
     return !this[ERRORS].length
   }
 
@@ -62,7 +68,7 @@ export default class Schema {
     if (isString(schemaId)) Object.defineProperty(this[REFS], schemaId, { value: this, enumerable: true })
 
     await this[ASSIGN_OPTIMIZED](this)
-    return this
+    return Object.freeze(this)
   }
 
   [ASSIGN_SCHEMA] (root, schema) {
@@ -150,12 +156,10 @@ export default class Schema {
 
     const { referred, list } = assertion
     if (list.length && isObject(referred)) {
-      return [async (value, ref, errors) => {
-        return assertOptimized(value, referred, list, errors)
-      }]
+      return [async (value) => assertOptimized(value, referred, list)]
     } else if (referred === false) {
-      return [async (value, ref, errors) => {
-        return errors.push('\'false\' Schema invalidates all values')
+      return [async () => {
+        throw new Error('\'false\' Schema invalidates all values')
       }]
     }
     return []
@@ -260,12 +264,16 @@ export default class Schema {
       if (!isEnum(type, isSchemaType)) throw new TypeError('#type: type arrays must contain only string')
 
       const list = type.map(val => this[ASSERT_SCHEMA]({ type: val })[0])
-      return [async (value, ref, errors) => {
+      return [async (value, ref) => {
         let err = []
         for (let fn of list) {
-          await fn(value, ref, err)
+          try {
+            await fn(value, ref, err)
+          } catch (e) {
+            err.push(e.message)
+          }
         }
-        if (err.length === list.length) errors.push(...err)
+        if (err.length === list.length) throw new Error('#type: value does not match the List of types')
       }]
     } else throw new TypeError('#type: must be either a valid type string or list of strings')
   }

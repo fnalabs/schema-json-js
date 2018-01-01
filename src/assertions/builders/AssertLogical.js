@@ -16,9 +16,9 @@ export default class AssertLogical {
       throw new TypeError('#allOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref, errors) => {
+    return [async (value, ref) => {
       for (let refSchema of ref.allOf) {
-        await assertOptimized(value, refSchema, refSchema[OPTIMIZED], errors)
+        await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
       }
     }]
   }
@@ -31,15 +31,14 @@ export default class AssertLogical {
       throw new TypeError('#anyOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref, errors) => {
-      const outerErr = []
+    return [async (value, ref) => {
       for (let refSchema of ref.anyOf) {
-        let innerErr = []
-        await assertOptimized(value, refSchema, refSchema[OPTIMIZED], innerErr)
-        if (!innerErr.length) return
-        outerErr.push(...innerErr)
+        try {
+          await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+          return
+        } catch (e) {}
       }
-      errors.push(...outerErr)
+      throw new Error('#anyOf: none of the defined Schemas match the value')
     }]
   }
 
@@ -51,10 +50,12 @@ export default class AssertLogical {
       throw new TypeError('#not: keyword should be a Schema')
     }
 
-    return [async (value, ref, errors) => {
-      const err = []
-      await assertOptimized(value, ref.not, ref.not[OPTIMIZED], err)
-      if (!err.length) errors.push('#not: value validated successfully against the schema')
+    return [async (value, ref) => {
+      try {
+        await assertOptimized(value, ref.not, ref.not[OPTIMIZED])
+      } catch (e) { return }
+
+      throw new Error('#not: value validated successfully against the schema')
     }]
   }
 
@@ -66,16 +67,15 @@ export default class AssertLogical {
       throw new TypeError('#oneOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref, errors) => {
+    return [async (value, ref) => {
       let count = 0
       for (let refSchema of ref.oneOf) {
-        let innerErr = []
-        await assertOptimized(value, refSchema, refSchema[OPTIMIZED], innerErr)
-        if (innerErr.length) count++
+        try {
+          await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+          count++
+        } catch (e) {}
       }
-      if (count !== ref.oneOf.length - 1) {
-        errors.push('#oneOf: value should be one of the listed schemas only')
-      }
+      if (count !== 1) throw new Error('#oneOf: value should be one of the listed schemas only')
     }]
   }
 }
