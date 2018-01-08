@@ -1,6 +1,5 @@
 # Project specific
 bin
-conf
 src
 tmp*
 tst
