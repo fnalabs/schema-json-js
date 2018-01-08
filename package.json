@@ -1,7 +1,7 @@
 {
-  "name": "js-schema-json",
+  "name": "schema-json-js",
   "version": "0.0.0",
-  "description": "A Schema class that implements the JSON Schema specification.",
+  "description": "A JavaScript Schema class that implements the JSON Schema specification.",
   "main": "index.js",
   "scripts": {
     "prebuild": "del dist",
@@ -20,13 +20,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aeilers/js-schema-json.git"
+    "url": "git+https://github.com/fnalabs/schema-json-js.git"
   },
   "bugs": {
-    "url": "https://github.com/aeilers/js-schema-json/issues"
+    "url": "https://github.com/fnalabs/schema-json-js/issues"
   },
-  "homepage": "https://github.com/aeilers/js-schema-json#readme",
-  "author": "Adam Eilers <adam.eilers@gmail.com>",
+  "homepage": "https://github.com/fnalabs/schema-json-js#readme",
+  "author": "Adam Eilers",
   "license": "MIT",
   "engines": {
     "node": ">=8",
@@ -51,7 +51,7 @@
     "json-schema-test-suite": "0.0.10",
     "mocha": "~4.1.0",
     "nock": "~9.1.5",
-    "nodemon": "~1.14.7",
+    "nodemon": "~1.14.8",
     "nyc": "~11.4.1",
     "proxyquire": "~1.8.0",
     "sinon": "~4.1.3",

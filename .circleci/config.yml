@@ -3,20 +3,20 @@ version: 2.0
 jobs:
   checkout_code:
     docker:
-      - image: circleci/node:8.9.3
-    working_directory: ~/js-schema-json
+      - image: circleci/node:8.9.4
+    working_directory: ~/schema-json-js
     steps:
       - checkout
       - run: git submodule update --init --recursive
       - save_cache:
           key: repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/js-schema-json
+            - ~/schema-json-js
 
   install_dependencies:
     docker:
-      - image: circleci/node:8.9.3
-    working_directory: ~/js-schema-json
+      - image: circleci/node:8.9.4
+    working_directory: ~/schema-json-js
     steps:
       - restore_cache:
           keys:
@@ -28,12 +28,12 @@ jobs:
       - save_cache:
           key: dependencies-{{ .Branch }}-{{ checksum "package.json" }}
           paths:
-            - ~/js-schema-json/node_modules
+            - ~/schema-json-js/node_modules
 
   test:
     docker:
-      - image: circleci/node:8.9.3
-    working_directory: ~/js-schema-json
+      - image: circleci/node:8.9.4
+    working_directory: ~/schema-json-js
     steps:
       - restore_cache:
           keys:
@@ -48,14 +48,14 @@ jobs:
           name: Run coverage report
           command: npm run coverage
       - store_test_results:
-          path: ~/js-schema-json/coverage.lcov
+          path: ~/schema-json-js/coverage.lcov
       - store_artifacts:
-          path: ~/js-schema-json/coverage.lcov
+          path: ~/schema-json-js/coverage.lcov
 
   build:
     docker:
-      - image: circleci/node:8.9.3
-    working_directory: ~/js-schema-json
+      - image: circleci/node:8.9.4
+    working_directory: ~/schema-json-js
     steps:
       - restore_cache:
           keys:
@@ -69,9 +69,9 @@ jobs:
       - save_cache:
           key: assets-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/js-schema-json/package.tar.gz
+            - ~/schema-json-js/package.tar.gz
       - store_artifacts:
-          path: ~/js-schema-json/package.tar.gz
+          path: ~/schema-json-js/package.tar.gz
 
 workflows:
   version: 2
