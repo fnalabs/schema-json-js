@@ -1,6 +1,6 @@
 {
   "name": "schema-json-js",
-  "version": "0.0.0-alpha",
+  "version": "0.0.0-alpha.1",
   "description": "A JavaScript Schema class that implements the JSON Schema specification.",
   "main": "index.js",
   "scripts": {
