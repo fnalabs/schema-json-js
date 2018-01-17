@@ -28,7 +28,7 @@ export async function runTests (tests) {
   for (const testSuite of tests) {
     for (const test of testSuite.tests) {
       it(`${testSuite.description}; ${test.description}`, async () => {
-        const schema = await new Schema().assign(testSuite.schema)
+        const schema = await new Schema(testSuite.schema)
         expect(await schema.validate(test.data)).to.equal(test.valid)
       })
     }

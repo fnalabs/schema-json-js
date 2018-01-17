@@ -27,7 +27,7 @@ const ASSERT_TYPE = Symbol('validates Schema type arrays')
 /*
  * Schema class
  */
-export default class Schema {
+class Schema {
   constructor () {
     Object.defineProperties(this, {
       [ERRORS]: { value: [] },
@@ -278,3 +278,10 @@ export default class Schema {
     } else throw new TypeError('#type: must be either a valid type string or list of strings')
   }
 }
+
+export default new Proxy(Schema, {
+  construct: async function (Schema, argsList) {
+    if (isUndefined(argsList[0])) return new Schema()
+    return new Schema().assign(argsList[0], argsList[1])
+  }
+})
