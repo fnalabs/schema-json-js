@@ -1,7 +1,7 @@
 {
   "name": "schema-json-js",
   "version": "0.0.0-alpha.1",
-  "description": "A JavaScript Schema class that implements the JSON Schema specification.",
+  "description": "A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using promises and thunks.",
   "main": "index.js",
   "scripts": {
     "prebuild": "del dist",
@@ -48,14 +48,14 @@
     "codecov": "~3.0.0",
     "del-cli": "~1.1.0",
     "dirty-chai": "~2.0.1",
-    "mocha": "~4.1.0",
+    "mocha": "~5.0.0",
     "nock": "~9.1.5",
     "nodemon": "~1.14.11",
     "nyc": "~11.4.1",
     "proxyquire": "~1.8.0",
-    "sinon": "~4.1.6",
+    "sinon": "~4.2.1",
     "standard": "~10.0.3",
-    "uglify-es": "~3.3.7"
+    "uglify-es": "~3.3.8"
   },
   "nyc": {
     "check-coverage": true,
