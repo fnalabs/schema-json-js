@@ -7,6 +7,8 @@ import {
 } from './assertions/types'
 import { getSchema } from './utils'
 
+const enumerable = true
+
 // private properties
 const ERRORS = Symbol('cache of all errors as they occurred during validation')
 const REFS = Symbol('cache of all referenced schemas in current schema')
@@ -64,11 +66,14 @@ class Schema {
     if (isObject(refs)) await this[ASSIGN_REFS](refs)
 
     this[ASSIGN_SCHEMA](this, schema)
+
     const schemaId = schema.$id || schema.id
-    if (isString(schemaId)) Object.defineProperty(this[REFS], schemaId, { value: this, enumerable: true })
+    if (isString(schemaId)) Object.defineProperty(this[REFS], schemaId, { value: this, enumerable })
 
     await this[ASSIGN_OPTIMIZED](this)
-    return Object.freeze(this)
+    Object.freeze(this[REFS])
+
+    return this
   }
 
   [ASSIGN_SCHEMA] (root, schema) {
@@ -81,15 +86,17 @@ class Schema {
         const value = source[key]
         if (value && typeof value === 'object') {
           Object.defineProperty(object, key, {
-            value: isArray(value) ? assign([], value, [...path, key]) : assign({}, value, [...path, key]),
-            enumerable: true
+            value: isArray(value)
+              ? assign([], value, [...path, key])
+              : assign({}, value, [...path, key]),
+            enumerable
           })
-        } else Object.defineProperty(object, key, { value, enumerable: true })
+        } else Object.defineProperty(object, key, { value, enumerable })
       }
 
       const tempId = source.$id || source.id
       if (isString(tempId) && isSubSchema(tempId, path)) {
-        Object.defineProperty(this[REFS], tempId, { value: object, enumerable: true })
+        Object.defineProperty(this[REFS], tempId, { value: object, enumerable })
       }
 
       return object
@@ -98,10 +105,9 @@ class Schema {
   }
 
   async [ASSIGN_REF] (schemaUrl, ref) {
-    Object.defineProperty(this[REFS], schemaUrl, { value: {}, enumerable: true })
+    Object.defineProperty(this[REFS], schemaUrl, { value: {}, enumerable })
     this[ASSIGN_SCHEMA](this[REFS][schemaUrl], ref)
-    await this[ASSIGN_OPTIMIZED](this[REFS][schemaUrl])
-    return this[REFS][schemaUrl]
+    return this[ASSIGN_OPTIMIZED](this[REFS][schemaUrl])
   }
 
   async [ASSIGN_REFS] (refs) {
@@ -128,6 +134,7 @@ class Schema {
         }
 
         Object.defineProperty(source, OPTIMIZED, { value })
+        Object.freeze(source[OPTIMIZED])
       }
 
       const keys = Object.keys(source)
@@ -135,6 +142,7 @@ class Schema {
         const value = source[key]
         if (value && typeof value === 'object') await assign(value, [...path, key])
       }
+      return Object.freeze(source)
     }
     return assign(schema)
   }

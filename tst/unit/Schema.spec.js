@@ -22,6 +22,11 @@ describe('Schema', () => {
 
       expect(schema).to.be.an('object')
       expect(schema).to.deep.equal({})
+      expect(schema).to.not.be.frozen()
+
+      const symbols = Object.getOwnPropertySymbols(schema)
+      expect(schema[symbols[0]]).to.not.be.frozen()
+      expect(schema[symbols[1]]).to.not.be.frozen()
 
       expect(schema.errors).to.deep.equal([])
       expect(schema.assign).to.be.a('function')
@@ -32,6 +37,13 @@ describe('Schema', () => {
   describe('#validate', () => {
     it('should validate a base schema ({}) successfully', async () => {
       schema = await new Schema()
+
+      expect(schema).to.deep.equal({})
+      expect(schema).to.not.be.frozen()
+
+      const symbols = Object.getOwnPropertySymbols(schema)
+      expect(schema[symbols[0]]).to.not.be.frozen()
+      expect(schema[symbols[1]]).to.not.be.frozen()
 
       expect(await schema.validate('anything')).to.be.true()
       expect(await schema.validate(1)).to.be.true()
@@ -48,6 +60,12 @@ describe('Schema', () => {
       schema = await new Schema({})
 
       expect(schema).to.deep.equal({})
+      expect(schema).to.be.frozen()
+
+      const symbols = Object.getOwnPropertySymbols(schema)
+      expect(schema[symbols[0]]).to.not.be.frozen()
+      expect(schema[symbols[1]]).to.be.frozen()
+      expect(schema[symbols[2]]).to.be.frozen()
 
       expect(await schema.validate('anything')).to.be.true()
       expect(await schema.validate(1)).to.be.true()
@@ -63,6 +81,13 @@ describe('Schema', () => {
       schema = await new Schema(test)
 
       expect(schema).to.deep.equal(test)
+      expect(schema).to.be.frozen()
+      expect(schema.properties).to.be.frozen()
+
+      const symbols = Object.getOwnPropertySymbols(schema)
+      expect(schema[symbols[0]]).to.not.be.frozen()
+      expect(schema[symbols[1]]).to.be.frozen()
+      expect(schema[symbols[2]]).to.be.frozen()
     })
 
     it('should assign properties that are arrays successfully', async () => {
@@ -70,6 +95,14 @@ describe('Schema', () => {
       schema = await new Schema(test)
 
       expect(schema).to.deep.equal(test)
+      expect(schema).to.be.frozen()
+      expect(schema.type).to.be.frozen()
+
+      const symbols = Object.getOwnPropertySymbols(schema)
+      expect(schema[symbols[0]]).to.not.be.frozen()
+      expect(schema[symbols[1]]).to.be.frozen()
+      expect(schema[symbols[2]]).to.be.frozen()
+
       expect(await schema.validate(false)).to.be.true()
       expect(await schema.validate(null)).to.be.true()
       expect(await schema.validate('')).to.be.false()
