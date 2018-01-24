@@ -1,7 +1,7 @@
 {
   "name": "schema-json-js",
   "version": "0.0.0-alpha.1",
-  "description": "A JavaScript Schema class that implements the JSON Schema specification.",
+  "description": "A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using promises and thunks.",
   "main": "index.js",
   "scripts": {
     "prebuild": "del dist",
