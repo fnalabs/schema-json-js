@@ -287,6 +287,9 @@ class Schema {
   }
 }
 
+/*
+ * Proxy<Schema> for async initialization of the schema and optional refs
+ */
 export default new Proxy(Schema, {
   construct: async function (Schema, argsList) {
     if (isUndefined(argsList[0])) return new Schema()
