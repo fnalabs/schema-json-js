@@ -3,7 +3,7 @@ version: 2.0
 jobs:
   checkout_code:
     docker:
-      - image: circleci/node:8.9.4
+      - image: circleci/node:8.10.0
     working_directory: ~/schema-json-js
     steps:
       - checkout
@@ -15,7 +15,7 @@ jobs:
 
   install_dependencies:
     docker:
-      - image: circleci/node:8.9.4
+      - image: circleci/node:8.10.0
     working_directory: ~/schema-json-js
     steps:
       - restore_cache:
@@ -32,7 +32,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:8.9.4
+      - image: circleci/node:8.10.0
     working_directory: ~/schema-json-js
     steps:
       - restore_cache:
@@ -54,7 +54,7 @@ jobs:
 
   build:
     docker:
-      - image: circleci/node:8.9.4
+      - image: circleci/node:8.10.0
     working_directory: ~/schema-json-js
     steps:
       - restore_cache:
