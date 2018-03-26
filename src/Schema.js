@@ -7,13 +7,11 @@ import {
 } from './assertions/types'
 import { getSchema } from './utils'
 
-const enumerable = true
-
-// private properties
+// "private" properties
 const ERRORS = Symbol('cache of all errors as they occurred during validation')
 const REFS = Symbol('cache of all referenced schemas in current schema')
 
-// private methods
+// "private" methods
 const ASSIGN_SCHEMA = Symbol('assigns schema definitions to the class instance')
 const ASSIGN_REF = Symbol('assigns a ref to ref cache')
 const ASSIGN_REFS = Symbol('assigns a Hash of refs to ref cache')
@@ -26,8 +24,42 @@ const ASSERT_REF_RELATIVE = Symbol('validates schema $ref with relative URLs')
 const ASSERT_REF_POINTER = Symbol('validates schema $ref with JSON pointers')
 const ASSERT_TYPE = Symbol('validates Schema type arrays')
 
-/*
- * Schema class
+// constants
+const enumerable = true
+
+/**
+ * @todo Finish documenting remaining "private" methods, dependant functions and Builder classes.
+ *
+ * Class representing the definition and validation methods for JSON Schema validation.
+ * @property {Array<string>} errors - A copy of the List of error strings from the last time `validate` ran.
+ * @param {Object} [schema] - Optional JSON Schema definition.
+ * @param {Object} [refs] - Optional hash of cached JSON Schemas that are referenced in the main schema.
+ * @example <caption>An example Schema initialized immediately.</caption>
+ * ...
+ * const schema = await new Schema({}) // immediately immutable
+ * ...
+ * @example <caption>An example Schema initialized immediately with cached JSON Schema references defined.</caption>
+ * ...
+ * const REFS = {
+ *   'https://localhost/schema': {}
+ * }
+ * const schema = await new Schema({ $ref: 'https://localhost/schema' }, REFS) // immediately immutable
+ * ...
+ * @example <caption>An example Schema initialized lazily.</caption>
+ * ...
+ * const schema = new Schema() // not immutable yet...
+ * ...
+ * await schema.assign({}) // now it's immutable
+ * ...
+ * @example <caption>An example Schema initialized lazily with cached JSON Schema references defined.</caption>
+ * ...
+ * const schema = new Schema() // not immutable yet...
+ * ...
+ * const REFS = {
+ *   'https://localhost/schema': {}
+ * }
+ * await schema.assign({ $ref: 'https://localhost/schema' }, REFS) // now it's immutable
+ * ...
  */
 class Schema {
   constructor () {
@@ -37,15 +69,15 @@ class Schema {
     })
   }
 
-  /*
-   * getter(s)/setter(s)
-   */
   get errors () {
     return [...this[ERRORS]]
   }
 
-  /*
-   * validate
+  /**
+   * [`async`] Method used to validate supplied data against the JSON Schema definition instance.
+   * @param data - The data to validate against the JSON Schema definition instance.
+   * @param {Schema} [schema=this] - Optionally pass nested JSON Schema definitions of the instance for partial schema validation or other instances of the JSON Schema class.
+   * @returns {boolean} `true` if validation is successful, otherwise `false`.
    */
   async validate (data, schema = this) {
     this[ERRORS].length = 0
@@ -59,8 +91,11 @@ class Schema {
     return !this[ERRORS].length
   }
 
-  /*
-   * assign methods
+  /**
+   * [`async`] Method used to define and optimize the JSON Schema instance with the supplied JSON Schema definition and optionially cached references of other JSON Schema definitions.
+   * @param {Object} schema - The supplied JSON Schema definition.
+   * @param {Object} [refs] - Optionally supplied cached references of other JSON Schema definitions.
+   * @returns {Schema} The instance of the JSON Schema definition.
    */
   async assign (schema, refs) {
     if (isObject(refs)) await this[ASSIGN_REFS](refs)
@@ -76,6 +111,12 @@ class Schema {
     return this
   }
 
+  /**
+   * @private
+   * Iteratively assigns the provided JSON Schema definition to the root of the instance JSON Schema object.
+   * @param {Object} root - The root of the instance JSON Schema object.
+   * @param {Object} schema - The JSON Schema definition about to be assigned.
+   */
   [ASSIGN_SCHEMA] (root, schema) {
     if (!isObject(schema)) throw new TypeError('JSON Schemas must be an Object at root')
 
