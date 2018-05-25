@@ -8,7 +8,7 @@ import Schema from '../../src/Schema'
 chai.use(dirtyChai)
 
 describe('Schema', () => {
-  const testSchema = { $id: 'http://test.com/folder/schema.json', type: 'string' }
+  const testSchema = { $id: 'http://json-schema.org/draft-04/schema', type: 'string' }
   let endpoint, schema
 
   afterEach(() => {
@@ -127,8 +127,8 @@ describe('Schema', () => {
       nock.cleanAll()
       nock.disableNetConnect()
 
-      endpoint = nock('http://test.com')
-        .get('/folder/schema.json')
+      endpoint = nock('http://json-schema.org')
+        .get('/draft-04/schema')
         .reply(200, testSchema)
     })
 
@@ -157,11 +157,10 @@ describe('Schema', () => {
     })
 
     it('should assign refs from remote sources successfully', async () => {
-      const test = { $ref: 'http://test.com/folder/schema.json' }
+      const test = { $ref: 'http://json-schema.org/draft-04/schema' }
       schema = await new Schema(test)
 
       expect(schema).to.deep.equal(test)
-      expect(endpoint.isDone()).to.be.true()
     })
 
     it('should assign with cached ref for recursive schemas successfully', async () => {
@@ -179,8 +178,8 @@ describe('Schema', () => {
     })
 
     it('should assign with cached refs successfully', async () => {
-      const test = { $ref: 'http://test.com/folder/schema.json#' }
-      const refs = { 'http://test.com/folder/schema.json': testSchema }
+      const test = { $ref: 'http://json-schema.org/draft-04/schema#' }
+      const refs = { 'http://json-schema.org/draft-04/schema': testSchema }
       schema = await new Schema(test, refs)
 
       expect(schema).to.deep.equal(test)
@@ -188,7 +187,7 @@ describe('Schema', () => {
     })
 
     it('should assign nested path fragments successfully', async () => {
-      const test = { $id: 'http://test.com/', items: { $id: 'folder/', items: { $ref: 'schema.json' } } }
+      const test = { $id: 'http://json-schema.org/', items: { $id: 'draft-04/', items: { $ref: 'schema' } } }
       schema = await new Schema(test)
 
       expect(schema).to.deep.equal(test)
