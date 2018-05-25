@@ -14,6 +14,7 @@ Motivations behind the project:
 - implement as instances of a `class` so the schema can be referenced in code
 - fully asynchronous from the ground up
 - small and lightweight with no dependencies
+- universal support for latest browsers and Node.js
 
 #### Contents
 - [Installing](#installing)
@@ -77,7 +78,11 @@ Click on the link in the header above to go to the API page.
 - feature requests via [issues](https://github.com/fnalabs/schema-json-js/issues)
 
 ## Changelog
-TODO
+#### v0.0.0-beta.2
+- added browser tests for most recent Chrome and Firefox
+
+#### v0.0.0-beta.1
+- added documentation
 
 [npm-image]: https://img.shields.io/npm/v/schema-json-js.svg
 [npm-url]: https://www.npmjs.com/package/schema-json-js

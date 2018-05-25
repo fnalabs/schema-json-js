@@ -15,6 +15,7 @@ toc:
       - implement as instances of a `class` so the schema can be referenced in code
       - fully asynchronous from the ground up
       - small and lightweight with no dependencies
+      - universal support for latest browsers and Node.js
 
       [npm-image]: https://img.shields.io/npm/v/schema-json-js.svg
       [npm-url]: https://www.npmjs.com/package/schema-json-js
