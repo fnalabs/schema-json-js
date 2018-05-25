@@ -41,3 +41,10 @@ toc:
       $ npm install schema-json-js
       ```
   - Schema
+  - name: Changelog
+    description: |
+      #### v0.1.0
+      - added browser tests for most recent Chrome and Firefox
+
+      #### v0.0.0-beta.1
+      - added documentation

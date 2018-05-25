@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>schema-json-js 0.0.0-beta.1 | Documentation</title>
+  <title>schema-json-js 0.1.0 | Documentation</title>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' type='text/css' rel='stylesheet' />
   <link href='assets/style.css' type='text/css' rel='stylesheet' />
@@ -14,7 +14,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>schema-json-js</h3>
-          <div class='mb1'><code>0.0.0-beta.1</code></div>
+          <div class='mb1'><code>0.1.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -74,6 +74,16 @@
                   
                   
                 </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#changelog'
+                  class="h5 bold black caps">
+                  Changelog
+                  
+                </a>
                 
                 </li>
               
@@ -224,7 +234,7 @@ const REFS = {
       <p><p>An example Schema initialized lazily.</p>
 </p>
       <pre class='p1 overflow-auto round fill-light'>...
-const schema = <span class="hljs-keyword">new</span> Schema() <span class="hljs-comment">// not immutable yet...</span>
+const schema = <span class="hljs-keyword">await</span> <span class="hljs-keyword">new</span> Schema() <span class="hljs-comment">// executes immediately, but not immutable yet...</span>
 ...
 await schema.assign({}) <span class="hljs-comment">// now it's immutable</span>
 ...</pre>
@@ -232,7 +242,7 @@ await schema.assign({}) <span class="hljs-comment">// now it's immutable</span>
       <p><p>An example Schema initialized lazily with cached JSON Schema references defined.</p>
 </p>
       <pre class='p1 overflow-auto round fill-light'>...
-const schema = <span class="hljs-keyword">new</span> Schema() <span class="hljs-comment">// not immutable yet...</span>
+const schema = <span class="hljs-keyword">await</span> <span class="hljs-keyword">new</span> Schema() <span class="hljs-comment">// executes immediately, but not immutable yet...</span>
 ...
 const REFS = {
   <span class="hljs-string">'https://localhost/schema'</span>: {}
@@ -413,6 +423,28 @@ const REFS = {
   
 </section>
 
+          
+        
+          
+            <div class='keyline-top-not py2'><section class='py2 clearfix'>
+
+  <h2 id='changelog' class='mt0'>
+    Changelog
+  </h2>
+
+  
+    <h4>v0.1.0</h4>
+<ul>
+<li>added browser tests for most recent Chrome and Firefox</li>
+</ul>
+<h4>v0.0.0-beta.1</h4>
+<ul>
+<li>added documentation</li>
+</ul>
+
+  
+</section>
+</div>
           
         
       </div>
