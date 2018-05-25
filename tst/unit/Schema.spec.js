@@ -115,6 +115,27 @@ describe('Schema', () => {
         expect(e.message).to.equal('JSON Schemas must be an Object at root')
       }
     })
+
+    it('should actually use assign explicitly...', async () => {
+      const test = { type: ['boolean', 'null'] }
+
+      schema = await new Schema()
+
+      expect(schema).to.deep.equal({})
+      expect(schema).not.to.deep.equal(test)
+      expect(schema).not.to.be.frozen()
+      expect(schema.type).to.be.undefined()
+
+      await schema.assign(test)
+
+      expect(schema).to.deep.equal(test)
+      expect(schema).to.be.frozen()
+      expect(schema.type).to.be.frozen()
+
+      expect(await schema.validate(false)).to.be.true()
+      expect(await schema.validate(null)).to.be.true()
+      expect(await schema.validate('')).to.be.false()
+    })
   })
 
   describe('($)id|$ref keywords', () => {
