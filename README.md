@@ -78,7 +78,7 @@ Click on the link in the header above to go to the API page.
 - feature requests via [issues](https://github.com/fnalabs/schema-json-js/issues)
 
 ## Changelog
-#### v0.0.0-beta.2
+#### v0.1.0
 - added browser tests for most recent Chrome and Firefox
 
 #### v0.0.0-beta.1
