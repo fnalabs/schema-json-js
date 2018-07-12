@@ -98,7 +98,8 @@ module.exports = function (config) {
         browser: 'iPhone',
         device: 'iPhone 8',
         os: 'ios',
-        os_version: '11.0'
+        os_version: '11.0',
+        real_mobile: true
       },
       bs_opera_mac: {
         base: 'BrowserStack',
@@ -123,8 +124,9 @@ module.exports = function (config) {
       'bs_chrome_mac', 'bs_chrome_win',
       'bs_edge_win',
       'bs_firefox_mac', 'bs_firefox_win',
-      'bs_iphone',
-      'bs_opera_mac',
+      // TODO: follow-up on timeouts with BrowserStack
+      // 'bs_iphone',
+      // 'bs_opera_mac',
       'bs_safari_mac'
     ],
 
