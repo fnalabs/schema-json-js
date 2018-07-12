@@ -83,7 +83,7 @@ class Schema {
     this[ERRORS].length = 0
 
     try {
-      await assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
+      assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
     } catch (e) {
       this[ERRORS].push(e.message)
     }
@@ -205,11 +205,9 @@ class Schema {
 
     const { referred, list } = assertion
     if (list.length && isObject(referred)) {
-      return [async (value) => assertOptimized(value, referred, list)]
+      return [(value) => assertOptimized(value, referred, list)]
     } else if (referred === false) {
-      return [async () => {
-        throw new Error('\'false\' Schema invalidates all values')
-      }]
+      return [() => { throw new Error('\'false\' Schema invalidates all values') }]
     }
     return []
   }
@@ -313,11 +311,11 @@ class Schema {
       if (!isEnum(type, isSchemaType)) throw new TypeError('#type: type arrays must contain only string')
 
       const list = type.map(val => this[ASSERT_SCHEMA]({ type: val })[0])
-      return [async (value, ref) => {
+      return [(value, ref) => {
         let err = []
         for (let fn of list) {
           try {
-            await fn(value, ref, err)
+            fn(value, ref, err)
           } catch (e) {
             err.push(e.message)
           }
