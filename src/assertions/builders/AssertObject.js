@@ -37,7 +37,7 @@ export default class AssertObject {
 
     // return validations based on defined keywords
     if (innerList.length || outerList.length) {
-      return [async (value, ref) => {
+      return [(value, ref) => {
         if (!isObject(value)) {
           if (ref.type === 'object') throw new Error('#type: value is not an object')
           return
@@ -53,17 +53,17 @@ export default class AssertObject {
             // check for required
             if (req[key]) reqCount++
             // asserts [properties, patternProperties, additionalProperties, dependencies, propertyNames]
-            if (innerList.length) await assertOptimized([value, key, val], ref, innerList)
+            if (innerList.length) assertOptimized([value, key, val], ref, innerList)
           }
         }
 
         // asserts [required, maxProperties, minProperties]
         if (outerList.length) {
-          await assertOptimized({ length, reqCount }, ref, outerList)
+          assertOptimized({ length, reqCount }, ref, outerList)
         }
       }]
     } else if (type === 'object') {
-      return [async (value, ref) => {
+      return [(value, ref) => {
         if (!isObject(value)) throw new Error('#type: value is not an object')
       }]
     }
@@ -73,15 +73,15 @@ export default class AssertObject {
   static [ASSERT_DEPENDENCIES] (dependencies) {
     // determine if dependencies object contains arrays or schemas
     const keys = Object.keys(dependencies)
-    for (let k of keys) {
-      const value = dependencies[k]
+    for (let key of keys) {
+      const value = dependencies[key]
       if (!((isArray(value) && !value.length) || isEnum(value, isString) || isSchema(value))) {
         throw new TypeError('#dependencies: all dependencies must either be Schemas|enums')
       }
     }
 
     // return either property dependencies or schema dependencies validations
-    return async ([value, key, val], ref) => {
+    return ([value, key, val], ref) => {
       if (isUndefined(ref.dependencies[key])) return
 
       if (isArray(ref.dependencies[key])) {
@@ -98,7 +98,7 @@ export default class AssertObject {
     if (!isSchema(propertyNames)) {
       throw new TypeError('#propertyNames: must be a Schema')
     }
-    return async ([value, key, val], ref) =>
+    return ([value, key, val], ref) =>
       assertOptimized(key, ref.propertyNames, ref.propertyNames[OPTIMIZED])
   }
 
@@ -110,9 +110,9 @@ export default class AssertObject {
 
     // attach properties validations if keyword set
     if (isObject(properties)) {
-      list.push(async ([value, key, val], ref) => {
+      list.push(([value, key, val], ref) => {
         if (isSchema(ref.properties[key])) {
-          await assertOptimized(val, ref.properties[key], ref.properties[key][OPTIMIZED])
+          assertOptimized(val, ref.properties[key], ref.properties[key][OPTIMIZED])
         }
       })
     } else if (!isUndefined(properties)) throw new TypeError('#properties: must be an Object')
@@ -122,12 +122,12 @@ export default class AssertObject {
       for (let k of keys) {
         patternProps[k] = new RegExp(k)
       }
-      list.push(async ([value, key, val], ref) => {
+      list.push(([value, key, val], ref) => {
         patternMatch = false
         for (let i of keys) {
           if (patternProps[i].test(key)) {
             patternMatch = true
-            await assertOptimized(val, ref.patternProperties[i], ref.patternProperties[i][OPTIMIZED])
+            assertOptimized(val, ref.patternProperties[i], ref.patternProperties[i][OPTIMIZED])
           }
         }
       })
@@ -135,13 +135,13 @@ export default class AssertObject {
 
     // attach additionalProperties validations if keyword set
     if (isObject(additionalProperties)) {
-      list.push(async ([value, key, val], ref) => {
+      list.push(([value, key, val], ref) => {
         if (!(ref.properties && ref.properties[key]) && !patternMatch) {
-          await assertOptimized(val, ref.additionalProperties, ref.additionalProperties[OPTIMIZED])
+          assertOptimized(val, ref.additionalProperties, ref.additionalProperties[OPTIMIZED])
         }
       })
     } else if (isBoolean(additionalProperties) && additionalProperties === false) {
-      list.push(async ([value, key, val], ref) => {
+      list.push(([value, key, val], ref) => {
         if (!(ref.properties && ref.properties[key]) && !patternMatch) {
           throw new Error('#additionalProperties: additional properties not allowed')
         }
@@ -162,7 +162,7 @@ export default class AssertObject {
         obj[val] = true
         return obj
       }, {}),
-      assertReq: async (results, ref) => {
+      assertReq: (results, ref) => {
         if (results.reqCount !== ref.required.length) {
           throw new Error('#required: value does not have all required properties')
         }

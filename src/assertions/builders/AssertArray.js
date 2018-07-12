@@ -32,7 +32,7 @@ export default class AssertArray {
 
     // return validations based on defined keywords
     if (innerList.length || outerList.length) {
-      return [async (value, ref) => {
+      return [(value, ref) => {
         if (!isArray(value)) {
           if (ref.type === 'array') throw new Error('#type: value is not an array')
           return
@@ -49,7 +49,7 @@ export default class AssertArray {
                 : unique.add(value[i])
             }
             // asserts [items, additionalItems, contains]
-            if (innerList.length) await assertOptimized([i, value], ref, innerList)
+            if (innerList.length) assertOptimized([i, value], ref, innerList)
           }
 
           if (length === 0 && isSchema(ref.contains)) {
@@ -59,11 +59,11 @@ export default class AssertArray {
 
         // asserts [uniqueItems, maxItems, minItems]
         if (outerList.length) {
-          await assertOptimized({ length, uniqueCount: unique.size }, ref, outerList)
+          assertOptimized({ length, uniqueCount: unique.size }, ref, outerList)
         }
       }]
     } else if (type === 'array') {
-      return [async (value, ref) => {
+      return [(value, ref) => {
         if (!isArray(value)) throw new Error('#type: value is not an array')
       }]
     }
@@ -76,10 +76,10 @@ export default class AssertArray {
     }
 
     let containsFlag = false
-    return async ([key, val], ref) => {
+    return ([key, val], ref) => {
       if (!containsFlag) {
         try {
-          await assertOptimized(val[key], ref.contains, ref.contains[OPTIMIZED])
+          assertOptimized(val[key], ref.contains, ref.contains[OPTIMIZED])
           containsFlag = true
         } catch (e) {
           containsFlag = false
@@ -98,38 +98,38 @@ export default class AssertArray {
 
     // attach properties validations if keyword set
     if (isSchema(items)) {
-      list.push(async ([key, val], ref) =>
+      list.push(([key, val], ref) =>
         assertOptimized(val[key], ref.items, ref.items[OPTIMIZED]))
     } else if (isArray(items)) {
-      list.push(async ([key, val], ref) =>
+      list.push(([key, val], ref) =>
         assertOptimized(val[key], ref.items[key], ref.items[key][OPTIMIZED]))
 
       // attach additionalItems validations if keyword set
       if (isObject(additionalItems)) {
-        list.push(async ([key, val], ref) =>
+        list.push(([key, val], ref) =>
           assertOptimized(val[key], ref.additionalItems, ref.additionalItems[OPTIMIZED]))
       } else if (isBoolean(additionalItems) && additionalItems === false) {
-        list.push(async ([key, val], ref) => {
+        list.push(([key, val], ref) => {
           throw new Error(`#additionalItems: '${key}' additional items not allowed`)
         })
       } else if (!isUndefined(additionalItems)) throw new TypeError('#additionalItems: must be either a Schema or Boolean')
     } else if (!isUndefined(items)) throw new TypeError('#items: must be either a Schema or an Array of Schemas')
 
     if (list.length === 2) {
-      return [async ([key, val], ref) => {
-        if (key < ref.items.length) await list[0]([key, val], ref)
-        else await list[1]([key, val], ref)
+      return [([key, val], ref) => {
+        if (key < ref.items.length) list[0]([key, val], ref)
+        else list[1]([key, val], ref)
       }]
     } else if (items && isArray(items)) {
-      return [async ([key, val], ref) => {
-        if (key < ref.items.length) await list[0]([key, val], ref)
+      return [([key, val], ref) => {
+        if (key < ref.items.length) list[0]([key, val], ref)
       }]
     }
     return list
   }
 
   static [ASSERT_UNIQUE] () {
-    return async ({ length, uniqueCount }, ref) => {
+    return ({ length, uniqueCount }, ref) => {
       if (length !== uniqueCount) throw new Error('#uniqueItems: value does not contain unique items')
     }
   }

@@ -22,7 +22,7 @@ export default class AssertGeneric {
   }
 
   static [ASSERT_CONST] (schema) {
-    return async (value, ref) => {
+    return (value, ref) => {
       if (ref.const && typeof ref.const === 'object' && deepEqual(value, ref.const)) return
       else if (value === ref.const) return
 
@@ -35,7 +35,7 @@ export default class AssertGeneric {
       throw new TypeError('#enum: invalid enum, check format and for duplicates')
     }
 
-    return async (value, ref) => {
+    return (value, ref) => {
       for (let enumVal of ref.enum) {
         if (enumVal && typeof enumVal === 'object' && deepEqual(value, enumVal)) return
         else if (!(value && typeof value === 'object') && value === enumVal) return

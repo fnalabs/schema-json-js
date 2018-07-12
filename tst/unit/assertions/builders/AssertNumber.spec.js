@@ -1,12 +1,10 @@
 /* eslint-env mocha */
 import chai, { expect } from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import dirtyChai from 'dirty-chai'
 
 import AssertNumber from '../../../../src/assertions/builders/AssertNumber'
 import { assertOptimized } from '../../../../src/assertions/types'
 
-chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 describe('AssertNumber', () => {
@@ -28,13 +26,21 @@ describe('AssertNumber', () => {
         expect(assertions[0]).to.be.a('function')
       })
 
-      it('should assert optimized with valid value successfully', async () => {
-        await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
+      it('should assert optimized with valid value successfully', () => {
+        expect(() => assertOptimized(1, schema, assertions)).to.not.throw()
       })
 
-      it('should assert optimized with invalid values unsuccessfully', async () => {
-        await expect(assertOptimized(1.1, schema, assertions)).to.be.rejected()
-        await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
+      it('should assert optimized with invalid values unsuccessfully', () => {
+        try {
+          assertOptimized(1.1, schema, assertions)
+        } catch (e) {
+          expect(e.message).to.equal('#type: value is not a(n) integer')
+        }
+        try {
+          assertOptimized(null, schema, assertions)
+        } catch (e) {
+          expect(e.message).to.equal('#type: value is not a(n) integer')
+        }
       })
     })
 
@@ -49,13 +55,17 @@ describe('AssertNumber', () => {
         expect(assertions[0]).to.be.a('function')
       })
 
-      it('should assert optimized with valid values successfully', async () => {
-        await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
-        await expect(assertOptimized(1.1, schema, assertions)).to.be.fulfilled()
+      it('should assert optimized with valid values successfully', () => {
+        expect(() => assertOptimized(1, schema, assertions)).to.not.throw()
+        expect(() => assertOptimized(1.1, schema, assertions)).to.not.throw()
       })
 
-      it('should assert optimized with invalid value type unsuccessfully', async () => {
-        await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
+      it('should assert optimized with invalid value type unsuccessfully', () => {
+        try {
+          assertOptimized(null, schema, assertions)
+        } catch (e) {
+          expect(e.message).to.equal('#type: value is not a(n) number')
+        }
       })
     })
   })
@@ -71,14 +81,18 @@ describe('AssertNumber', () => {
       expect(assertions[0]).to.be.a('function')
     })
 
-    it('should assert optimized with valid values successfully', async () => {
-      await expect(assertOptimized(0, schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
+    it('should assert optimized with valid values successfully', () => {
+      expect(() => assertOptimized(0, schema, assertions)).to.not.throw()
+      expect(() => assertOptimized(1, schema, assertions)).to.not.throw()
+      expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
     })
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await expect(assertOptimized(2, schema, assertions)).to.be.rejected()
+    it('should assert optimized with invalid value unsuccessfully', () => {
+      try {
+        assertOptimized(2, schema, assertions)
+      } catch (e) {
+        expect(e.message).to.equal('#maximum: value is greater than 1')
+      }
     })
 
     it('should throw an error on invalid type', () => {
@@ -102,13 +116,17 @@ describe('AssertNumber', () => {
         expect(assertions[0]).to.be.a('function')
       })
 
-      it('should assert optimized with valid values successfully', async () => {
-        await expect(assertOptimized(0, schema, assertions)).to.be.fulfilled()
-        await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
+      it('should assert optimized with valid values successfully', () => {
+        expect(() => assertOptimized(0, schema, assertions)).to.not.throw()
+        expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
       })
 
-      it('should assert optimized with invalid value unsuccessfully', async () => {
-        await expect(assertOptimized(1, schema, assertions)).to.be.rejected()
+      it('should assert optimized with invalid value unsuccessfully', () => {
+        try {
+          assertOptimized(1, schema, assertions)
+        } catch (e) {
+          expect(e.message).to.equal('#exclusiveMaximum: value is greater than or equal to 1')
+        }
       })
     })
 
@@ -123,13 +141,17 @@ describe('AssertNumber', () => {
         expect(assertions[0]).to.be.a('function')
       })
 
-      it('should assert optimized with valid values successfully', async () => {
-        await expect(assertOptimized(0, schema, assertions)).to.be.fulfilled()
-        await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
+      it('should assert optimized with valid values successfully', () => {
+        expect(() => assertOptimized(0, schema, assertions)).to.not.throw()
+        expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
       })
 
-      it('should assert optimized with invalid value unsuccessfully', async () => {
-        await expect(assertOptimized(1, schema, assertions)).to.be.rejected()
+      it('should assert optimized with invalid value unsuccessfully', () => {
+        try {
+          assertOptimized(1, schema, assertions)
+        } catch (e) {
+          expect(e.message).to.equal('#maximum: value is greater than or equal to 1')
+        }
       })
     })
 
@@ -161,14 +183,18 @@ describe('AssertNumber', () => {
       expect(assertions[0]).to.be.a('function')
     })
 
-    it('should assert optimized with valid values successfully', async () => {
-      await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(2, schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
+    it('should assert optimized with valid values successfully', () => {
+      expect(() => assertOptimized(1, schema, assertions)).to.not.throw()
+      expect(() => assertOptimized(2, schema, assertions)).to.not.throw()
+      expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
     })
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await expect(assertOptimized(0, schema, assertions)).to.be.rejected()
+    it('should assert optimized with invalid value unsuccessfully', () => {
+      try {
+        assertOptimized(0, schema, assertions)
+      } catch (e) {
+        expect(e.message).to.equal('#minimum: value is less than 1')
+      }
     })
 
     it('should throw an error on invalid type', () => {
@@ -192,13 +218,17 @@ describe('AssertNumber', () => {
         expect(assertions[0]).to.be.a('function')
       })
 
-      it('should assert optimized with valid values successfully', async () => {
-        await expect(assertOptimized(2, schema, assertions)).to.be.fulfilled()
-        await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
+      it('should assert optimized with valid values successfully', () => {
+        expect(() => assertOptimized(2, schema, assertions)).to.not.throw()
+        expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
       })
 
-      it('should assert optimized with invalid value unsuccessfully', async () => {
-        await expect(assertOptimized(1, schema, assertions)).to.be.rejected()
+      it('should assert optimized with invalid value unsuccessfully', () => {
+        try {
+          assertOptimized(1, schema, assertions)
+        } catch (e) {
+          expect(e.message).to.equal('#exclusiveMinimum: value is less than or equal to 1')
+        }
       })
     })
 
@@ -213,13 +243,17 @@ describe('AssertNumber', () => {
         expect(assertions[0]).to.be.a('function')
       })
 
-      it('should assert optimized with valid values successfully', async () => {
-        await expect(assertOptimized(2, schema, assertions)).to.be.fulfilled()
-        await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
+      it('should assert optimized with valid values successfully', () => {
+        expect(() => assertOptimized(2, schema, assertions)).to.not.throw()
+        expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
       })
 
-      it('should assert optimized with invalid value unsuccessfully', async () => {
-        await expect(assertOptimized(1, schema, assertions)).to.be.rejected()
+      it('should assert optimized with invalid value unsuccessfully', () => {
+        try {
+          assertOptimized(1, schema, assertions)
+        } catch (e) {
+          expect(e.message).to.equal('#minimum: value is less than or equal to 1')
+        }
       })
     })
 
@@ -251,13 +285,17 @@ describe('AssertNumber', () => {
       expect(assertions[0]).to.be.a('function')
     })
 
-    it('should assert optimized with valid values successfully', async () => {
-      await expect(assertOptimized(4, schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
+    it('should assert optimized with valid values successfully', () => {
+      expect(() => assertOptimized(4, schema, assertions)).to.not.throw()
+      expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
     })
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await expect(assertOptimized(3, schema, assertions)).to.be.rejected()
+    it('should assert optimized with invalid value unsuccessfully', () => {
+      try {
+        assertOptimized(3, schema, assertions)
+      } catch (e) {
+        expect(e.message).to.equal('#multipleOf: value is not a multiple of 2')
+      }
     })
 
     it('should throw an error on invalid type', () => {
@@ -280,14 +318,22 @@ describe('AssertNumber', () => {
       expect(assertions[0]).to.be.a('function')
     })
 
-    it('should assert optimized with valid values successfully', async () => {
-      await expect(assertOptimized(0, schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
+    it('should assert optimized with valid values successfully', () => {
+      expect(() => assertOptimized(0, schema, assertions)).to.not.throw()
+      expect(() => assertOptimized(1, schema, assertions)).to.not.throw()
     })
 
-    it('should assert optimized with invalid values unsuccessfully', async () => {
-      await expect(assertOptimized(2, schema, assertions)).to.be.rejected()
-      await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
+    it('should assert optimized with invalid values unsuccessfully', () => {
+      try {
+        assertOptimized(2, schema, assertions)
+      } catch (e) {
+        expect(e.message).to.equal('#maximum: value is greater than 1')
+      }
+      try {
+        assertOptimized(null, schema, assertions)
+      } catch (e) {
+        expect(e.message).to.equal('#type: value is not a(n) number')
+      }
     })
   })
 })

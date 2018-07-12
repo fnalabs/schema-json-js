@@ -16,9 +16,9 @@ export default class AssertLogical {
       throw new TypeError('#allOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref) => {
+    return [(value, ref) => {
       for (let refSchema of ref.allOf) {
-        await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+        assertOptimized(value, refSchema, refSchema[OPTIMIZED])
       }
     }]
   }
@@ -31,10 +31,10 @@ export default class AssertLogical {
       throw new TypeError('#anyOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref) => {
+    return [(value, ref) => {
       for (let refSchema of ref.anyOf) {
         try {
-          await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+          assertOptimized(value, refSchema, refSchema[OPTIMIZED])
           return
         } catch (e) {}
       }
@@ -50,9 +50,9 @@ export default class AssertLogical {
       throw new TypeError('#not: keyword should be a Schema')
     }
 
-    return [async (value, ref) => {
+    return [(value, ref) => {
       try {
-        await assertOptimized(value, ref.not, ref.not[OPTIMIZED])
+        assertOptimized(value, ref.not, ref.not[OPTIMIZED])
       } catch (e) { return }
 
       throw new Error('#not: value validated successfully against the schema')
@@ -67,11 +67,11 @@ export default class AssertLogical {
       throw new TypeError('#oneOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref) => {
+    return [(value, ref) => {
       let count = 0
       for (let refSchema of ref.oneOf) {
         try {
-          await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+          assertOptimized(value, refSchema, refSchema[OPTIMIZED])
           count++
         } catch (e) {}
       }
