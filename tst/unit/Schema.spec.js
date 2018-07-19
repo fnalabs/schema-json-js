@@ -1,10 +1,14 @@
 /* eslint-env mocha */
 import chai, { expect } from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 import dirtyChai from 'dirty-chai'
 import nock from 'nock'
 
 import Schema from '../../src/Schema'
 
+import draft04Schema from '../refs/json-schema-draft-04.json'
+
+chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 describe('Schema', () => {
@@ -262,6 +266,20 @@ describe('Schema', () => {
       } catch (e) {
         expect(e.message).to.equal('#type: type arrays must contain only string')
       }
+    })
+  })
+
+  describe('definitions keyword', () => {
+    beforeEach(async () => {
+      schema = await new Schema(draft04Schema)
+    })
+
+    it('should validate successfully', () => {
+      expect(schema.validate({definitions: {foo: {type: 'integer'}}})).to.be.ok()
+    })
+
+    it('should throw an error on invalid data', () => {
+      expect(schema.validate({definitions: {foo: {type: 1}}})).to.not.be.ok()
     })
   })
 })

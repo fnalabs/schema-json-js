@@ -34,7 +34,7 @@ export default class AssertArray {
     if (innerList.length || outerList.length) {
       return [(value, ref) => {
         if (!isArray(value)) {
-          if (ref.type === 'array') throw new Error('#type: value is not an array')
+          if (ref.type === 'array') return new Error('#type: value is not an array')
           return
         }
 
@@ -49,22 +49,25 @@ export default class AssertArray {
                 : unique.add(value[i])
             }
             // asserts [items, additionalItems, contains]
-            if (innerList.length) assertOptimized([i, value], ref, innerList)
+            if (innerList.length) {
+              const error = assertOptimized([i, value], ref, innerList)
+              if (error) return error
+            }
           }
 
           if (length === 0 && isSchema(ref.contains)) {
-            throw new Error('#contains: value does not contain element matching the Schema')
+            return new Error('#contains: value does not contain element matching the Schema')
           }
         }
 
         // asserts [uniqueItems, maxItems, minItems]
         if (outerList.length) {
-          assertOptimized({ length, uniqueCount: unique.size }, ref, outerList)
+          return assertOptimized({ length, uniqueCount: unique.size }, ref, outerList)
         }
       }]
     } else if (type === 'array') {
       return [(value, ref) => {
-        if (!isArray(value)) throw new Error('#type: value is not an array')
+        if (!isArray(value)) return new Error('#type: value is not an array')
       }]
     }
     return []
@@ -78,16 +81,14 @@ export default class AssertArray {
     let containsFlag = false
     return ([key, val], ref) => {
       if (!containsFlag) {
-        try {
-          assertOptimized(val[key], ref.contains, ref.contains[OPTIMIZED])
-          containsFlag = true
-        } catch (e) {
+        const error = assertOptimized(val[key], ref.contains, ref.contains[OPTIMIZED])
+        if (error) {
           containsFlag = false
 
           if (key === val.length - 1) {
-            throw new Error('#contains: value does not contain element matching the Schema')
+            return new Error('#contains: value does not contain element matching the Schema')
           }
-        }
+        } else containsFlag = true
       } else if (key === val.length - 1) containsFlag = false
     }
   }
@@ -110,19 +111,19 @@ export default class AssertArray {
           assertOptimized(val[key], ref.additionalItems, ref.additionalItems[OPTIMIZED]))
       } else if (isBoolean(additionalItems) && additionalItems === false) {
         list.push(([key, val], ref) => {
-          throw new Error(`#additionalItems: '${key}' additional items not allowed`)
+          return new Error(`#additionalItems: '${key}' additional items not allowed`)
         })
       } else if (!isUndefined(additionalItems)) throw new TypeError('#additionalItems: must be either a Schema or Boolean')
     } else if (!isUndefined(items)) throw new TypeError('#items: must be either a Schema or an Array of Schemas')
 
     if (list.length === 2) {
       return [([key, val], ref) => {
-        if (key < ref.items.length) list[0]([key, val], ref)
-        else list[1]([key, val], ref)
+        if (key < ref.items.length) return list[0]([key, val], ref)
+        else return list[1]([key, val], ref)
       }]
     } else if (items && isArray(items)) {
       return [([key, val], ref) => {
-        if (key < ref.items.length) list[0]([key, val], ref)
+        if (key < ref.items.length) return list[0]([key, val], ref)
       }]
     }
     return list
@@ -130,7 +131,7 @@ export default class AssertArray {
 
   static [ASSERT_UNIQUE] () {
     return ({ length, uniqueCount }, ref) => {
-      if (length !== uniqueCount) throw new Error('#uniqueItems: value does not contain unique items')
+      if (length !== uniqueCount) return new Error('#uniqueItems: value does not contain unique items')
     }
   }
 }

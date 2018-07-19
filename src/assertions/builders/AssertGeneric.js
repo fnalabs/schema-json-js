@@ -26,7 +26,7 @@ export default class AssertGeneric {
       if (ref.const && typeof ref.const === 'object' && deepEqual(value, ref.const)) return
       else if (value === ref.const) return
 
-      throw new Error('#const: value does not match the defined const')
+      return new Error('#const: value does not match the defined const')
     }
   }
 
@@ -40,7 +40,7 @@ export default class AssertGeneric {
         if (enumVal && typeof enumVal === 'object' && deepEqual(value, enumVal)) return
         else if (!(value && typeof value === 'object') && value === enumVal) return
       }
-      throw new Error('#enum: value does not match anything in the enum')
+      return new Error('#enum: value does not match anything in the enum')
     }
   }
 }

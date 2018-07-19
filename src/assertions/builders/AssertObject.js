@@ -39,7 +39,7 @@ export default class AssertObject {
     if (innerList.length || outerList.length) {
       return [(value, ref) => {
         if (!isObject(value)) {
-          if (ref.type === 'object') throw new Error('#type: value is not an object')
+          if (ref.type === 'object') return new Error('#type: value is not an object')
           return
         }
 
@@ -53,18 +53,21 @@ export default class AssertObject {
             // check for required
             if (req[key]) reqCount++
             // asserts [properties, patternProperties, additionalProperties, dependencies, propertyNames]
-            if (innerList.length) assertOptimized([value, key, val], ref, innerList)
+            if (innerList.length) {
+              const error = assertOptimized([value, key, val], ref, innerList)
+              if (error) return error
+            }
           }
         }
 
         // asserts [required, maxProperties, minProperties]
         if (outerList.length) {
-          assertOptimized({ length, reqCount }, ref, outerList)
+          return assertOptimized({ length, reqCount }, ref, outerList)
         }
       }]
     } else if (type === 'object') {
       return [(value, ref) => {
-        if (!isObject(value)) throw new Error('#type: value is not an object')
+        if (!isObject(value)) return new Error('#type: value is not an object')
       }]
     }
     return []
@@ -87,7 +90,7 @@ export default class AssertObject {
       if (isArray(ref.dependencies[key])) {
         for (let depKey of ref.dependencies[key]) {
           if (isUndefined(value[depKey])) {
-            throw new Error(`#dependencies: value does not have '${key}' dependency`)
+            return new Error(`#dependencies: value does not have '${key}' dependency`)
           }
         }
       } else return assertOptimized(value, ref.dependencies[key], ref.dependencies[key][OPTIMIZED])
@@ -112,7 +115,7 @@ export default class AssertObject {
     if (isObject(properties)) {
       list.push(([value, key, val], ref) => {
         if (isSchema(ref.properties[key])) {
-          assertOptimized(val, ref.properties[key], ref.properties[key][OPTIMIZED])
+          return assertOptimized(val, ref.properties[key], ref.properties[key][OPTIMIZED])
         }
       })
     } else if (!isUndefined(properties)) throw new TypeError('#properties: must be an Object')
@@ -127,7 +130,8 @@ export default class AssertObject {
         for (let i of keys) {
           if (patternProps[i].test(key)) {
             patternMatch = true
-            assertOptimized(val, ref.patternProperties[i], ref.patternProperties[i][OPTIMIZED])
+            const error = assertOptimized(val, ref.patternProperties[i], ref.patternProperties[i][OPTIMIZED])
+            if (error) return error
           }
         }
       })
@@ -137,13 +141,13 @@ export default class AssertObject {
     if (isObject(additionalProperties)) {
       list.push(([value, key, val], ref) => {
         if (!(ref.properties && ref.properties[key]) && !patternMatch) {
-          assertOptimized(val, ref.additionalProperties, ref.additionalProperties[OPTIMIZED])
+          return assertOptimized(val, ref.additionalProperties, ref.additionalProperties[OPTIMIZED])
         }
       })
     } else if (isBoolean(additionalProperties) && additionalProperties === false) {
       list.push(([value, key, val], ref) => {
         if (!(ref.properties && ref.properties[key]) && !patternMatch) {
-          throw new Error('#additionalProperties: additional properties not allowed')
+          return new Error('#additionalProperties: additional properties not allowed')
         }
       })
     } else if (!isUndefined(additionalProperties)) throw new TypeError('#additionalProperties: must be either a Schema or Boolean')
@@ -164,7 +168,7 @@ export default class AssertObject {
       }, {}),
       assertReq: (results, ref) => {
         if (results.reqCount !== ref.required.length) {
-          throw new Error('#required: value does not have all required properties')
+          return new Error('#required: value does not have all required properties')
         }
       }
     }

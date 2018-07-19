@@ -29,15 +29,12 @@ describe('AssertArray', () => {
     })
 
     it('should assert optimized with valid value successfully', () => {
-      expect(() => assertOptimized([], schema, assertions)).to.not.throw()
+      expect(assertOptimized([], schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized(null, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#type: value is not an array')
-      }
+      const error = assertOptimized(null, schema, assertions)
+      expect(error.message).to.equal('#type: value is not an array')
     })
   })
 
@@ -54,15 +51,12 @@ describe('AssertArray', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized([[]], schema, assertions)).to.not.throw()
+        expect(assertOptimized([[]], schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized([null], schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#type: value is not an array')
-        }
+        const error = assertOptimized([null], schema, assertions)
+        expect(error.message).to.equal('#type: value is not an array')
       })
     })
 
@@ -78,17 +72,14 @@ describe('AssertArray', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized([[]], schema, assertions)).to.not.throw()
-        expect(() => assertOptimized([[], []], schema, assertions)).to.not.throw()
-        expect(() => assertOptimized([[], [], []], schema, assertions)).to.not.throw()
+        expect(assertOptimized([[]], schema, assertions)).to.be.undefined()
+        expect(assertOptimized([[], []], schema, assertions)).to.be.undefined()
+        expect(assertOptimized([[], [], []], schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized([null, null], schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#type: value is not an array')
-        }
+        const error = assertOptimized([null, null], schema, assertions)
+        expect(error.message).to.equal('#type: value is not an array')
       })
     })
 
@@ -114,15 +105,12 @@ describe('AssertArray', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized([[]], schema, assertions)).to.not.throw()
+        expect(assertOptimized([[]], schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized([[], []], schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#additionalItems: \'1\' additional items not allowed')
-        }
+        const error = assertOptimized([[], []], schema, assertions)
+        expect(error.message).to.equal('#additionalItems: \'1\' additional items not allowed')
       })
     })
 
@@ -138,16 +126,13 @@ describe('AssertArray', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized([[]], schema, assertions)).to.not.throw()
-        expect(() => assertOptimized([[], []], schema, assertions)).to.not.throw()
+        expect(assertOptimized([[]], schema, assertions)).to.be.undefined()
+        expect(assertOptimized([[], []], schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized([[], null], schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#type: value is not an array')
-        }
+        const error = assertOptimized([[], null], schema, assertions)
+        expect(error.message).to.equal('#type: value is not an array')
       })
     })
 
@@ -172,21 +157,16 @@ describe('AssertArray', () => {
     })
 
     it('should assert optimized with valid values successfully', () => {
-      expect(() => assertOptimized([1, []], schema, assertions)).to.not.throw()
-      expect(() => assertOptimized([[], 2], schema, assertions)).to.not.throw()
+      expect(assertOptimized([1, []], schema, assertions)).to.be.undefined()
+      expect(assertOptimized([[], 2], schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid values unsuccessfully', () => {
-      try {
-        assertOptimized([1, 2], schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#contains: value does not contain element matching the Schema')
-      }
-      try {
-        assertOptimized([], schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#contains: value does not contain element matching the Schema')
-      }
+      let error = assertOptimized([1, 2], schema, assertions)
+      expect(error.message).to.equal('#contains: value does not contain element matching the Schema')
+
+      error = assertOptimized([], schema, assertions)
+      expect(error.message).to.equal('#contains: value does not contain element matching the Schema')
     })
 
     it('should throw an error on invalid type', () => {
@@ -210,15 +190,12 @@ describe('AssertArray', () => {
     })
 
     it('should assert optimized with valid value successfully', () => {
-      expect(() => assertOptimized([], schema, assertions)).to.not.throw()
+      expect(assertOptimized([], schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized([1, 2], schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#maxItems: value maximum exceeded')
-      }
+      const error = assertOptimized([1, 2], schema, assertions)
+      expect(error.message).to.equal('#maxItems: value maximum exceeded')
     })
 
     it('should throw an error on invalid type', () => {
@@ -242,15 +219,12 @@ describe('AssertArray', () => {
     })
 
     it('should assert optimized with valid value successfully', () => {
-      expect(() => assertOptimized([1], schema, assertions)).to.not.throw()
+      expect(assertOptimized([1], schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized([], schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#minItems: value minimum not met')
-      }
+      const error = assertOptimized([], schema, assertions)
+      expect(error.message).to.equal('#minItems: value minimum not met')
     })
 
     it('should throw an error on invalid type', () => {
@@ -274,21 +248,16 @@ describe('AssertArray', () => {
     })
 
     it('should assert optimized with valid primitive values successfully', () => {
-      expect(() => assertOptimized([1, 2], schema, assertions)).to.not.throw()
-      expect(() => assertOptimized([schema, 1], schema, assertions)).to.not.throw()
+      expect(assertOptimized([1, 2], schema, assertions)).to.be.undefined()
+      expect(assertOptimized([schema, 1], schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid primitive values unsuccessfully', () => {
-      try {
-        assertOptimized([1, 1], schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#uniqueItems: value does not contain unique items')
-      }
-      try {
-        assertOptimized([schema, schema], schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#uniqueItems: value does not contain unique items')
-      }
+      let error = assertOptimized([1, 1], schema, assertions)
+      expect(error.message).to.equal('#uniqueItems: value does not contain unique items')
+
+      error = assertOptimized([schema, schema], schema, assertions)
+      expect(error.message).to.equal('#uniqueItems: value does not contain unique items')
     })
 
     it('should throw an error on invalid type', () => {
@@ -313,15 +282,12 @@ describe('AssertArray', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized([1], schema, assertions)).to.not.throw()
+        expect(assertOptimized([1], schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized(null, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#type: value is not an array')
-        }
+        const error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#type: value is not an array')
       })
     })
 
@@ -337,8 +303,8 @@ describe('AssertArray', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized([1], schema, assertions)).to.not.throw()
-        expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
+        expect(assertOptimized([1], schema, assertions)).to.be.undefined()
+        expect(assertOptimized(null, schema, assertions)).to.be.undefined()
       })
     })
   })

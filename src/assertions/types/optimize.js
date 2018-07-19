@@ -5,8 +5,11 @@ import { isInteger } from './primitive'
  */
 export const OPTIMIZED = Symbol('cache of thunked methods to validate a value')
 export function assertOptimized (value, schema, optimized = []) {
-  if (schema === false) throw new Error('\'false\' Schema invalidates all values')
-  for (let fn of optimized) fn(value, schema)
+  if (schema === false) return new Error('\'false\' Schema invalidates all values')
+  for (let fn of optimized) {
+    const error = fn(value, schema)
+    if (error) return error
+  }
 }
 
 export function assertSizeMax (size, key) {
@@ -14,7 +17,7 @@ export function assertSizeMax (size, key) {
     throw new TypeError(`#${key}: keyword must be a positive integer`)
   }
   return (results, ref) => {
-    if (results.length > ref[key]) throw new Error(`#${key}: value maximum exceeded`)
+    if (results.length > ref[key]) return new Error(`#${key}: value maximum exceeded`)
   }
 }
 
@@ -23,6 +26,6 @@ export function assertSizeMin (size, key) {
     throw new TypeError(`#${key}: keyword must be a positive integer`)
   }
   return (results, ref) => {
-    if (results.length < ref[key]) throw new Error(`#${key}: value minimum not met`)
+    if (results.length < ref[key]) return new Error(`#${key}: value minimum not met`)
   }
 }

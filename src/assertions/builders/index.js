@@ -9,7 +9,7 @@ export class AssertBoolean {
     if (schema.type !== 'boolean') return []
 
     return [(value, ref) => {
-      if (!isBoolean(value)) throw new Error('#type: value is not a boolean')
+      if (!isBoolean(value)) return new Error('#type: value is not a boolean')
     }]
   }
 }
@@ -23,7 +23,7 @@ export class AssertNull {
     if (schema.type !== 'null') return []
 
     return [(value, ref) => {
-      if (value !== null) throw new Error('#type: value is not null')
+      if (value !== null) return new Error('#type: value is not null')
     }]
   }
 }

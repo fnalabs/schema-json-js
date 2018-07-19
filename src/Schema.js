@@ -79,14 +79,11 @@ class Schema {
    * @param {Schema} [schema=this] - Optionally pass nested JSON Schema definitions of the instance for partial schema validation or other instances of the JSON Schema class.
    * @returns {boolean} `true` if validation is successful, otherwise `false`.
    */
-  async validate (data, schema = this) {
+  validate (data, schema = this) {
     this[ERRORS].length = 0
 
-    try {
-      assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
-    } catch (e) {
-      this[ERRORS].push(e.message)
-    }
+    const error = assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
+    if (error) this[ERRORS].push(error.message)
 
     return !this[ERRORS].length
   }
@@ -205,9 +202,9 @@ class Schema {
 
     const { referred, list } = assertion
     if (list.length && isObject(referred)) {
-      return [(value) => assertOptimized(value, referred, list)]
+      return [value => assertOptimized(value, referred, list)]
     } else if (referred === false) {
-      return [() => { throw new Error('\'false\' Schema invalidates all values') }]
+      return [() => { return new Error('\'false\' Schema invalidates all values') }]
     }
     return []
   }
@@ -314,13 +311,10 @@ class Schema {
       return [(value, ref) => {
         let err = []
         for (let fn of list) {
-          try {
-            fn(value, ref, err)
-          } catch (e) {
-            err.push(e.message)
-          }
+          const error = fn(value, ref, err)
+          if (error) err.push(error.message)
         }
-        if (err.length === list.length) throw new Error('#type: value does not match the List of types')
+        if (err.length === list.length) return new Error('#type: value does not match the List of types')
       }]
     } else throw new TypeError('#type: must be either a valid type string or list of strings')
   }

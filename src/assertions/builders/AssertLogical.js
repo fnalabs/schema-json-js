@@ -18,7 +18,8 @@ export default class AssertLogical {
 
     return [(value, ref) => {
       for (let refSchema of ref.allOf) {
-        assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+        const error = assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+        if (error) return error
       }
     }]
   }
@@ -33,12 +34,10 @@ export default class AssertLogical {
 
     return [(value, ref) => {
       for (let refSchema of ref.anyOf) {
-        try {
-          assertOptimized(value, refSchema, refSchema[OPTIMIZED])
-          return
-        } catch (e) {}
+        const error = assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+        if (!error) return
       }
-      throw new Error('#anyOf: none of the defined Schemas match the value')
+      return new Error('#anyOf: none of the defined Schemas match the value')
     }]
   }
 
@@ -51,11 +50,9 @@ export default class AssertLogical {
     }
 
     return [(value, ref) => {
-      try {
-        assertOptimized(value, ref.not, ref.not[OPTIMIZED])
-      } catch (e) { return }
-
-      throw new Error('#not: value validated successfully against the schema')
+      const error = assertOptimized(value, ref.not, ref.not[OPTIMIZED])
+      if (error) return
+      return new Error('#not: value validated successfully against the schema')
     }]
   }
 
@@ -70,12 +67,10 @@ export default class AssertLogical {
     return [(value, ref) => {
       let count = 0
       for (let refSchema of ref.oneOf) {
-        try {
-          assertOptimized(value, refSchema, refSchema[OPTIMIZED])
-          count++
-        } catch (e) {}
+        const error = assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+        if (error) count++
       }
-      if (count !== 1) throw new Error('#oneOf: value should be one of the listed schemas only')
+      if (count !== ref.oneOf.length - 1) return new Error('#oneOf: value should be one of the listed schemas only')
     }]
   }
 }

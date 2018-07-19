@@ -28,15 +28,12 @@ describe('AssertObject', () => {
     })
 
     it('should assert optimized with valid value successfully', () => {
-      expect(() => assertOptimized({}, schema, assertions)).to.not.throw()
+      expect(assertOptimized({}, schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized(null, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#type: value is not an object')
-      }
+      const error = assertOptimized(null, schema, assertions)
+      expect(error.message).to.equal('#type: value is not an object')
     })
   })
 
@@ -53,15 +50,12 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized({ property: {} }, schema, assertions)).to.not.throw()
+        expect(assertOptimized({ property: {} }, schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized({ property: null }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#type: value is not an object')
-        }
+        const error = assertOptimized({ property: null }, schema, assertions)
+        expect(error.message).to.equal('#type: value is not an object')
       })
     })
 
@@ -77,21 +71,16 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized({}, schema, assertions)).to.not.throw()
-        expect(() => assertOptimized({ foo: 1 }, schema, assertions)).to.not.throw()
+        expect(assertOptimized({}, schema, assertions)).to.be.undefined()
+        expect(assertOptimized({ foo: 1 }, schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid values unsuccessfully', () => {
-        try {
-          assertOptimized({ bar: 2 }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('\'false\' Schema invalidates all values')
-        }
-        try {
-          assertOptimized({ foo: 1, bar: 2 }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('\'false\' Schema invalidates all values')
-        }
+        let error = assertOptimized({ bar: 2 }, schema, assertions)
+        expect(error.message).to.equal('\'false\' Schema invalidates all values')
+
+        error = assertOptimized({ foo: 1, bar: 2 }, schema, assertions)
+        expect(error.message).to.equal('\'false\' Schema invalidates all values')
       })
     })
 
@@ -116,22 +105,17 @@ describe('AssertObject', () => {
     })
 
     it('should assert optimized with valid values successfully', () => {
-      expect(() => assertOptimized({ property: {} }, schema, assertions)).to.not.throw()
-      expect(() => assertOptimized({ pattern: {}, property: {} }, schema, assertions)).to.not.throw()
-      expect(() => assertOptimized({ pattern: {}, property: {}, with_ignored: true }, schema, assertions)).to.not.throw()
+      expect(assertOptimized({ property: {} }, schema, assertions)).to.be.undefined()
+      expect(assertOptimized({ pattern: {}, property: {} }, schema, assertions)).to.be.undefined()
+      expect(assertOptimized({ pattern: {}, property: {}, with_ignored: true }, schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid values unsuccessfully', () => {
-      try {
-        assertOptimized({ pattern: null, property: null }, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#type: value is not an object')
-      }
-      try {
-        assertOptimized({ pattern: null, property: null }, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#type: value is not an object')
-      }
+      let error = assertOptimized({ pattern: null, property: null }, schema, assertions)
+      expect(error.message).to.equal('#type: value is not an object')
+
+      error = assertOptimized({ pattern: null, property: null }, schema, assertions)
+      expect(error.message).to.equal('#type: value is not an object')
     })
 
     it('should throw an error on invalid type', () => {
@@ -156,15 +140,12 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized({ property: {} }, schema, assertions)).to.not.throw()
+        expect(assertOptimized({ property: {} }, schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized({ additional: {}, property: {} }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#additionalProperties: additional properties not allowed')
-        }
+        const error = assertOptimized({ additional: {}, property: {} }, schema, assertions)
+        expect(error.message).to.equal('#additionalProperties: additional properties not allowed')
       })
     })
 
@@ -180,16 +161,13 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized({ property: {} }, schema, assertions)).to.not.throw()
-        expect(() => assertOptimized({ additional: {}, property: {} }, schema, assertions)).to.not.throw()
+        expect(assertOptimized({ property: {} }, schema, assertions)).to.be.undefined()
+        expect(assertOptimized({ additional: {}, property: {} }, schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized({ additional: null, property: {} }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#type: value is not an object')
-        }
+        const error = assertOptimized({ additional: null, property: {} }, schema, assertions)
+        expect(error.message).to.equal('#type: value is not an object')
       })
     })
 
@@ -215,16 +193,13 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized({ bar: 'anything' }, schema, assertions)).to.not.throw()
-        expect(() => assertOptimized({ foo: 'bar', bar: 'foo' }, schema, assertions)).to.not.throw()
+        expect(assertOptimized({ bar: 'anything' }, schema, assertions)).to.be.undefined()
+        expect(assertOptimized({ foo: 'bar', bar: 'foo' }, schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized({ foo: 'bar' }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#dependencies: value does not have \'foo\' dependency')
-        }
+        const error = assertOptimized({ foo: 'bar' }, schema, assertions)
+        expect(error.message).to.equal('#dependencies: value does not have \'foo\' dependency')
       })
     })
 
@@ -240,16 +215,13 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized({ bar: 'anything' }, schema, assertions)).to.not.throw()
-        expect(() => assertOptimized({ foo: 'bar', bar: 'foo' }, schema, assertions)).to.not.throw()
+        expect(assertOptimized({ bar: 'anything' }, schema, assertions)).to.be.undefined()
+        expect(assertOptimized({ foo: 'bar', bar: 'foo' }, schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized({ foo: 'bar', bar: 'foo', one: 'more' }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#maxProperties: value maximum exceeded')
-        }
+        const error = assertOptimized({ foo: 'bar', bar: 'foo', one: 'more' }, schema, assertions)
+        expect(error.message).to.equal('#maxProperties: value maximum exceeded')
       })
     })
 
@@ -274,15 +246,12 @@ describe('AssertObject', () => {
     })
 
     it('should assert optimized with valid value successfully', () => {
-      expect(() => assertOptimized({ property: {} }, schema, assertions)).to.not.throw()
+      expect(assertOptimized({ property: {} }, schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized({ p: {} }, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#minLength: value minimum not met')
-      }
+      const error = assertOptimized({ p: {} }, schema, assertions)
+      expect(error.message).to.equal('#minLength: value minimum not met')
     })
 
     it('should throw an error on invalid type', () => {
@@ -306,15 +275,12 @@ describe('AssertObject', () => {
     })
 
     it('should assert optimized with valid value successfully', () => {
-      expect(() => assertOptimized({ foo: 1 }, schema, assertions)).to.not.throw()
+      expect(assertOptimized({ foo: 1 }, schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized({ one: 1 }, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#required: value does not have all required properties')
-      }
+      const error = assertOptimized({ one: 1 }, schema, assertions)
+      expect(error.message).to.equal('#required: value does not have all required properties')
     })
 
     it('should throw an error on invalid type', () => {
@@ -338,16 +304,13 @@ describe('AssertObject', () => {
     })
 
     it('should assert optimized with valid values successfully', () => {
-      expect(() => assertOptimized({}, schema, assertions)).to.not.throw()
-      expect(() => assertOptimized({ one: 1 }, schema, assertions)).to.not.throw()
+      expect(assertOptimized({}, schema, assertions)).to.be.undefined()
+      expect(assertOptimized({ one: 1 }, schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized({ one: 1, two: 2 }, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#maxProperties: value maximum exceeded')
-      }
+      const error = assertOptimized({ one: 1, two: 2 }, schema, assertions)
+      expect(error.message).to.equal('#maxProperties: value maximum exceeded')
     })
 
     it('should throw an error on invalid type', () => {
@@ -371,16 +334,13 @@ describe('AssertObject', () => {
     })
 
     it('should assert optimized with valid values successfully', () => {
-      expect(() => assertOptimized({ one: 1 }, schema, assertions)).to.not.throw()
-      expect(() => assertOptimized({ one: 1, two: 2 }, schema, assertions)).to.not.throw()
+      expect(assertOptimized({ one: 1 }, schema, assertions)).to.be.undefined()
+      expect(assertOptimized({ one: 1, two: 2 }, schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized({}, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#minProperties: value minimum not met')
-      }
+      const error = assertOptimized({}, schema, assertions)
+      expect(error.message).to.equal('#minProperties: value minimum not met')
     })
 
     it('should throw an error on invalid type', () => {
@@ -405,20 +365,15 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized({ one: 1 }, schema, assertions)).to.not.throw()
+        expect(assertOptimized({ one: 1 }, schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid values unsuccessfully', () => {
-        try {
-          assertOptimized({ one: 1, two: 2 }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#maxProperties: value maximum exceeded')
-        }
-        try {
-          assertOptimized(null, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#type: value is not an object')
-        }
+        let error = assertOptimized({ one: 1, two: 2 }, schema, assertions)
+        expect(error.message).to.equal('#maxProperties: value maximum exceeded')
+
+        error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#type: value is not an object')
       })
     })
 
@@ -434,16 +389,13 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized({ one: 1 }, schema, assertions)).to.not.throw()
-        expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
+        expect(assertOptimized({ one: 1 }, schema, assertions)).to.be.undefined()
+        expect(assertOptimized(null, schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized({ one: 1, two: 2 }, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#maxProperties: value maximum exceeded')
-        }
+        const error = assertOptimized({ one: 1, two: 2 }, schema, assertions)
+        expect(error.message).to.equal('#maxProperties: value maximum exceeded')
       })
     })
   })
