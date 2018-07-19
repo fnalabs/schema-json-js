@@ -26,15 +26,12 @@ describe('AssertString', () => {
     })
 
     it('should assert optimized with valid value successfully', () => {
-      expect(() => assertOptimized('', schema, assertions)).to.not.throw()
+      expect(assertOptimized('', schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized(null, schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#type: value is not a string')
-      }
+      const error = assertOptimized(null, schema, assertions)
+      expect(error.message).to.equal('#type: value is not a string')
     })
   })
 
@@ -51,15 +48,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('1963-06-19T08:30:06.283185Z', schema, assertions)).to.not.throw()
+        expect(assertOptimized('1963-06-19T08:30:06.283185Z', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('06/19/1963 08:30:06 PST', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match date-time format')
-        }
+        const error = assertOptimized('06/19/1963 08:30:06 PST', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match date-time format')
       })
     })
 
@@ -75,15 +69,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('joe.bloggs@example.com', schema, assertions)).to.not.throw()
+        expect(assertOptimized('joe.bloggs@example.com', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('2962', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match email format')
-        }
+        const error = assertOptimized('2962', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match email format')
       })
     })
 
@@ -99,15 +90,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('192.168.0.1', schema, assertions)).to.not.throw()
+        expect(assertOptimized('192.168.0.1', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('127.0', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match ipv4 format')
-        }
+        const error = assertOptimized('127.0', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match ipv4 format')
       })
     })
 
@@ -123,15 +111,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('::1', schema, assertions)).to.not.throw()
+        expect(assertOptimized('::1', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('12345::', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match ipv6 format')
-        }
+        const error = assertOptimized('12345::', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match ipv6 format')
       })
     })
 
@@ -147,15 +132,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('www.example.com', schema, assertions)).to.not.throw()
+        expect(assertOptimized('www.example.com', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('-a-host-name-that-starts-with--', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match hostname format')
-        }
+        const error = assertOptimized('-a-host-name-that-starts-with--', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match hostname format')
       })
     })
 
@@ -171,15 +153,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('/foo/bar~0/baz~1/%a', schema, assertions)).to.not.throw()
+        expect(assertOptimized('/foo/bar~0/baz~1/%a', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('/foo/bar~', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match json-pointer format')
-        }
+        const error = assertOptimized('/foo/bar~', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match json-pointer format')
       })
     })
 
@@ -195,20 +174,15 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('^a', schema, assertions)).to.not.throw()
+        expect(assertOptimized('^a', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('[', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value is not a valid regex format')
-        }
-        try {
-          assertOptimized('^\\S(|(.|\\n)*\\S)\\Z', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: ECMA 262 has no support for \\Z anchor from .NET')
-        }
+        let error = assertOptimized('[', schema, assertions)
+        expect(error.message).to.equal('#format: value is not a valid regex format')
+
+        error = assertOptimized('^\\S(|(.|\\n)*\\S)\\Z', schema, assertions)
+        expect(error.message).to.equal('#format: ECMA 262 has no support for \\Z anchor from .NET')
       })
     })
 
@@ -224,15 +198,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('http://foo.bar/?baz=qux#quux', schema, assertions)).to.not.throw()
+        expect(assertOptimized('http://foo.bar/?baz=qux#quux', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('//foo.bar/?baz=qux#quux', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match uri format')
-        }
+        const error = assertOptimized('//foo.bar/?baz=qux#quux', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match uri format')
       })
     })
 
@@ -248,15 +219,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('/abc', schema, assertions)).to.not.throw()
+        expect(assertOptimized('/abc', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('\\\\WINDOWS\\fileshare', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match uri-reference format')
-        }
+        const error = assertOptimized('\\\\WINDOWS\\fileshare', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match uri-reference format')
       })
     })
 
@@ -272,15 +240,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('http://example.com/dictionary/{term:1}/{term}', schema, assertions)).to.not.throw()
+        expect(assertOptimized('http://example.com/dictionary/{term:1}/{term}', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized('http://example.com/dictionary/{term:1}/{term', schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#format: value does not match uri-template format')
-        }
+        const error = assertOptimized('http://example.com/dictionary/{term:1}/{term', schema, assertions)
+        expect(error.message).to.equal('#format: value does not match uri-template format')
       })
     })
 
@@ -311,24 +276,19 @@ describe('AssertString', () => {
     })
 
     it('should assert optimized with valid values successfully', () => {
-      expect(() => assertOptimized('', schema, assertions)).to.not.throw()
-      expect(() => assertOptimized('1', schema, assertions)).to.not.throw()
-      expect(() => assertOptimized('12', schema, assertions)).to.not.throw()
-      expect(() => assertOptimized('\uD83D\uDCA9', schema, assertions)).to.not.throw()
-      expect(() => assertOptimized('\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.not.throw()
+      expect(assertOptimized('', schema, assertions)).to.be.undefined()
+      expect(assertOptimized('1', schema, assertions)).to.be.undefined()
+      expect(assertOptimized('12', schema, assertions)).to.be.undefined()
+      expect(assertOptimized('\uD83D\uDCA9', schema, assertions)).to.be.undefined()
+      expect(assertOptimized('\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid values unsuccessfully', () => {
-      try {
-        assertOptimized('123', schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#maxLength: value maximum exceeded')
-      }
-      try {
-        assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#maxLength: value maximum exceeded')
-      }
+      let error = assertOptimized('123', schema, assertions)
+      expect(error.message).to.equal('#maxLength: value maximum exceeded')
+
+      error = assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)
+      expect(error.message).to.equal('#maxLength: value maximum exceeded')
     })
 
     it('should throw an error on invalid type', () => {
@@ -352,23 +312,18 @@ describe('AssertString', () => {
     })
 
     it('should assert optimized with valid values successfully', () => {
-      expect(() => assertOptimized('12', schema, assertions)).to.not.throw()
-      expect(() => assertOptimized('123', schema, assertions)).to.not.throw()
-      expect(() => assertOptimized('\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.not.throw()
-      expect(() => assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.not.throw()
+      expect(assertOptimized('12', schema, assertions)).to.be.undefined()
+      expect(assertOptimized('123', schema, assertions)).to.be.undefined()
+      expect(assertOptimized('\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.be.undefined()
+      expect(assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid values unsuccessfully', () => {
-      try {
-        assertOptimized('1', schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#minLength: value minimum not met')
-      }
-      try {
-        assertOptimized('\uD83D\uDCA9', schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#minLength: value minimum not met')
-      }
+      let error = assertOptimized('1', schema, assertions)
+      expect(error.message).to.equal('#minLength: value minimum not met')
+
+      error = assertOptimized('\uD83D\uDCA9', schema, assertions)
+      expect(error.message).to.equal('#minLength: value minimum not met')
     })
 
     it('should throw an error on invalid type', () => {
@@ -392,15 +347,12 @@ describe('AssertString', () => {
     })
 
     it('should assert optimized with valid value successfully', () => {
-      expect(() => assertOptimized('aaa', schema, assertions)).to.not.throw()
+      expect(assertOptimized('aaa', schema, assertions)).to.be.undefined()
     })
 
     it('should assert optimized with invalid value unsuccessfully', () => {
-      try {
-        assertOptimized('abc', schema, assertions)
-      } catch (e) {
-        expect(e.message).to.equal('#pattern: value does not match pattern \'^a*$\'')
-      }
+      const error = assertOptimized('abc', schema, assertions)
+      expect(error.message).to.equal('#pattern: value does not match pattern \'^a*$\'')
     })
 
     it('should throw an error on invalid type', () => {
@@ -425,15 +377,12 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid value successfully', () => {
-        expect(() => assertOptimized('1', schema, assertions)).to.not.throw()
+        expect(assertOptimized('1', schema, assertions)).to.be.undefined()
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        try {
-          assertOptimized(null, schema, assertions)
-        } catch (e) {
-          expect(e.message).to.equal('#type: value is not a string')
-        }
+        const error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#type: value is not a string')
       })
     })
 
@@ -449,8 +398,8 @@ describe('AssertString', () => {
       })
 
       it('should assert optimized with valid values successfully', () => {
-        expect(() => assertOptimized('1', schema, assertions)).to.not.throw()
-        expect(() => assertOptimized(null, schema, assertions)).to.not.throw()
+        expect(assertOptimized('1', schema, assertions)).to.be.undefined()
+        expect(assertOptimized(null, schema, assertions)).to.be.undefined()
       })
     })
   })
