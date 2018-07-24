@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 
 describe('optimize assertions', () => {
   it('should assert maximum size keywords successfully', () => {
-    expect(optimize.assertSizeMax(1, 'maxItems')).to.be.a('function')
+    expect(optimize.assertSizeMax(1, 'maxItems')).to.be.undefined()
 
     try {
       optimize.assertSizeMax(0, 'maxItems')
@@ -24,7 +24,7 @@ describe('optimize assertions', () => {
   })
 
   it('should assert minimum size keywords successfully', () => {
-    expect(optimize.assertSizeMin(1, 'minItems')).to.be.a('function')
+    expect(optimize.assertSizeMin(1, 'minItems')).to.be.undefined()
 
     try {
       optimize.assertSizeMin(0, 'minItems')
