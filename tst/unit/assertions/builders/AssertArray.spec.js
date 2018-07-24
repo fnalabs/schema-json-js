@@ -140,41 +140,60 @@ describe('AssertArray', () => {
       try {
         assertions = AssertArray.optimize({ items: [{}], additionalItems: null })
       } catch (e) {
-        expect(e.message).to.equal('#additionalItems: must be either a Schema or Boolean')
+        expect(e.message).to.equal('#additionalItems: must be either a Schema or Boolean if defined')
       }
     })
   })
 
   describe('contains keyword', () => {
-    const schema = { contains: typeSchema }
+    context('as an object schema', () => {
+      const schema = { contains: typeSchema }
 
-    beforeEach(() => (assertions = AssertArray.optimize(schema)))
+      beforeEach(() => (assertions = AssertArray.optimize(schema)))
 
-    it('should create optimized assertions successfully', () => {
-      expect(assertions).to.be.an('array')
-      expect(assertions.length).to.equal(1)
-      expect(assertions[0]).to.be.a('function')
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with valid values successfully', () => {
+        expect(assertOptimized([1, []], schema, assertions)).to.be.undefined()
+        expect(assertOptimized([[], 2], schema, assertions)).to.be.undefined()
+      })
+
+      it('should assert optimized with invalid values unsuccessfully', () => {
+        let error = assertOptimized([1, 2], schema, assertions)
+        expect(error.message).to.equal('#contains: value does not contain element matching the Schema')
+
+        error = assertOptimized([], schema, assertions)
+        expect(error.message).to.equal('#contains: value does not contain element matching the Schema')
+      })
+
+      it('should throw an error on invalid type', () => {
+        try {
+          assertions = AssertArray.optimize({ contains: null })
+        } catch (e) {
+          expect(e.message).to.equal('#contains: keyword should be a Schema')
+        }
+      })
     })
 
-    it('should assert optimized with valid values successfully', () => {
-      expect(assertOptimized([1, []], schema, assertions)).to.be.undefined()
-      expect(assertOptimized([[], 2], schema, assertions)).to.be.undefined()
-    })
+    context('as a boolean schema', () => {
+      const schema = { contains: false }
 
-    it('should assert optimized with invalid values unsuccessfully', () => {
-      let error = assertOptimized([1, 2], schema, assertions)
-      expect(error.message).to.equal('#contains: value does not contain element matching the Schema')
+      beforeEach(() => (assertions = AssertArray.optimize(schema)))
 
-      error = assertOptimized([], schema, assertions)
-      expect(error.message).to.equal('#contains: value does not contain element matching the Schema')
-    })
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
 
-    it('should throw an error on invalid type', () => {
-      try {
-        assertions = AssertArray.optimize({ contains: null })
-      } catch (e) {
-        expect(e.message).to.equal('#contains: keyword should be a Schema')
-      }
+      it('should assert optimized with valid values successfully', () => {
+        const error = assertOptimized([], schema, assertions)
+        expect(error.message).to.equal('#contains: value does not contain element matching the Schema')
+      })
     })
   })
 
@@ -304,6 +323,36 @@ describe('AssertArray', () => {
 
       it('should assert optimized with valid values successfully', () => {
         expect(assertOptimized([1], schema, assertions)).to.be.undefined()
+        expect(assertOptimized(null, schema, assertions)).to.be.undefined()
+      })
+    })
+
+    context('with iterative valitions', () => {
+      const schema = { type: 'array', items: { type: 'number' }, maxItems: 3, minItems: 1 }
+
+      beforeEach(() => (assertions = AssertArray.optimize(schema)))
+
+      it('should create optimized assertions and validate successfully', () => {
+        expect(assertOptimized([1], schema, assertions)).to.be.undefined()
+        expect(assertOptimized([1, 2], schema, assertions)).to.be.undefined()
+        expect(assertOptimized([1, 2, 3], schema, assertions)).to.be.undefined()
+      })
+
+      it('should create optimized assertions and validate unsuccessfully', () => {
+        let error = assertOptimized([], schema, assertions)
+        expect(error.message).to.equal('#minItems: value minimum not met')
+
+        error = assertOptimized([1, 2, 3, 4], schema, assertions)
+        expect(error.message).to.equal('#maxItems: value maximum exceeded')
+      })
+    })
+
+    context('without a type defined', () => {
+      const schema = { items: { type: 'number' }, maxItems: 3, minItems: 1 }
+
+      beforeEach(() => (assertions = AssertArray.optimize(schema)))
+
+      it('should ignore non-array types', () => {
         expect(assertOptimized(null, schema, assertions)).to.be.undefined()
       })
     })
