@@ -377,7 +377,7 @@ describe('AssertObject', () => {
       })
     })
 
-    context('without type defined', () => {
+    context('without enforced type', () => {
       const schema = { maxProperties: 1, [OPTIMIZED]: AssertObject.optimize({ maxProperties: 1 }) }
 
       beforeEach(() => (assertions = AssertObject.optimize(schema)))
@@ -396,6 +396,37 @@ describe('AssertObject', () => {
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized({ one: 1, two: 2 }, schema, assertions)
         expect(error.message).to.equal('#maxProperties: value maximum exceeded')
+      })
+    })
+
+    context('with iterative validations', () => {
+      const schema = { type: 'object', additionalProperties: {}, maxProperties: 1, minProperties: 1 }
+
+      beforeEach(() => (assertions = AssertObject.optimize(schema)))
+
+      it('should create optimized assertions and validate successfully', () => {
+        expect(assertOptimized({anything: 'goes'}, schema, assertions)).to.be.undefined()
+      })
+
+      it('should create optimized assertions and validate unsuccessfully', () => {
+        let error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#type: value is not an object')
+
+        error = assertOptimized({}, schema, assertions)
+        expect(error.message).to.equal('#minProperties: value minimum not met')
+
+        error = assertOptimized({not: 'always', anything: 'goes'}, schema, assertions)
+        expect(error.message).to.equal('#maxProperties: value maximum exceeded')
+      })
+    })
+
+    context('without a type defined', () => {
+      const schema = { additionalProperties: {}, maxProperties: 1, minProperties: 1 }
+
+      beforeEach(() => (assertions = AssertObject.optimize(schema)))
+
+      it('should ignore non-object types', () => {
+        expect(assertOptimized(null, schema, assertions)).to.be.undefined()
       })
     })
   })
