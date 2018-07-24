@@ -1,10 +1,8 @@
-import { isInteger, isString, isUndefined } from '../types'
+import { assertSizeMax, assertSizeMin, isInteger, isString, isUndefined } from '../types'
 
 // private methods
 const ASSERT_FORMAT = Symbol('validates String format')
 const ASSERT_PATTERN = Symbol('validates String pattern')
-const ASSERT_SIZE_MAX = Symbol('validates String maxLength')
-const ASSERT_SIZE_MIN = Symbol('validates String minLength')
 
 function stringLength (str) {
   let length = 0
@@ -32,8 +30,8 @@ export default class AssertString {
 
     // perform remaining validations defined in schema
     if (!isUndefined(format)) assertFormat = AssertString[ASSERT_FORMAT](format, type)
-    if (!isUndefined(maxLength)) AssertString[ASSERT_SIZE_MAX](maxLength, type)
-    if (!isUndefined(minLength)) AssertString[ASSERT_SIZE_MIN](minLength, type)
+    if (!isUndefined(maxLength)) assertSizeMax(maxLength, 'maxLength')
+    if (!isUndefined(minLength)) assertSizeMin(minLength, 'minLength')
     if (!isUndefined(pattern)) patternRegExp = AssertString[ASSERT_PATTERN](pattern, type)
 
     // return validations based on defined keywords
@@ -47,10 +45,10 @@ export default class AssertString {
           const error = assertFormat(value)
           if (error) return error
         }
-        if (isInteger(ref.maxLength) && !(value.length <= ref.maxLength || stringLength(value) <= ref.maxLength)) {
+        if (typeof ref.maxLength === 'number' && !(value.length <= ref.maxLength || stringLength(value) <= ref.maxLength)) {
           return new Error('#maxLength: value maximum exceeded')
         }
-        if (isInteger(ref.minLength) && (value.length < ref.minLength || stringLength(value) < ref.minLength)) {
+        if (typeof ref.minLength === 'number' && (value.length < ref.minLength || stringLength(value) < ref.minLength)) {
           return new Error('#minLength: value minimum not met')
         }
         if (patternRegExp && !patternRegExp.test(value)) {
@@ -141,17 +139,5 @@ export default class AssertString {
       throw new TypeError('#pattern: keyword is not a string')
     }
     return new RegExp(pattern)
-  }
-
-  static [ASSERT_SIZE_MAX] (size, type) {
-    if (!(isInteger(size) && size > 0)) {
-      throw new TypeError('#maxLength: keyword must be a positive integer')
-    }
-  }
-
-  static [ASSERT_SIZE_MIN] (size, type) {
-    if (!(isInteger(size) && size > 0)) {
-      throw new TypeError('#minLength: keyword must be a positive integer')
-    }
   }
 }

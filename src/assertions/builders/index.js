@@ -1,5 +1,3 @@
-import { isBoolean } from '../types'
-
 export class AssertBoolean {
   constructor () {
     return AssertBoolean
@@ -9,7 +7,7 @@ export class AssertBoolean {
     if (schema.type !== 'boolean') return []
 
     return [(value, ref) => {
-      if (!isBoolean(value)) return new Error('#type: value is not a boolean')
+      if (typeof value !== 'boolean') return new Error('#type: value is not a boolean')
     }]
   }
 }

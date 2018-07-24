@@ -30,19 +30,19 @@ export default class AssertNumber {
           if (/^(?:integer|number)$/.test(ref.type)) return new Error(`#type: value is not a(n) ${ref.type}`)
           return
         }
-        if (isNumber(ref.maximum) && ((ref.exclusiveMaximum && value >= ref.maximum) || value > ref.maximum)) {
+        if (typeof ref.maximum === 'number' && ((ref.exclusiveMaximum && value >= ref.maximum) || value > ref.maximum)) {
           return new Error(`#maximum: value is greater than or equal to ${ref.maximum}`)
         }
-        if (isNumber(ref.exclusiveMaximum) && value >= ref.exclusiveMaximum) {
+        if (typeof ref.exclusiveMaximum === 'number' && value >= ref.exclusiveMaximum) {
           return new Error(`#exclusiveMaximum: value is greater than or equal to ${ref.exclusiveMaximum}`)
         }
-        if (isNumber(ref.minimum) && ((ref.exclusiveMinimum && value <= ref.minimum) || value < ref.minimum)) {
+        if (typeof ref.minimum === 'number' && ((ref.exclusiveMinimum && value <= ref.minimum) || value < ref.minimum)) {
           return new Error(`#minimum: value is less than or equal to ${ref.minimum}`)
         }
-        if (isNumber(ref.exclusiveMinimum) && value <= ref.exclusiveMinimum) {
+        if (typeof ref.exclusiveMinimum === 'number' && value <= ref.exclusiveMinimum) {
           return new Error(`#exclusiveMinimum: value is less than or equal to ${ref.exclusiveMinimum}`)
         }
-        if (isNumber(ref.multipleOf) && (value / ref.multipleOf) % 1 !== 0) {
+        if (typeof ref.multipleOf === 'number' && (value / ref.multipleOf) % 1 !== 0) {
           return new Error(`#multipleOf: value is not a multiple of ${ref.multipleOf}`)
         }
       }]
