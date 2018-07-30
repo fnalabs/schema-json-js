@@ -3,7 +3,7 @@ import chai, { expect } from 'chai'
 import dirtyChai from 'dirty-chai'
 
 import AssertGeneric from '../../../../src/assertions/builders/AssertGeneric'
-import { assertOptimized } from '../../../../src/assertions/types'
+import { assertOptimized } from '../../../utils'
 
 chai.use(dirtyChai)
 

@@ -34,3 +34,15 @@ export async function runTests (tests) {
     }
   }
 }
+
+export function assertOptimized (value, schema, optimized = []) {
+  if (schema === false) return new Error('\'false\' Schema invalidates all values')
+  if (optimized.length === 1) {
+    const error = optimized[0](value, schema)
+    if (error) return error
+  }
+  for (let fn of optimized) {
+    const error = fn(value, schema)
+    if (error) return error
+  }
+}
