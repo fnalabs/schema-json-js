@@ -1,5 +1,5 @@
 import {
-  OPTIMIZED, assertOptimized, assertSizeMax, assertSizeMin,
+  OPTIMIZED, assertSizeMax, assertSizeMin,
   isArray, isBoolean, isObject, isSchema, isUndefined
 } from '../types'
 
@@ -57,29 +57,75 @@ export default class AssertArray {
           if (ref.items || ref.items === false) {
             if (Array.isArray(ref.items)) {
               if (i < ref.items.length) {
-                const error = assertOptimized(value[i], ref.items[i], ref.items[i][OPTIMIZED])
-                if (error) return error
+                if (ref.items[i] === false) {
+                  return new Error('#items: \'false\' Schema invalidates all values')
+                }
+                /* istanbul ignore else */
+                if (ref.items[i][OPTIMIZED]) {
+                  if (ref.items[i][OPTIMIZED].length === 1) {
+                    const error = ref.items[i][OPTIMIZED][0](value[i], ref.items[i])
+                    if (error) return error
+                  } else {
+                    for (let fn of ref.items[i][OPTIMIZED]) {
+                      const error = fn(value[i], ref.items[i])
+                      if (error) return error
+                    }
+                  }
+                }
               } else if (ref.additionalItems || ref.additionalItems === false) {
-                if (typeof ref.additionalItems === 'boolean' && ref.additionalItems === false) {
+                if (ref.additionalItems === false) {
                   return new Error(`#additionalItems: '${i}' additional items not allowed`)
-                } else {
-                  const error = assertOptimized(value[i], ref.additionalItems, ref.additionalItems[OPTIMIZED])
+                }
+                /* istanbul ignore else */
+                if (ref.additionalItems[OPTIMIZED]) {
+                  if (ref.additionalItems[OPTIMIZED].length === 1) {
+                    const error = ref.additionalItems[OPTIMIZED][0](value[i], ref.additionalItems)
+                    if (error) return error
+                  } else {
+                    for (let fn of ref.additionalItems[OPTIMIZED]) {
+                      const error = fn(value[i], ref.additionalItems)
+                      if (error) return error
+                    }
+                  }
+                }
+              }
+            }
+            if (ref.items === false) {
+              return new Error('#items: \'false\' Schema invalidates all values')
+            }
+            if (ref.items[OPTIMIZED]) {
+              if (ref.items[OPTIMIZED].length === 1) {
+                const error = ref.items[OPTIMIZED][0](value[i], ref.items)
+                if (error) return error
+              } else {
+                for (let fn of ref.items[OPTIMIZED]) {
+                  const error = fn(value[i], ref.items)
                   if (error) return error
                 }
               }
-            } else {
-              const error = assertOptimized(value[i], ref.items, ref.items[OPTIMIZED])
-              if (error) return error
             }
           }
 
           // asserts [contains]
           if (ref.contains || ref.contains === false) {
             if (!containsFlag) {
-              const error = assertOptimized(value[i], ref.contains, ref.contains[OPTIMIZED])
+              let error
+              if (ref.contains === false) {
+                error = new Error('#contains: \'false\' Schema invalidates all values')
+              } else if (ref.contains[OPTIMIZED]) {
+                if (ref.contains[OPTIMIZED].length === 1) {
+                  error = ref.contains[OPTIMIZED][0](value[i], ref.contains)
+                } else {
+                  for (let fn of ref.contains[OPTIMIZED]) {
+                    error = fn(value[i], ref.contains)
+                    /* istanbul ignore else */
+                    if (!error) break
+                  }
+                }
+              }
+
               if (error) {
                 containsFlag = false
-
                 if (i === length - 1) {
                   return new Error('#contains: value does not contain element matching the Schema')
                 }
