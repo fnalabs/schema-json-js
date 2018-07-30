@@ -1,5 +1,5 @@
 import {
-  OPTIMIZED, assertOptimized, assertSizeMax, assertSizeMin,
+  OPTIMIZED, assertSizeMax, assertSizeMin,
   isArray, isEnum, isObject, isSchema, isString, isTypedArray, isUndefined
 } from '../types'
 
@@ -68,8 +68,20 @@ export default class AssertObject {
           propertiesMatch = false
           if (ref.properties && (ref.properties[key] || ref.properties[key] === false)) {
             propertiesMatch = true
-            const error = assertOptimized(val, ref.properties[key], ref.properties[key][OPTIMIZED])
-            if (error) return error
+            if (ref.properties[key] === false) {
+              return new Error('#properties: \'false\' Schema invalidates all values')
+            }
+            if (ref.properties[key][OPTIMIZED]) {
+              if (ref.properties[key][OPTIMIZED].length === 1) {
+                const error = ref.properties[key][OPTIMIZED][0](val, ref.properties[key])
+                if (error) return error
+              } else {
+                for (let fn of ref.properties[key][OPTIMIZED]) {
+                  const error = fn(val, ref.properties[key])
+                  if (error) return error
+                }
+              }
+            }
           }
 
           // asserts [patternProperties]
@@ -79,8 +91,21 @@ export default class AssertObject {
             for (let i of propKeys) {
               if (patternProps[i].test(key)) {
                 patternMatch = true
-                const error = assertOptimized(val, ref.patternProperties[i], ref.patternProperties[i][OPTIMIZED])
-                if (error) return error
+                if (ref.patternProperties[i] === false) {
+                  return new Error('#patternProperties: \'false\' Schema invalidates all values')
+                }
+                /* istanbul ignore else */
+                if (ref.patternProperties[i][OPTIMIZED]) {
+                  if (ref.patternProperties[i][OPTIMIZED].length === 1) {
+                    const error = ref.patternProperties[i][OPTIMIZED][0](val, ref.patternProperties[i])
+                    if (error) return error
+                  } else {
+                    for (let fn of ref.patternProperties[i][OPTIMIZED]) {
+                      const error = fn(val, ref.patternProperties[i])
+                      if (error) return error
+                    }
+                  }
+                }
               }
             }
           }
@@ -90,8 +115,17 @@ export default class AssertObject {
             if (ref.additionalProperties === false) {
               return new Error('#additionalProperties: additional properties not allowed')
             }
-            const error = assertOptimized(val, ref.additionalProperties, ref.additionalProperties[OPTIMIZED])
-            if (error) return error
+            if (ref.additionalProperties[OPTIMIZED]) {
+              if (ref.additionalProperties[OPTIMIZED].length === 1) {
+                const error = ref.additionalProperties[OPTIMIZED][0](val, ref.additionalProperties)
+                if (error) return error
+              } else {
+                for (let fn of ref.additionalProperties[OPTIMIZED]) {
+                  const error = fn(val, ref.additionalProperties)
+                  if (error) return error
+                }
+              }
+            }
           }
 
           // asserts [dependencies]
@@ -103,15 +137,41 @@ export default class AssertObject {
                 }
               }
             } else {
-              const error = assertOptimized(value, ref.dependencies[key], ref.dependencies[key][OPTIMIZED])
-              if (error) return error
+              if (ref.dependencies[key] === false) {
+                return new Error('#dependencies: \'false\' Schema invalidates all values')
+              }
+              /* istanbul ignore else */
+              if (ref.dependencies[key][OPTIMIZED]) {
+                if (ref.dependencies[key][OPTIMIZED].length === 1) {
+                  const error = ref.dependencies[key][OPTIMIZED][0](value, ref.dependencies[key])
+                  if (error) return error
+                } else {
+                  for (let fn of ref.dependencies[key][OPTIMIZED]) {
+                    const error = fn(value, ref.dependencies[key])
+                    if (error) return error
+                  }
+                }
+              }
             }
           }
 
           // asserts [propertyNames]
           if (ref.propertyNames || ref.propertyNames === false) {
-            const error = assertOptimized(key, ref.propertyNames, ref.propertyNames[OPTIMIZED])
-            if (error) return error
+            if (ref.propertyNames === false) {
+              return new Error('#propertyNames: \'false\' Schema invalidates all values')
+            }
+            /* istanbul ignore else */
+            if (ref.propertyNames[OPTIMIZED]) {
+              if (ref.propertyNames[OPTIMIZED].length === 1) {
+                const error = ref.propertyNames[OPTIMIZED][0](key, ref.propertyNames)
+                if (error) return error
+              } else {
+                for (let fn of ref.propertyNames[OPTIMIZED]) {
+                  const error = fn(key, ref.propertyNames)
+                  if (error) return error
+                }
+              }
+            }
           }
         }
 

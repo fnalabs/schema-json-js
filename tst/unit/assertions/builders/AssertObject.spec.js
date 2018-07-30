@@ -4,7 +4,8 @@ import dirtyChai from 'dirty-chai'
 
 import AssertObject from '../../../../src/assertions/builders/AssertObject'
 import AssertString from '../../../../src/assertions/builders/AssertString'
-import { OPTIMIZED, assertOptimized } from '../../../../src/assertions/types'
+import { OPTIMIZED } from '../../../../src/assertions/types'
+import { assertOptimized } from '../../../utils'
 
 chai.use(dirtyChai)
 
@@ -77,10 +78,10 @@ describe('AssertObject', () => {
 
       it('should assert optimized with invalid values unsuccessfully', () => {
         let error = assertOptimized({ bar: 2 }, schema, assertions)
-        expect(error.message).to.equal('\'false\' Schema invalidates all values')
+        expect(error.message).to.equal('#properties: \'false\' Schema invalidates all values')
 
         error = assertOptimized({ foo: 1, bar: 2 }, schema, assertions)
-        expect(error.message).to.equal('\'false\' Schema invalidates all values')
+        expect(error.message).to.equal('#properties: \'false\' Schema invalidates all values')
       })
     })
 
@@ -94,7 +95,7 @@ describe('AssertObject', () => {
   })
 
   describe('patternProperties keyword', () => {
-    const schema = { patternProperties: { '^p': typeSchema } }
+    const schema = { patternProperties: { '^p': typeSchema, '^q': false } }
 
     beforeEach(() => (assertions = AssertObject.optimize(schema)))
 
@@ -116,6 +117,9 @@ describe('AssertObject', () => {
 
       error = assertOptimized({ pattern: null, property: null }, schema, assertions)
       expect(error.message).to.equal('#type: value is not an object')
+
+      error = assertOptimized({ query: 'not gonna allow this shit' }, schema, assertions)
+      expect(error.message).to.equal('#patternProperties: \'false\' Schema invalidates all values')
     })
 
     it('should throw an error on invalid type', () => {
@@ -182,7 +186,7 @@ describe('AssertObject', () => {
 
   describe('dependencies keyword', () => {
     context('as an array', () => {
-      const schema = { dependencies: { foo: ['bar'] } }
+      const schema = { dependencies: { foo: ['bar'], be: false } }
 
       beforeEach(() => (assertions = AssertObject.optimize(schema)))
 
@@ -198,8 +202,11 @@ describe('AssertObject', () => {
       })
 
       it('should assert optimized with invalid value unsuccessfully', () => {
-        const error = assertOptimized({ foo: 'bar' }, schema, assertions)
+        let error = assertOptimized({ foo: 'bar' }, schema, assertions)
         expect(error.message).to.equal('#dependencies: value does not have \'foo\' dependency')
+
+        error = assertOptimized({ be: 'something' }, schema, assertions)
+        expect(error.message).to.equal('#dependencies: \'false\' Schema invalidates all values')
       })
     })
 
@@ -235,23 +242,42 @@ describe('AssertObject', () => {
   })
 
   describe('propertyNames keyword', () => {
-    const schema = { propertyNames: { minLength: 2, [OPTIMIZED]: AssertString.optimize({ minLength: 2 }) } }
+    context('object JSON schema', () => {
+      const schema = { propertyNames: { minLength: 2, [OPTIMIZED]: AssertString.optimize({ minLength: 2 }) } }
 
-    beforeEach(() => (assertions = AssertObject.optimize(schema)))
+      beforeEach(() => (assertions = AssertObject.optimize(schema)))
 
-    it('should create optimized assertions successfully', () => {
-      expect(assertions).to.be.an('array')
-      expect(assertions.length).to.equal(1)
-      expect(assertions[0]).to.be.a('function')
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with valid value successfully', () => {
+        expect(assertOptimized({ property: {} }, schema, assertions)).to.be.undefined()
+      })
+
+      it('should assert optimized with invalid value unsuccessfully', () => {
+        const error = assertOptimized({ p: {} }, schema, assertions)
+        expect(error.message).to.equal('#minLength: value minimum not met')
+      })
     })
 
-    it('should assert optimized with valid value successfully', () => {
-      expect(assertOptimized({ property: {} }, schema, assertions)).to.be.undefined()
-    })
+    context('boolean JSON schema', () => {
+      const schema = { propertyNames: false }
 
-    it('should assert optimized with invalid value unsuccessfully', () => {
-      const error = assertOptimized({ p: {} }, schema, assertions)
-      expect(error.message).to.equal('#minLength: value minimum not met')
+      beforeEach(() => (assertions = AssertObject.optimize(schema)))
+
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with invalid value unsuccessfully', () => {
+        const error = assertOptimized({ p: {} }, schema, assertions)
+        expect(error.message).to.equal('#propertyNames: \'false\' Schema invalidates all values')
+      })
     })
 
     it('should throw an error on invalid type', () => {
