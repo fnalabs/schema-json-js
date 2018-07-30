@@ -1,7 +1,7 @@
 // imports
 import * as builders from './assertions/builders'
 import {
-  OPTIMIZED, assertOptimized,
+  OPTIMIZED,
   isArray, isEnum, isNull, isObject, isParentKeyword, isPathFragment,
   isRef, isSchemaType, isSubSchema, isString, isUndefined
 } from './assertions/types'
@@ -82,8 +82,21 @@ class Schema {
   validate (data, schema = this) {
     this[ERRORS].length = 0
 
-    const error = assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
-    if (error) this[ERRORS].push(error.message)
+    if (schema === false) this[ERRORS].push('\'false\' Schema invalidates all values')
+    else if (schema[OPTIMIZED]) {
+      if (schema[OPTIMIZED].length === 1) {
+        const error = schema[OPTIMIZED][0](data, schema)
+        if (error) this[ERRORS].push(error.message)
+      } else {
+        for (let fn of schema[OPTIMIZED]) {
+          const error = fn(data, schema)
+          if (error) {
+            this[ERRORS].push(error.message)
+            break
+          }
+        }
+      }
+    }
 
     return !this[ERRORS].length
   }
@@ -202,7 +215,17 @@ class Schema {
 
     const { referred, list } = assertion
     if (list.length && isObject(referred)) {
-      return [value => assertOptimized(value, referred, list)]
+      return [value => {
+        if (list.length === 1) {
+          const error = list[0](value, referred)
+          if (error) return error
+        } else {
+          for (let fn of list) {
+            const error = fn(value, referred)
+            if (error) return error
+          }
+        }
+      }]
     } else if (referred === false) {
       return [() => { return new Error('\'false\' Schema invalidates all values') }]
     }
@@ -276,14 +299,16 @@ class Schema {
     // assert schema type
     if (!isUndefined(schema.type)) list.push(...this[ASSERT_TYPE](schema))
 
-    // assert schema for generic and primitive keywords
+    // assert schema for generic and primitive type keywords
     list.push(...builders.AssertGeneric.optimize(schema))
-    list.push(...builders.AssertArray.optimize(schema))
     list.push(...builders.AssertBoolean.optimize(schema))
     list.push(...builders.AssertNull.optimize(schema))
     list.push(...builders.AssertNumber.optimize(schema))
-    list.push(...builders.AssertObject.optimize(schema))
     list.push(...builders.AssertString.optimize(schema))
+
+    // assert schema for complex type keywords
+    list.push(...builders.AssertArray.optimize(schema))
+    list.push(...builders.AssertObject.optimize(schema))
 
     // assert schema for logical operation keywords
     list.push(...builders.AssertLogical.optimizeAllOf(schema))
@@ -309,12 +334,8 @@ class Schema {
 
       const list = type.map(val => this[ASSERT_SCHEMA]({ type: val })[0])
       return [(value, ref) => {
-        let err = []
-        for (let fn of list) {
-          const error = fn(value, ref, err)
-          if (error) err.push(error.message)
-        }
-        if (err.length === list.length) return new Error('#type: value does not match the List of types')
+        for (let fn of list) if (!fn(value, ref)) return
+        return new Error('#type: value does not match the List of types')
       }]
     } else throw new TypeError('#type: must be either a valid type string or list of strings')
   }
