@@ -83,6 +83,7 @@
     "watchify": "~3.11.0"
   },
   "nyc": {
+    "exclude": [ "tst" ],
     "check-coverage": true,
     "per-file": true,
     "lines": 80,
