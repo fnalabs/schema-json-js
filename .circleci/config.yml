@@ -21,12 +21,9 @@ jobs:
       - restore_cache:
           keys:
             - repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          keys:
-            - dependencies-{{ .Branch }}-{{ checksum "package.json" }}
       - run: npm install --no-optional
       - save_cache:
-          key: dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+          key: dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/schema-json-js/node_modules
 
@@ -40,7 +37,7 @@ jobs:
             - repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
-            - dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+            - dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Run lint and unit tests
           command: npm run test:all && npm test
@@ -52,21 +49,20 @@ jobs:
       - store_artifacts:
           path: ~/schema-json-js/coverage.lcov
 
-  # TODO: uncomment when unlimited tests are provided
-  # browserstack:
-  #   docker:
-  #     - image: circleci/node:8.11.3
-  #   working_directory: ~/schema-json-js
-  #   steps:
-  #     - restore_cache:
-  #         keys:
-  #           - repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-  #     - restore_cache:
-  #         keys:
-  #           - dependencies-{{ .Branch }}-{{ checksum "package.json" }}
-  #     - run:
-  #         name: Run BrowserStack tests
-  #         command: npm run browserstack
+  browserstack:
+    docker:
+      - image: circleci/node:8.11.3
+    working_directory: ~/schema-json-js
+    steps:
+      - restore_cache:
+          keys:
+            - repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Run BrowserStack tests
+          command: npm run browserstack
 
   build:
     docker:
@@ -78,7 +74,7 @@ jobs:
             - repo-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
-            - dependencies-{{ .Branch }}-{{ checksum "package.json" }}
+            - dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Build and compress code
           command: npm run build && node ./bin/compress
@@ -100,10 +96,9 @@ workflows:
       - test:
           requires:
             - install_dependencies
-      # TODO: uncomment when unlimited tests are provided
-      # - browserstack:
-      #     requires:
-      #       - test
-      - build:
+      - browserstack:
           requires:
             - test
+      - build:
+          requires:
+            - browserstack

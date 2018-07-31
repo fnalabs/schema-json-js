@@ -1,4 +1,4 @@
-import { OPTIMIZED, assertOptimized, isArray, isSchema, isTypedArray, isUndefined } from '../types'
+import { OPTIMIZED, isArray, isSchema, isTypedArray, isUndefined } from '../types'
 
 export default class AssertLogical {
   constructor () {
@@ -16,9 +16,23 @@ export default class AssertLogical {
       throw new TypeError('#allOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref) => {
+    return [(value, ref) => {
       for (let refSchema of ref.allOf) {
-        await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
+        if (refSchema === false) {
+          return new Error('#allOf: \'false\' Schema invalidates all values')
+        }
+        /* istanbul ignore else */
+        if (refSchema[OPTIMIZED]) {
+          if (refSchema[OPTIMIZED].length === 1) {
+            const error = refSchema[OPTIMIZED][0](value, refSchema)
+            if (error) return error
+          } else {
+            for (let fn of refSchema[OPTIMIZED]) {
+              const error = fn(value, refSchema)
+              if (error) return error
+            }
+          }
+        }
       }
     }]
   }
@@ -31,14 +45,25 @@ export default class AssertLogical {
       throw new TypeError('#anyOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref) => {
+    return [(value, ref) => {
       for (let refSchema of ref.anyOf) {
-        try {
-          await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
-          return
-        } catch (e) {}
+        if (refSchema === true) return
+        /* istanbul ignore else */
+        if (refSchema[OPTIMIZED]) {
+          if (refSchema[OPTIMIZED].length === 1) {
+            const error = refSchema[OPTIMIZED][0](value, refSchema)
+            if (!error) return
+          } else {
+            let error
+            for (let fn of refSchema[OPTIMIZED]) {
+              error = fn(value, refSchema)
+              if (error) break
+            }
+            if (!error) return
+          }
+        }
       }
-      throw new Error('#anyOf: none of the defined Schemas match the value')
+      return new Error('#anyOf: none of the defined Schemas match the value')
     }]
   }
 
@@ -50,12 +75,21 @@ export default class AssertLogical {
       throw new TypeError('#not: keyword should be a Schema')
     }
 
-    return [async (value, ref) => {
-      try {
-        await assertOptimized(value, ref.not, ref.not[OPTIMIZED])
-      } catch (e) { return }
-
-      throw new Error('#not: value validated successfully against the schema')
+    return [(value, ref) => {
+      if (ref.not === false) return
+      /* istanbul ignore else */
+      if (ref.not[OPTIMIZED]) {
+        if (ref.not[OPTIMIZED].length === 1) {
+          const error = ref.not[OPTIMIZED][0](value, ref.not)
+          if (error) return
+        } else {
+          for (let fn of ref.not[OPTIMIZED]) {
+            const error = fn(value, ref.not)
+            if (error) return
+          }
+        }
+      }
+      return new Error('#not: value validated successfully against the schema')
     }]
   }
 
@@ -67,15 +101,26 @@ export default class AssertLogical {
       throw new TypeError('#oneOf: keyword should be an array of Schemas')
     }
 
-    return [async (value, ref) => {
+    return [(value, ref) => {
       let count = 0
       for (let refSchema of ref.oneOf) {
-        try {
-          await assertOptimized(value, refSchema, refSchema[OPTIMIZED])
-          count++
-        } catch (e) {}
+        if (refSchema === true) count++
+        if (refSchema[OPTIMIZED]) {
+          if (refSchema[OPTIMIZED].length === 1) {
+            const error = refSchema[OPTIMIZED][0](value, refSchema)
+            if (!error) count++
+          } else {
+            let error
+            for (let fn of refSchema[OPTIMIZED]) {
+              error = fn(value, refSchema)
+              if (error) break
+            }
+            if (!error) count++
+          }
+        }
+        if (count > 1) return new Error('#oneOf: value should be one of the listed schemas only')
       }
-      if (count !== 1) throw new Error('#oneOf: value should be one of the listed schemas only')
+      if (count !== 1) return new Error('#oneOf: value should be one of the listed schemas only')
     }]
   }
 }

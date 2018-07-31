@@ -1,12 +1,10 @@
 /* eslint-env mocha */
 import chai, { expect } from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import dirtyChai from 'dirty-chai'
 
 import AssertGeneric from '../../../../src/assertions/builders/AssertGeneric'
-import { assertOptimized } from '../../../../src/assertions/types'
+import { assertOptimized } from '../../../utils'
 
-chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 describe('AssertGeneric', () => {
@@ -27,13 +25,16 @@ describe('AssertGeneric', () => {
         expect(assertions.length).to.equal(1)
       })
 
-      it('should assert optimized with valid value successfully', async () => {
-        await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
+      it('should assert optimized with valid value successfully', () => {
+        expect(assertOptimized(1, schema, assertions)).to.be.undefined()
       })
 
-      it('should assert optimized with invalid values unsuccessfully', async () => {
-        await expect(assertOptimized(2, schema, assertions)).to.be.rejected()
-        await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
+      it('should assert optimized with invalid values unsuccessfully', () => {
+        let error = assertOptimized(2, schema, assertions)
+        expect(error.message).to.equal('#const: value does not match the defined const')
+
+        error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#const: value does not match the defined const')
       })
     })
 
@@ -47,13 +48,16 @@ describe('AssertGeneric', () => {
         expect(assertions.length).to.equal(1)
       })
 
-      it('should assert optimized with valid value successfully', async () => {
-        await expect(assertOptimized({ complex: 'object' }, schema, assertions)).to.be.fulfilled()
+      it('should assert optimized with valid value successfully', () => {
+        expect(assertOptimized({ complex: 'object' }, schema, assertions)).to.be.undefined()
       })
 
-      it('should assert optimized with invalid values unsuccessfully', async () => {
-        await expect(assertOptimized({ another: 'object' }, schema, assertions)).to.be.rejected()
-        await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
+      it('should assert optimized with invalid values unsuccessfully', () => {
+        let error = assertOptimized({ another: 'object' }, schema, assertions)
+        expect(error.message).to.equal('#const: value does not match the defined const')
+
+        error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#const: value does not match the defined const')
       })
     })
   })
@@ -68,14 +72,17 @@ describe('AssertGeneric', () => {
       expect(assertions.length).to.equal(1)
     })
 
-    it('should assert optimized with valid values successfully', async () => {
-      await expect(assertOptimized(1, schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized({ complex: 'object' }, schema, assertions)).to.be.fulfilled()
+    it('should assert optimized with valid values successfully', () => {
+      expect(assertOptimized(1, schema, assertions)).to.be.undefined()
+      expect(assertOptimized({ complex: 'object' }, schema, assertions)).to.be.undefined()
     })
 
-    it('should assert optimized with invalid values unsuccessfully', async () => {
-      await expect(assertOptimized({ another: 'object' }, schema, assertions)).to.be.rejected()
-      await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
+    it('should assert optimized with invalid values unsuccessfully', () => {
+      let error = assertOptimized({ another: 'object' }, schema, assertions)
+      expect(error.message).to.equal('#enum: value does not match anything in the enum')
+
+      error = assertOptimized(null, schema, assertions)
+      expect(error.message).to.equal('#enum: value does not match anything in the enum')
     })
 
     it('should throw an error on invalid enum', () => {

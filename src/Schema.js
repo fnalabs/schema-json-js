@@ -1,8 +1,8 @@
 // imports
 import * as builders from './assertions/builders'
 import {
-  OPTIMIZED, assertOptimized,
-  isArray, isEnum, isNull, isObject, isParentKeyword, isPathFragment,
+  OPTIMIZED,
+  isArray, isBoolean, isEnum, isNull, isObject, isParentKeyword, isPathFragment,
   isRef, isSchemaType, isSubSchema, isString, isUndefined
 } from './assertions/types'
 import { getSchema } from './utils'
@@ -12,6 +12,8 @@ const ERRORS = Symbol('cache of all errors as they occurred during validation')
 const REFS = Symbol('cache of all referenced schemas in current schema')
 
 // "private" methods
+const VALIDATE = Symbol('validate schemas')
+
 const ASSIGN_SCHEMA = Symbol('assigns schema definitions to the class instance')
 const ASSIGN_REF = Symbol('assigns a ref to ref cache')
 const ASSIGN_REFS = Symbol('assigns a Hash of refs to ref cache')
@@ -34,6 +36,7 @@ const enumerable = true
  * @property {Array<string>} errors - A copy of the List of error strings from the last time `validate` ran.
  * @param {Object} [schema] - Optional JSON Schema definition.
  * @param {Object} [refs] - Optional hash of cached JSON Schemas that are referenced in the main schema.
+ * @param {Boolean} [async] - Optional boolean flag to enable asynchronous validations.
  * @example <caption>An example Schema initialized immediately.</caption>
  * ...
  * const schema = await new Schema({}) // immediately immutable
@@ -62,33 +65,16 @@ const enumerable = true
  * ...
  */
 class Schema {
-  constructor () {
+  constructor (isAsync) {
     Object.defineProperties(this, {
       [ERRORS]: { value: [] },
-      [REFS]: { value: {} }
+      [REFS]: { value: {} },
+      validate: { value: isAsync ? async () => this[VALIDATE] : this[VALIDATE] }
     })
   }
 
   get errors () {
     return [...this[ERRORS]]
-  }
-
-  /**
-   * [`async`] Method used to validate supplied data against the JSON Schema definition instance.
-   * @param data - The data to validate against the JSON Schema definition instance.
-   * @param {Schema} [schema=this] - Optionally pass nested JSON Schema definitions of the instance for partial schema validation or other instances of the JSON Schema class.
-   * @returns {boolean} `true` if validation is successful, otherwise `false`.
-   */
-  async validate (data, schema = this) {
-    this[ERRORS].length = 0
-
-    try {
-      await assertOptimized(data, schema, schema[OPTIMIZED], this[ERRORS])
-    } catch (e) {
-      this[ERRORS].push(e.message)
-    }
-
-    return !this[ERRORS].length
   }
 
   /**
@@ -109,6 +95,34 @@ class Schema {
     Object.freeze(this[REFS])
 
     return this
+  }
+
+  /**
+   * [`async`] Method used to validate supplied data against the JSON Schema definition instance.
+   * @param data - The data to validate against the JSON Schema definition instance.
+   * @param {Schema} [schema=this] - Optionally pass nested JSON Schema definitions of the instance for partial schema validation or other instances of the JSON Schema class.
+   * @returns {boolean} `true` if validation is successful, otherwise `false`.
+   */
+  [VALIDATE] (data, schema = this) {
+    this[ERRORS].length = 0
+
+    if (schema === false) this[ERRORS].push('\'false\' Schema invalidates all values')
+    else if (schema[OPTIMIZED]) {
+      if (schema[OPTIMIZED].length === 1) {
+        const error = schema[OPTIMIZED][0](data, schema)
+        if (error) this[ERRORS].push(error.message)
+      } else {
+        for (let fn of schema[OPTIMIZED]) {
+          const error = fn(data, schema)
+          if (error) {
+            this[ERRORS].push(error.message)
+            break
+          }
+        }
+      }
+    }
+
+    return !this[ERRORS].length
   }
 
   /**
@@ -205,11 +219,19 @@ class Schema {
 
     const { referred, list } = assertion
     if (list.length && isObject(referred)) {
-      return [async (value) => assertOptimized(value, referred, list)]
-    } else if (referred === false) {
-      return [async () => {
-        throw new Error('\'false\' Schema invalidates all values')
+      return [value => {
+        if (list.length === 1) {
+          const error = list[0](value, referred)
+          if (error) return error
+        } else {
+          for (let fn of list) {
+            const error = fn(value, referred)
+            if (error) return error
+          }
+        }
       }]
+    } else if (referred === false) {
+      return [() => { return new Error('\'false\' Schema invalidates all values') }]
     }
     return []
   }
@@ -281,14 +303,16 @@ class Schema {
     // assert schema type
     if (!isUndefined(schema.type)) list.push(...this[ASSERT_TYPE](schema))
 
-    // assert schema for generic and primitive keywords
+    // assert schema for generic and primitive type keywords
     list.push(...builders.AssertGeneric.optimize(schema))
-    list.push(...builders.AssertArray.optimize(schema))
     list.push(...builders.AssertBoolean.optimize(schema))
     list.push(...builders.AssertNull.optimize(schema))
     list.push(...builders.AssertNumber.optimize(schema))
-    list.push(...builders.AssertObject.optimize(schema))
     list.push(...builders.AssertString.optimize(schema))
+
+    // assert schema for complex type keywords
+    list.push(...builders.AssertArray.optimize(schema))
+    list.push(...builders.AssertObject.optimize(schema))
 
     // assert schema for logical operation keywords
     list.push(...builders.AssertLogical.optimizeAllOf(schema))
@@ -313,16 +337,9 @@ class Schema {
       if (!isEnum(type, isSchemaType)) throw new TypeError('#type: type arrays must contain only string')
 
       const list = type.map(val => this[ASSERT_SCHEMA]({ type: val })[0])
-      return [async (value, ref) => {
-        let err = []
-        for (let fn of list) {
-          try {
-            await fn(value, ref, err)
-          } catch (e) {
-            err.push(e.message)
-          }
-        }
-        if (err.length === list.length) throw new Error('#type: value does not match the List of types')
+      return [(value, ref) => {
+        for (let fn of list) if (!fn(value, ref)) return
+        return new Error('#type: value does not match the List of types')
       }]
     } else throw new TypeError('#type: must be either a valid type string or list of strings')
   }
@@ -333,7 +350,8 @@ class Schema {
  */
 export default new Proxy(Schema, {
   construct: async function (Schema, argsList) {
-    if (isUndefined(argsList[0])) return new Schema()
-    return new Schema().assign(argsList[0], argsList[1])
+    if (isUndefined(argsList[0]) || isBoolean(argsList[0])) return new Schema(argsList[0])
+    if (isBoolean(argsList[1])) return new Schema(argsList[1]).assign(argsList[0])
+    return new Schema(argsList[2]).assign(argsList[0], argsList[1])
   }
 })

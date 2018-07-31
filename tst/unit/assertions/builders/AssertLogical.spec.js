@@ -1,13 +1,12 @@
 /* eslint-env mocha */
 import chai, { expect } from 'chai'
-import chaiAsPromised from 'chai-as-promised'
 import dirtyChai from 'dirty-chai'
 
 import AssertArray from '../../../../src/assertions/builders/AssertArray'
 import AssertLogical from '../../../../src/assertions/builders/AssertLogical'
-import { OPTIMIZED, assertOptimized } from '../../../../src/assertions/types'
+import { OPTIMIZED } from '../../../../src/assertions/types'
+import { assertOptimized } from '../../../utils'
 
-chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 describe('AssertLogical', () => {
@@ -18,65 +17,97 @@ describe('AssertLogical', () => {
   })
 
   describe('optimizeAllOf', () => {
-    const schema = { allOf: [
-      { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) },
-      { minItems: 1, [OPTIMIZED]: AssertArray.optimize({ minItems: 1 }) }
-    ]}
+    context('object JSON schemas', () => {
+      const schema = { allOf: [
+        { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) },
+        { minItems: 1, [OPTIMIZED]: AssertArray.optimize({ minItems: 1 }) }
+      ]}
 
-    beforeEach(() => (assertions = AssertLogical.optimizeAllOf(schema)))
+      beforeEach(() => (assertions = AssertLogical.optimizeAllOf(schema)))
 
-    it('should create optimized assertions successfully', () => {
-      expect(assertions).to.be.an('array')
-      expect(assertions.length).to.equal(1)
-      expect(assertions[0]).to.be.a('function')
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with valid value successfully', () => {
+        expect(assertOptimized(['something'], schema, assertions)).to.be.undefined()
+      })
+
+      it('should assert optimized with invalid values unsuccessfully', () => {
+        let error = assertOptimized([], schema, assertions)
+        expect(error.message).to.equal('#minItems: value minimum not met')
+
+        error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#type: value is not an array')
+      })
+
+      it('should throw an error on invalid type', () => {
+        try {
+          assertions = AssertLogical.optimizeAllOf({ allOf: null })
+        } catch (e) {
+          expect(e.message).to.equal('#allOf: keyword should be an array of Schemas')
+        }
+
+        try {
+          assertions = AssertLogical.optimizeAllOf({ allOf: [null] })
+        } catch (e) {
+          expect(e.message).to.equal('#allOf: keyword should be an array of Schemas')
+        }
+      })
     })
 
-    it('should assert optimized with valid value successfully', async () => {
-      await expect(assertOptimized(['something'], schema, assertions)).to.be.fulfilled()
-    })
+    context('boolean JSON schemas', () => {
+      const schema = { allOf: [
+        { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) },
+        false
+      ]}
 
-    it('should assert optimized with invalid values unsuccessfully', async () => {
-      await expect(assertOptimized([], schema, assertions)).to.be.rejected()
-      await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
-    })
+      beforeEach(() => (assertions = AssertLogical.optimizeAllOf(schema)))
 
-    it('should throw an error on invalid type', () => {
-      try {
-        assertions = AssertLogical.optimizeAllOf({ allOf: null })
-      } catch (e) {
-        expect(e.message).to.equal('#allOf: keyword should be an array of Schemas')
-      }
-
-      try {
-        assertions = AssertLogical.optimizeAllOf({ allOf: [null] })
-      } catch (e) {
-        expect(e.message).to.equal('#allOf: keyword should be an array of Schemas')
-      }
+      it('should assert optimized with invalid values unsuccessfully', () => {
+        const error = assertOptimized([], schema, assertions)
+        expect(error.message).to.equal('#allOf: \'false\' Schema invalidates all values')
+      })
     })
   })
 
   describe('optimizeAnyOf', () => {
-    const schema = { anyOf: [
-      { type: 'array', maxItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', maxItems: 3 }) },
-      { type: 'array', minItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }) }
-    ]}
+    context('object JSON schemas', () => {
+      const schema = { anyOf: [
+        { type: 'array', maxItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', maxItems: 3 }) },
+        { type: 'array', minItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }) }
+      ]}
 
-    beforeEach(() => (assertions = AssertLogical.optimizeAnyOf(schema)))
+      beforeEach(() => (assertions = AssertLogical.optimizeAnyOf(schema)))
 
-    it('should create optimized assertions successfully', () => {
-      expect(assertions).to.be.an('array')
-      expect(assertions.length).to.equal(1)
-      expect(assertions[0]).to.be.a('function')
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with valid values successfully', () => {
+        expect(assertOptimized([], schema, assertions)).to.be.undefined()
+        expect(assertOptimized(['something'], schema, assertions)).to.be.undefined()
+        expect(assertOptimized(['something', 'something'], schema, assertions)).to.be.undefined()
+      })
+
+      it('should assert optimized with invalid value unsuccessfully', () => {
+        const error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#anyOf: none of the defined Schemas match the value')
+      })
     })
 
-    it('should assert optimized with valid values successfully', async () => {
-      await expect(assertOptimized([], schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(['something'], schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(['something', 'something'], schema, assertions)).to.be.fulfilled()
-    })
+    context('boolean JSON schemas', () => {
+      const schema = { anyOf: [true, false] }
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
+      beforeEach(() => (assertions = AssertLogical.optimizeAnyOf(schema)))
+
+      it('should assert optimized with valid values successfully', () => {
+        expect(assertOptimized([null], schema, assertions)).to.be.undefined()
+      })
     })
 
     it('should throw an error on invalid type', () => {
@@ -95,22 +126,35 @@ describe('AssertLogical', () => {
   })
 
   describe('optimizeNot', () => {
-    const schema = { not: { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) } }
+    context('object JSON schema', () => {
+      const schema = { not: { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) } }
 
-    beforeEach(() => (assertions = AssertLogical.optimizeNot(schema)))
+      beforeEach(() => (assertions = AssertLogical.optimizeNot(schema)))
 
-    it('should create optimized assertions successfully', () => {
-      expect(assertions).to.be.an('array')
-      expect(assertions.length).to.equal(1)
-      expect(assertions[0]).to.be.a('function')
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with valid value successfully', () => {
+        expect(assertOptimized(null, schema, assertions)).to.be.undefined()
+      })
+
+      it('should assert optimized with invalid value unsuccessfully', () => {
+        const error = assertOptimized([], schema, assertions)
+        expect(error.message).to.equal('#not: value validated successfully against the schema')
+      })
     })
 
-    it('should assert optimized with valid value successfully', async () => {
-      await expect(assertOptimized(null, schema, assertions)).to.be.fulfilled()
-    })
+    context('boolean JSON schemas', () => {
+      const schema = { not: false }
 
-    it('should assert optimized with invalid value unsuccessfully', async () => {
-      await expect(assertOptimized([], schema, assertions)).to.be.rejected()
+      beforeEach(() => (assertions = AssertLogical.optimizeNot(schema)))
+
+      it('should assert optimized with valid values successfully', () => {
+        expect(assertOptimized(null, schema, assertions)).to.be.undefined()
+      })
     })
 
     it('should throw an error on invalid type', () => {
@@ -123,29 +167,50 @@ describe('AssertLogical', () => {
   })
 
   describe('optimizeOneOf', () => {
-    const schema = { oneOf: [
-      { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }) },
-      { type: 'array', minItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }) }
-    ]}
+    context('object JSON schemas', () => {
+      const schema = { oneOf: [
+        { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }) },
+        { type: 'array', minItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }) }
+      ]}
 
-    beforeEach(() => (assertions = AssertLogical.optimizeOneOf(schema)))
+      beforeEach(() => (assertions = AssertLogical.optimizeOneOf(schema)))
 
-    it('should create optimized assertions successfully', () => {
-      expect(assertions).to.be.an('array')
-      expect(assertions.length).to.equal(1)
-      expect(assertions[0]).to.be.a('function')
+      it('should create optimized assertions successfully', () => {
+        expect(assertions).to.be.an('array')
+        expect(assertions.length).to.equal(1)
+        expect(assertions[0]).to.be.a('function')
+      })
+
+      it('should assert optimized with valid values successfully', () => {
+        expect(assertOptimized(['something'], schema, assertions)).to.be.undefined()
+        expect(assertOptimized(['something', 'something'], schema, assertions)).to.be.undefined()
+        expect(assertOptimized(['something', 'something', 'something', 'something'], schema, assertions)).to.be.undefined()
+      })
+
+      it('should assert optimized with invalid values unsuccessfully', () => {
+        let error = assertOptimized([], schema, assertions)
+        expect(error.message).to.equal('#oneOf: value should be one of the listed schemas only')
+
+        error = assertOptimized(['something', 'something', 'something'], schema, assertions)
+        expect(error.message).to.equal('#oneOf: value should be one of the listed schemas only')
+
+        error = assertOptimized(null, schema, assertions)
+        expect(error.message).to.equal('#oneOf: value should be one of the listed schemas only')
+      })
     })
 
-    it('should assert optimized with valid values successfully', async () => {
-      await expect(assertOptimized(['something'], schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(['something', 'something'], schema, assertions)).to.be.fulfilled()
-      await expect(assertOptimized(['something', 'something', 'something', 'something'], schema, assertions)).to.be.fulfilled()
-    })
+    context('boolean JSON schemas', () => {
+      const schema = { oneOf: [
+        { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }) },
+        true,
+        false
+      ]}
 
-    it('should assert optimized with invalid values unsuccessfully', async () => {
-      await expect(assertOptimized([], schema, assertions)).to.be.rejected()
-      await expect(assertOptimized(['something', 'something', 'something'], schema, assertions)).to.be.rejected()
-      await expect(assertOptimized(null, schema, assertions)).to.be.rejected()
+      beforeEach(() => (assertions = AssertLogical.optimizeOneOf(schema)))
+
+      it('should assert optimized with valid values successfully', () => {
+        expect(assertOptimized(null, schema, assertions)).to.be.undefined()
+      })
     })
 
     it('should throw an error on invalid type', () => {

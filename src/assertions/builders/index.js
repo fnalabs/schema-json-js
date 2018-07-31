@@ -1,5 +1,3 @@
-import { isBoolean } from '../types'
-
 export class AssertBoolean {
   constructor () {
     return AssertBoolean
@@ -8,8 +6,8 @@ export class AssertBoolean {
   static optimize (schema) {
     if (schema.type !== 'boolean') return []
 
-    return [async (value, ref) => {
-      if (!isBoolean(value)) throw new Error('#type: value is not a boolean')
+    return [(value, ref) => {
+      if (typeof value !== 'boolean') return new Error('#type: value is not a boolean')
     }]
   }
 }
@@ -22,8 +20,8 @@ export class AssertNull {
   static optimize (schema) {
     if (schema.type !== 'null') return []
 
-    return [async (value, ref) => {
-      if (value !== null) throw new Error('#type: value is not null')
+    return [(value, ref) => {
+      if (value !== null) return new Error('#type: value is not null')
     }]
   }
 }

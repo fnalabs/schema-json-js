@@ -40,12 +40,16 @@ export function isEnum (value, assertion) {
 }
 
 export function isParentKeyword (parents) {
-  if (/^(?:properties|patternProperties|dependencies)$/.test(parents[parents.length - 1])) return true
+  const len = parents.length
+
+  let check = false
+  if (/^(?:properties|patternProperties|dependencies|definitions)$/.test(parents[len - 1])) check = true
+  if (parents[len - 2] === 'properties') check = false
 
   for (let parent of parents) {
-    if (/^(?:const|enum)$/.test(parent)) return true
+    if (/^(?:const|enum)$/.test(parent)) check = true
   }
-  return false
+  return check
 }
 
 export function isPathFragment ($ref) {
