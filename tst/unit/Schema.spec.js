@@ -36,6 +36,44 @@ describe('Schema', () => {
       expect(schema.assign).to.be.a('function')
       expect(schema.validate).to.be.a('function')
     })
+
+    it('should create a Schema object with async validation successfully', async () => {
+      schema = await new Schema(true)
+
+      expect(schema).to.be.an('object')
+      expect(schema).to.deep.equal({})
+      expect(schema).to.not.be.frozen()
+
+      const symbols = Object.getOwnPropertySymbols(schema)
+      expect(schema[symbols[0]]).to.not.be.frozen()
+      expect(schema[symbols[1]]).to.not.be.frozen()
+
+      expect(schema.errors).to.deep.equal([])
+      expect(schema.assign).to.be.a('function')
+      expect(schema.validate).to.be.a('function')
+
+      schema = await new Schema({}, true)
+
+      expect(schema).to.be.an('object')
+      expect(schema).to.deep.equal({})
+      expect(schema).to.be.frozen()
+
+      expect(schema.errors).to.deep.equal([])
+      expect(schema.assign).to.be.a('function')
+      expect(schema.validate).to.be.a('function')
+
+      schema = await new Schema({}, {'http://json-schema.org/draft-04/schema': testSchema}, true)
+
+      expect(schema).to.be.an('object')
+      expect(schema).to.deep.equal({})
+      expect(schema).to.be.frozen()
+
+      expect(schema.errors).to.deep.equal([])
+      expect(schema.assign).to.be.a('function')
+      expect(schema.validate).to.be.a('function')
+
+      expect(schema.validate(true)).to.eventually.be.ok()
+    })
   })
 
   describe('#validate', () => {
