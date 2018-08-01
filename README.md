@@ -8,14 +8,15 @@
 [![Dependency Status][depstat-image]][depstat-url]
 [![JavaScript Style Guide][style-image]][style-url]
 
-A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using promises and thunks. It currently supports the `draft-04` and `draft-06` versions of the JSON Schema specification.
+A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using thunks. It currently supports the `draft-04` and `draft-06` versions of the JSON Schema specification.
 
 Motivations behind the project:
 - implement a JSON Schema validator leveraging modern JS features
 - implement as instances of a `class` so the schema can be referenced in code
-- fully asynchronous from the ground up
+- include support for `synchronous` or `asynchronous` validations
+- allow for partial validations for complex object properties
 - small and lightweight with no dependencies
-- universal support for latest browsers and Node.js
+- universal support for the latest browsers and Node.js
 
 #### Contents
 - [Installing](#installing)
@@ -35,10 +36,15 @@ $ npm install schema-json-js
 Click on the link in the header above to go to the API page.
 
 ## Examples
+
+#### Initialized immediately:
+---
 - An example Schema initialized immediately.
   ```javascript
   // ...
   const schema = await new Schema({}) // immediately immutable
+  // ...
+  schema.validate('something')
   // ...
   ```
 
@@ -50,14 +56,41 @@ Click on the link in the header above to go to the API page.
   }
   const schema = await new Schema({ $ref: 'https://localhost/schema' }, REFS) // immediately immutable
   // ...
+  schema.validate('something')
+  // ...
   ```
 
+- An example Schema initialized immediately with `async` validation.
+  ```javascript
+  // ...
+  const schema = await new Schema({}, true) // immediately immutable
+  // ...
+  await schema.validate('something')
+  // ...
+  ```
+
+- An example Schema initialized immediately with cached JSON Schema references defined and `async` validation.
+  ```javascript
+  // ...
+  const REFS = {
+    'https://localhost/schema': {}
+  }
+  const schema = await new Schema({ $ref: 'https://localhost/schema' }, REFS, true) // immediately immutable
+  // ...
+  await schema.validate('something')
+  // ...
+  ```
+
+#### Initialized lazily:
+---
 - An example Schema initialized lazily.
   ```javascript
   // ...
   const schema = await new Schema() // not immutable yet...
   // ...
   await schema.assign({}) // now it's immutable
+  // ...
+  schema.validate('something')
   // ...
   ```
 
@@ -70,6 +103,19 @@ Click on the link in the header above to go to the API page.
     'https://localhost/schema': {}
   }
   await schema.assign({ $ref: 'https://localhost/schema' }, REFS) // now it's immutable
+  // ...
+  schema.validate('something')
+  // ...
+  ```
+
+- An example Schema initialized lazily with `async` validation.
+  ```javascript
+  // ...
+  const schema = await new Schema(true) // not immutable yet...
+  // ...
+  await schema.assign({}) // now it's immutable
+  // ...
+  await schema.validate('something')
   // ...
   ```
 
@@ -87,6 +133,14 @@ We are currently drafting our contributing guide!
 <a href="https://browserstack.com"><img height="48" src="https://fnalabs.github.io/fnalabs-assets/assets/Browserstack-logo.svg" alt="BrowserStack logo"></a>
 
 ## Changelog
+#### v0.2.0
+- updated documentation
+- implemented `sync` and `async` validation options
+- performance updates:
+    - removed nested `async` functions
+    - removed all try...catch statements from loops
+    - comparison and structural improvements
+
 #### v0.1.1
 - added browser unit test coverage for `Schema` in all evergreen browsers, desktop and mobile
 - updated dev dependencies
