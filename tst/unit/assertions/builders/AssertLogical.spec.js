@@ -21,7 +21,7 @@ describe('AssertLogical', () => {
       const schema = { allOf: [
         { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) },
         { minItems: 1, [OPTIMIZED]: AssertArray.optimize({ minItems: 1 }) }
-      ]}
+      ] }
 
       beforeEach(() => (assertions = AssertLogical.optimizeAllOf(schema)))
 
@@ -62,7 +62,7 @@ describe('AssertLogical', () => {
       const schema = { allOf: [
         { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) },
         false
-      ]}
+      ] }
 
       beforeEach(() => (assertions = AssertLogical.optimizeAllOf(schema)))
 
@@ -78,7 +78,7 @@ describe('AssertLogical', () => {
       const schema = { anyOf: [
         { type: 'array', maxItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', maxItems: 3 }) },
         { type: 'array', minItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }) }
-      ]}
+      ] }
 
       beforeEach(() => (assertions = AssertLogical.optimizeAnyOf(schema)))
 
@@ -171,7 +171,7 @@ describe('AssertLogical', () => {
       const schema = { oneOf: [
         { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }) },
         { type: 'array', minItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }) }
-      ]}
+      ] }
 
       beforeEach(() => (assertions = AssertLogical.optimizeOneOf(schema)))
 
@@ -204,7 +204,7 @@ describe('AssertLogical', () => {
         { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }) },
         true,
         false
-      ]}
+      ] }
 
       beforeEach(() => (assertions = AssertLogical.optimizeOneOf(schema)))
 

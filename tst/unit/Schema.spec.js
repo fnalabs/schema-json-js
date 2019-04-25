@@ -62,7 +62,7 @@ describe('Schema', () => {
       expect(schema.assign).to.be.a('function')
       expect(schema.validate).to.be.a('function')
 
-      schema = await new Schema({}, {'http://json-schema.org/draft-04/schema': testSchema}, true)
+      schema = await new Schema({}, { 'http://json-schema.org/draft-04/schema': testSchema }, true)
 
       expect(schema).to.be.an('object')
       expect(schema).to.deep.equal({})
@@ -92,7 +92,7 @@ describe('Schema', () => {
       expect(schema.validate(1.1)).to.be.true()
       expect(schema.validate(true)).to.be.true()
       expect(schema.validate(['an', 'array'])).to.be.true()
-      expect(schema.validate({an: 'object'})).to.be.true()
+      expect(schema.validate({ an: 'object' })).to.be.true()
       expect(schema.validate(null)).to.be.true()
 
       expect(schema.validate(true, false)).to.be.false()
@@ -125,7 +125,7 @@ describe('Schema', () => {
       expect(schema.validate(1.1)).to.be.true()
       expect(schema.validate(true)).to.be.true()
       expect(schema.validate(['an', 'array'])).to.be.true()
-      expect(schema.validate({an: 'object'})).to.be.true()
+      expect(schema.validate({ an: 'object' })).to.be.true()
       expect(schema.validate(null)).to.be.true()
     })
 
@@ -325,11 +325,11 @@ describe('Schema', () => {
     })
 
     it('should validate successfully', () => {
-      expect(schema.validate({definitions: {foo: {type: 'integer'}}})).to.be.ok()
+      expect(schema.validate({ definitions: { foo: { type: 'integer' } } })).to.be.ok()
     })
 
     it('should throw an error on invalid data', () => {
-      expect(schema.validate({definitions: {foo: {type: 1}}})).to.not.be.ok()
+      expect(schema.validate({ definitions: { foo: { type: 1 } } })).to.not.be.ok()
     })
   })
 
@@ -418,11 +418,11 @@ describe('Schema', () => {
       })
 
       it('should validate successfully', () => {
-        expect(schema.validate({test: true})).to.be.ok()
+        expect(schema.validate({ test: true })).to.be.ok()
       })
 
       it('should validate unsuccessfully', () => {
-        expect(schema.validate({testing: false})).not.to.be.ok()
+        expect(schema.validate({ testing: false })).not.to.be.ok()
       })
     })
   })

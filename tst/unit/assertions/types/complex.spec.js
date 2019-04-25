@@ -17,11 +17,11 @@ describe('primitive assertions', () => {
     expect(complex.deepEqual([1, 2, 3, 4, 6], [1, 2, 3, 4, 5])).to.be.false()
 
     expect(complex.deepEqual({}, {})).to.be.true()
-    expect(complex.deepEqual({one: 1, two: 2}, {one: 1, two: 2})).to.be.true()
+    expect(complex.deepEqual({ one: 1, two: 2 }, { one: 1, two: 2 })).to.be.true()
     expect(complex.deepEqual(null, {})).to.be.false()
-    expect(complex.deepEqual({one: 1, two: 2}, {one: 1, two: 2, three: 3})).to.be.false()
-    expect(complex.deepEqual({one: 1, two: 2, three: 3}, {one: 1, two: 2})).to.be.false()
-    expect(complex.deepEqual({one: 1, two: 3}, {one: 1, two: 2})).to.be.false()
+    expect(complex.deepEqual({ one: 1, two: 2 }, { one: 1, two: 2, three: 3 })).to.be.false()
+    expect(complex.deepEqual({ one: 1, two: 2, three: 3 }, { one: 1, two: 2 })).to.be.false()
+    expect(complex.deepEqual({ one: 1, two: 3 }, { one: 1, two: 2 })).to.be.false()
 
     expect(complex.deepEqual('1', '1')).to.be.true()
     expect(complex.deepEqual(1, 0)).to.be.false()
@@ -32,17 +32,17 @@ describe('primitive assertions', () => {
     expect(complex.isEnum([1])).to.be.true()
     expect(complex.isEnum([1, 2])).to.be.true()
     expect(complex.isEnum([1, '2'])).to.be.true()
-    expect(complex.isEnum([1, {two: 2}])).to.be.true()
+    expect(complex.isEnum([1, { two: 2 }])).to.be.true()
     expect(complex.isEnum([])).to.be.false()
     expect(complex.isEnum([1, 1])).to.be.false()
-    expect(complex.isEnum([{one: 1}, {one: 1}])).to.be.false()
+    expect(complex.isEnum([{ one: 1 }, { one: 1 }])).to.be.false()
 
     expect(complex.isEnum([1], isNumber)).to.be.true()
     expect(complex.isEnum([1, 2], isNumber)).to.be.true()
     expect(complex.isEnum([1, '2'], isNumber)).to.be.false()
-    expect(complex.isEnum([1, {two: 2}], isNumber)).to.be.false()
+    expect(complex.isEnum([1, { two: 2 }], isNumber)).to.be.false()
     expect(complex.isEnum([1, 1], isNumber)).to.be.false()
-    expect(complex.isEnum([{one: 1}, {one: 1}], isNumber)).to.be.false()
+    expect(complex.isEnum([{ one: 1 }, { one: 1 }], isNumber)).to.be.false()
   })
 
   it('should test for parent keywords successfully', () => {
