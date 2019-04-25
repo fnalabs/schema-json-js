@@ -431,7 +431,7 @@ describe('AssertObject', () => {
       beforeEach(() => (assertions = AssertObject.optimize(schema)))
 
       it('should create optimized assertions and validate successfully', () => {
-        expect(assertOptimized({anything: 'goes'}, schema, assertions)).to.be.undefined()
+        expect(assertOptimized({ anything: 'goes' }, schema, assertions)).to.be.undefined()
       })
 
       it('should create optimized assertions and validate unsuccessfully', () => {
@@ -441,7 +441,7 @@ describe('AssertObject', () => {
         error = assertOptimized({}, schema, assertions)
         expect(error.message).to.equal('#minProperties: value minimum not met')
 
-        error = assertOptimized({not: 'always', anything: 'goes'}, schema, assertions)
+        error = assertOptimized({ not: 'always', anything: 'goes' }, schema, assertions)
         expect(error.message).to.equal('#maxProperties: value maximum exceeded')
       })
     })

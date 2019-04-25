@@ -46,7 +46,7 @@ describe('primitive assertions', () => {
 
   it('should test object types successfully', () => {
     expect(primitive.isObject({})).to.be.true()
-    expect(primitive.isObject({simple: 'object'})).to.be.true()
+    expect(primitive.isObject({ simple: 'object' })).to.be.true()
     expect(primitive.isObject(null)).to.not.be.ok()
     expect(primitive.isObject([])).to.be.false()
   })

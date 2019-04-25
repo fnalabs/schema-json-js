@@ -63,7 +63,7 @@ describe('AssertGeneric', () => {
   })
 
   describe('enum keyword', () => {
-    const schema = { enum: [1, {complex: 'object'}] }
+    const schema = { enum: [1, { complex: 'object' }] }
 
     beforeEach(() => (assertions = AssertGeneric.optimize(schema)))
 
