@@ -89,8 +89,9 @@ class Schema {
         const error = schema[OPTIMIZED][0](data, schema)
         if (error) this[ERRORS].push(error.message)
       } else {
-        for (let fn of schema[OPTIMIZED]) {
-          const error = fn(data, schema)
+        let index = schema[OPTIMIZED].length
+        while (index--) {
+          const error = schema[OPTIMIZED][index](data, schema)
           if (error) {
             this[ERRORS].push(error.message)
             break
@@ -114,16 +115,17 @@ class Schema {
     // iterate over object/array passed as source schema
     const assign = (object, source, path = []) => {
       const keys = Object.keys(source)
-      for (let key of keys) {
-        const value = source[key]
+      let index = keys.length
+      while (index--) {
+        const value = source[keys[index]]
         if (value && typeof value === 'object') {
-          Object.defineProperty(object, key, {
+          Object.defineProperty(object, keys[index], {
             value: isArray(value)
-              ? assign([], value, [...path, key])
-              : assign({}, value, [...path, key]),
+              ? assign([], value, [...path, keys[index]])
+              : assign({}, value, [...path, keys[index]]),
             enumerable
           })
-        } else Object.defineProperty(object, key, { value, enumerable })
+        } else Object.defineProperty(object, keys[index], { value, enumerable })
       }
 
       const tempId = source.$id || source.id
@@ -144,7 +146,8 @@ class Schema {
 
   async [ASSIGN_REFS] (refs) {
     const keys = Object.keys(refs)
-    for (let schemaUrl of keys) await this[ASSIGN_REF](schemaUrl, refs[schemaUrl])
+    let index = keys.length
+    while (index--) await this[ASSIGN_REF](keys[index], refs[keys[index]])
   }
 
   async [ASSIGN_OPTIMIZED] (schema) {
@@ -170,9 +173,10 @@ class Schema {
       }
 
       const keys = Object.keys(source)
-      for (let key of keys) {
-        const value = source[key]
-        if (value && typeof value === 'object') await assign(value, [...path, key])
+      let index = keys.length
+      while (index--) {
+        const value = source[keys[index]]
+        if (value && typeof value === 'object') await assign(value, [...path, keys[index]])
       }
       return Object.freeze(source)
     }
@@ -201,8 +205,9 @@ class Schema {
           const error = list[0](value, referred)
           if (error) return error
         } else {
-          for (let fn of list) {
-            const error = fn(value, referred)
+          let index = list.length
+          while (index--) {
+            const error = list[index](value, referred)
             if (error) return error
           }
         }
@@ -238,11 +243,11 @@ class Schema {
 
     // build Schema path by traversing schema from root, checking for ($)id path fragments
     let temp = absMatch[1]
-    let index = root
-    for (let key of path) {
-      index = index[key]
-      if (isString(index.$id) && isPathFragment(index.$id)) temp = `${temp}${index.$id}`
-      else if (isString(index.id) && isPathFragment(index.id)) temp = `${temp}${index.id}`
+    let schema = root
+    for (let index = 0, length = path.length; index < length; index++) {
+      schema = schema[path[index]]
+      if (isString(schema.$id) && isPathFragment(schema.$id)) temp = `${temp}${schema.$id}`
+      else if (isString(schema.id) && isPathFragment(schema.id)) temp = `${temp}${schema.id}`
     }
 
     absMatch[0] = `${temp}${match[0]}`
@@ -254,12 +259,15 @@ class Schema {
   [ASSERT_REF_POINTER] (pointer, root) {
     // recursive traversal of root in case of recursive references
     const traverse = (ptr) => {
-      let ref = root
       const keys = ptr.split('/')
+      let ref = root
 
       keys.shift()
       if (keys.length) {
-        for (let key of keys) ref = ref[key.replace(/~1/g, '/').replace(/~0/g, '~')]
+        // NOTE: must be a incrementing loop since we need to traverse in order
+        for (let index = 0, length = keys.length; index < length; index++) {
+          ref = ref[keys[index].replace(/~1/g, '/').replace(/~0/g, '~')]
+        }
       }
 
       if (ref.$ref) return traverse(ref.$ref.split('#')[1])
@@ -315,7 +323,8 @@ class Schema {
 
       const list = type.map(val => this[ASSERT_SCHEMA]({ type: val })[0])
       return [(value, ref) => {
-        for (let fn of list) if (!fn(value, ref)) return
+        let index = list.length
+        while (index--) if (!list[index](value, ref)) return
         return new Error('#type: value does not match the List of types')
       }]
     } else throw new TypeError('#type: must be either a valid type string or list of strings')

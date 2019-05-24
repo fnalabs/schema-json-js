@@ -46,44 +46,46 @@ export default class AssertArray {
           return new Error('#minItems: value minimum not met')
         }
 
-        for (let i = 0; i < length; i++) {
+        for (let index = 0; index < length; index++) {
           if (ref.uniqueItems) {
-            value[i] && typeof value[i] === 'object'
-              ? unique.add(JSON.stringify(value[i]))
-              : unique.add(value[i])
+            value[index] && typeof value[index] === 'object'
+              ? unique.add(JSON.stringify(value[index]))
+              : unique.add(value[index])
           }
 
           // asserts [items, additionalItems]
           if (ref.items || ref.items === false) {
             if (Array.isArray(ref.items)) {
-              if (i < ref.items.length) {
-                if (ref.items[i] === false) {
+              if (index < ref.items.length) {
+                if (ref.items[index] === false) {
                   return new Error('#items: \'false\' Schema invalidates all values')
                 }
                 /* istanbul ignore else */
-                if (ref.items[i][OPTIMIZED]) {
-                  if (ref.items[i][OPTIMIZED].length === 1) {
-                    const error = ref.items[i][OPTIMIZED][0](value[i], ref.items[i])
+                if (ref.items[index][OPTIMIZED]) {
+                  if (ref.items[index][OPTIMIZED].length === 1) {
+                    const error = ref.items[index][OPTIMIZED][0](value[index], ref.items[index])
                     if (error) return error
                   } else {
-                    for (let fn of ref.items[i][OPTIMIZED]) {
-                      const error = fn(value[i], ref.items[i])
+                    let i = ref.items[index][OPTIMIZED].length
+                    while (i--) {
+                      const error = ref.items[index][OPTIMIZED][i](value[index], ref.items[index])
                       if (error) return error
                     }
                   }
                 }
               } else if (ref.additionalItems || ref.additionalItems === false) {
                 if (ref.additionalItems === false) {
-                  return new Error(`#additionalItems: '${i}' additional items not allowed`)
+                  return new Error(`#additionalItems: '${index}' additional items not allowed`)
                 }
                 /* istanbul ignore else */
                 if (ref.additionalItems[OPTIMIZED]) {
                   if (ref.additionalItems[OPTIMIZED].length === 1) {
-                    const error = ref.additionalItems[OPTIMIZED][0](value[i], ref.additionalItems)
+                    const error = ref.additionalItems[OPTIMIZED][0](value[index], ref.additionalItems)
                     if (error) return error
                   } else {
-                    for (let fn of ref.additionalItems[OPTIMIZED]) {
-                      const error = fn(value[i], ref.additionalItems)
+                    let i = ref.additionalItems[OPTIMIZED].length
+                    while (i--) {
+                      const error = ref.additionalItems[OPTIMIZED][i](value[index], ref.additionalItems)
                       if (error) return error
                     }
                   }
@@ -95,11 +97,12 @@ export default class AssertArray {
             }
             if (ref.items[OPTIMIZED]) {
               if (ref.items[OPTIMIZED].length === 1) {
-                const error = ref.items[OPTIMIZED][0](value[i], ref.items)
+                const error = ref.items[OPTIMIZED][0](value[index], ref.items)
                 if (error) return error
               } else {
-                for (let fn of ref.items[OPTIMIZED]) {
-                  const error = fn(value[i], ref.items)
+                let i = ref.items[OPTIMIZED].length
+                while (i--) {
+                  const error = ref.items[OPTIMIZED][i](value[index], ref.items)
                   if (error) return error
                 }
               }
@@ -114,10 +117,11 @@ export default class AssertArray {
                 error = new Error('#contains: \'false\' Schema invalidates all values')
               } else if (ref.contains[OPTIMIZED]) {
                 if (ref.contains[OPTIMIZED].length === 1) {
-                  error = ref.contains[OPTIMIZED][0](value[i], ref.contains)
+                  error = ref.contains[OPTIMIZED][0](value[index], ref.contains)
                 } else {
-                  for (let fn of ref.contains[OPTIMIZED]) {
-                    error = fn(value[i], ref.contains)
+                  let i = ref.contains[OPTIMIZED].length
+                  while (i--) {
+                    error = ref.contains[OPTIMIZED][i](value[index], ref.contains)
                     /* istanbul ignore else */
                     if (!error) break
                   }
@@ -126,11 +130,11 @@ export default class AssertArray {
 
               if (error) {
                 containsFlag = false
-                if (i === length - 1) {
+                if (index === length - 1) {
                   return new Error('#contains: value does not contain element matching the Schema')
                 }
               } else containsFlag = true
-            } else if (i === length - 1) containsFlag = false
+            } else if (index === length - 1) containsFlag = false
           }
         }
 

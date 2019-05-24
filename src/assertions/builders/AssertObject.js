@@ -45,39 +45,40 @@ export default class AssertObject {
         }
 
         const keys = Object.keys(value)
-        const length = keys.length
+        let index = keys.length
         let reqCount = 0
         let patternMatch = false
         let propertiesMatch = false
 
         // asserts [required, maxProperties, minProperties]
-        if (typeof ref.maxProperties === 'number' && length > ref.maxProperties) {
+        if (typeof ref.maxProperties === 'number' && index > ref.maxProperties) {
           return new Error('#maxProperties: value maximum exceeded')
         }
-        if (typeof ref.minProperties === 'number' && length < ref.minProperties) {
+        if (typeof ref.minProperties === 'number' && index < ref.minProperties) {
           return new Error('#minProperties: value minimum not met')
         }
 
         // loop runs assertions for [properties, patternProperties, additionalProperties, etc.]
-        for (let key of keys) {
-          const val = value[key]
+        while (index--) {
+          const val = value[keys[index]]
           // check for required
-          if (req[key]) reqCount++
+          if (req[keys[index]]) reqCount++
 
           // asserts [properties]
           propertiesMatch = false
-          if (ref.properties && (ref.properties[key] || ref.properties[key] === false)) {
+          if (ref.properties && (ref.properties[keys[index]] || ref.properties[keys[index]] === false)) {
             propertiesMatch = true
-            if (ref.properties[key] === false) {
+            if (ref.properties[keys[index]] === false) {
               return new Error('#properties: \'false\' Schema invalidates all values')
             }
-            if (ref.properties[key][OPTIMIZED]) {
-              if (ref.properties[key][OPTIMIZED].length === 1) {
-                const error = ref.properties[key][OPTIMIZED][0](val, ref.properties[key])
+            if (ref.properties[keys[index]][OPTIMIZED]) {
+              if (ref.properties[keys[index]][OPTIMIZED].length === 1) {
+                const error = ref.properties[keys[index]][OPTIMIZED][0](val, ref.properties[keys[index]])
                 if (error) return error
               } else {
-                for (let fn of ref.properties[key][OPTIMIZED]) {
-                  const error = fn(val, ref.properties[key])
+                let i = ref.properties[keys[index]][OPTIMIZED].length
+                while (i--) {
+                  const error = ref.properties[keys[index]][OPTIMIZED][i](val, ref.properties[keys[index]])
                   if (error) return error
                 }
               }
@@ -88,20 +89,24 @@ export default class AssertObject {
           if (ref.patternProperties) {
             patternMatch = false
             const propKeys = Object.keys(ref.patternProperties)
-            for (let i of propKeys) {
-              if (patternProps[i].test(key)) {
+            let i = propKeys.length
+            while (i--) {
+              if (patternProps[propKeys[i]].test(keys[index])) {
                 patternMatch = true
-                if (ref.patternProperties[i] === false) {
+                if (ref.patternProperties[propKeys[i]] === false) {
                   return new Error('#patternProperties: \'false\' Schema invalidates all values')
                 }
                 /* istanbul ignore else */
-                if (ref.patternProperties[i][OPTIMIZED]) {
-                  if (ref.patternProperties[i][OPTIMIZED].length === 1) {
-                    const error = ref.patternProperties[i][OPTIMIZED][0](val, ref.patternProperties[i])
+                if (ref.patternProperties[propKeys[i]][OPTIMIZED]) {
+                  if (ref.patternProperties[propKeys[i]][OPTIMIZED].length === 1) {
+                    const error =
+                      ref.patternProperties[propKeys[i]][OPTIMIZED][0](val, ref.patternProperties[propKeys[i]])
                     if (error) return error
                   } else {
-                    for (let fn of ref.patternProperties[i][OPTIMIZED]) {
-                      const error = fn(val, ref.patternProperties[i])
+                    let j = ref.patternProperties[propKeys[i]][OPTIMIZED].length
+                    while (j--) {
+                      const error =
+                        ref.patternProperties[propKeys[i]][OPTIMIZED][j](val, ref.patternProperties[propKeys[i]])
                       if (error) return error
                     }
                   }
@@ -120,8 +125,9 @@ export default class AssertObject {
                 const error = ref.additionalProperties[OPTIMIZED][0](val, ref.additionalProperties)
                 if (error) return error
               } else {
-                for (let fn of ref.additionalProperties[OPTIMIZED]) {
-                  const error = fn(val, ref.additionalProperties)
+                let i = ref.additionalProperties[OPTIMIZED].length
+                while (i--) {
+                  const error = ref.additionalProperties[OPTIMIZED][i](val, ref.additionalProperties)
                   if (error) return error
                 }
               }
@@ -129,25 +135,29 @@ export default class AssertObject {
           }
 
           // asserts [dependencies]
-          if (ref.dependencies && (ref.dependencies[key] || ref.dependencies[key] === false)) {
-            if (Array.isArray(ref.dependencies[key])) {
-              for (let depKey of ref.dependencies[key]) {
-                if (typeof value[depKey] === 'undefined') {
-                  return new Error(`#dependencies: value does not have '${key}' dependency`)
+          if (ref.dependencies && (ref.dependencies[keys[index]] || ref.dependencies[keys[index]] === false)) {
+            if (Array.isArray(ref.dependencies[keys[index]])) {
+              let i = ref.dependencies[keys[index]].length
+              while (i--) {
+                if (typeof value[ref.dependencies[keys[index]][i]] === 'undefined') {
+                  return new Error(`#dependencies: value does not have '${keys[index]}' dependency`)
                 }
               }
             } else {
-              if (ref.dependencies[key] === false) {
+              if (ref.dependencies[keys[index]] === false) {
                 return new Error('#dependencies: \'false\' Schema invalidates all values')
               }
               /* istanbul ignore else */
-              if (ref.dependencies[key][OPTIMIZED]) {
-                if (ref.dependencies[key][OPTIMIZED].length === 1) {
-                  const error = ref.dependencies[key][OPTIMIZED][0](value, ref.dependencies[key])
+              if (ref.dependencies[keys[index]][OPTIMIZED]) {
+                if (ref.dependencies[keys[index]][OPTIMIZED].length === 1) {
+                  const error =
+                    ref.dependencies[keys[index]][OPTIMIZED][0](value, ref.dependencies[keys[index]])
                   if (error) return error
                 } else {
-                  for (let fn of ref.dependencies[key][OPTIMIZED]) {
-                    const error = fn(value, ref.dependencies[key])
+                  let i = ref.dependencies[keys[index]][OPTIMIZED].length
+                  while (i--) {
+                    const error =
+                      ref.dependencies[keys[index]][OPTIMIZED][i](value, ref.dependencies[keys[index]])
                     if (error) return error
                   }
                 }
@@ -163,11 +173,12 @@ export default class AssertObject {
             /* istanbul ignore else */
             if (ref.propertyNames[OPTIMIZED]) {
               if (ref.propertyNames[OPTIMIZED].length === 1) {
-                const error = ref.propertyNames[OPTIMIZED][0](key, ref.propertyNames)
+                const error = ref.propertyNames[OPTIMIZED][0](keys[index], ref.propertyNames)
                 if (error) return error
               } else {
-                for (let fn of ref.propertyNames[OPTIMIZED]) {
-                  const error = fn(key, ref.propertyNames)
+                let i = ref.propertyNames[OPTIMIZED].length
+                while (i--) {
+                  const error = ref.propertyNames[OPTIMIZED][i](keys[index], ref.propertyNames)
                   if (error) return error
                 }
               }
@@ -207,8 +218,9 @@ export default class AssertObject {
   static [ASSERT_DEPENDENCIES] (dependencies) {
     // determine if dependencies object contains arrays or schemas
     const keys = Object.keys(dependencies)
-    for (let key of keys) {
-      const value = dependencies[key]
+    let index = keys.length
+    while (index--) {
+      const value = dependencies[keys[index]]
       if (!((isArray(value) && !value.length) || isEnum(value, isString) || isSchema(value))) {
         throw new TypeError('#dependencies: all dependencies must either be Schemas|enums')
       }
@@ -233,8 +245,9 @@ export default class AssertObject {
     // validate patternProperties keyword
     if (isObject(patternProperties)) {
       const keys = Object.keys(patternProperties)
-      for (let k of keys) {
-        patternProps[k] = new RegExp(k)
+      let index = keys.length
+      while (index--) {
+        patternProps[keys[index]] = new RegExp(keys[index])
       }
     } else if (!isUndefined(patternProperties)) {
       throw new TypeError('#patternProperties: must be an Object')

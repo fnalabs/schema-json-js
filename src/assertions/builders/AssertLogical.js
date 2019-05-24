@@ -17,18 +17,19 @@ export default class AssertLogical {
     }
 
     return [(value, ref) => {
-      for (let refSchema of ref.allOf) {
-        if (refSchema === false) {
+      for (let index = 0, length = ref.allOf.length; index < length; index++) {
+        if (ref.allOf[index] === false) {
           return new Error('#allOf: \'false\' Schema invalidates all values')
         }
         /* istanbul ignore else */
-        if (refSchema[OPTIMIZED]) {
-          if (refSchema[OPTIMIZED].length === 1) {
-            const error = refSchema[OPTIMIZED][0](value, refSchema)
+        if (ref.allOf[index][OPTIMIZED]) {
+          if (ref.allOf[index][OPTIMIZED].length === 1) {
+            const error = ref.allOf[index][OPTIMIZED][0](value, ref.allOf[index])
             if (error) return error
           } else {
-            for (let fn of refSchema[OPTIMIZED]) {
-              const error = fn(value, refSchema)
+            let i = ref.allOf[index][OPTIMIZED].length
+            while (i--) {
+              const error = ref.allOf[index][OPTIMIZED][i](value, ref.allOf[index])
               if (error) return error
             }
           }
@@ -46,17 +47,18 @@ export default class AssertLogical {
     }
 
     return [(value, ref) => {
-      for (let refSchema of ref.anyOf) {
-        if (refSchema === true) return
+      for (let index = 0, length = ref.anyOf.length; index < length; index++) {
+        if (ref.anyOf[index] === true) return
         /* istanbul ignore else */
-        if (refSchema[OPTIMIZED]) {
-          if (refSchema[OPTIMIZED].length === 1) {
-            const error = refSchema[OPTIMIZED][0](value, refSchema)
+        if (ref.anyOf[index][OPTIMIZED]) {
+          if (ref.anyOf[index][OPTIMIZED].length === 1) {
+            const error = ref.anyOf[index][OPTIMIZED][0](value, ref.anyOf[index])
             if (!error) return
           } else {
             let error
-            for (let fn of refSchema[OPTIMIZED]) {
-              error = fn(value, refSchema)
+            let i = ref.anyOf[index][OPTIMIZED].length
+            while (i--) {
+              error = ref.anyOf[index][OPTIMIZED][i](value, ref.anyOf[index])
               if (error) break
             }
             if (!error) return
@@ -83,8 +85,9 @@ export default class AssertLogical {
           const error = ref.not[OPTIMIZED][0](value, ref.not)
           if (error) return
         } else {
-          for (let fn of ref.not[OPTIMIZED]) {
-            const error = fn(value, ref.not)
+          let index = ref.not[OPTIMIZED].length
+          while (index--) {
+            const error = ref.not[OPTIMIZED][index](value, ref.not)
             if (error) return
           }
         }
@@ -103,16 +106,17 @@ export default class AssertLogical {
 
     return [(value, ref) => {
       let count = 0
-      for (let refSchema of ref.oneOf) {
-        if (refSchema === true) count++
-        if (refSchema[OPTIMIZED]) {
-          if (refSchema[OPTIMIZED].length === 1) {
-            const error = refSchema[OPTIMIZED][0](value, refSchema)
+      for (let index = 0, length = ref.oneOf.length; index < length; index++) {
+        if (ref.oneOf[index] === true) count++
+        if (ref.oneOf[index][OPTIMIZED]) {
+          if (ref.oneOf[index][OPTIMIZED].length === 1) {
+            const error = ref.oneOf[index][OPTIMIZED][0](value, ref.oneOf[index])
             if (!error) count++
           } else {
             let error
-            for (let fn of refSchema[OPTIMIZED]) {
-              error = fn(value, refSchema)
+            let i = ref.oneOf[index][OPTIMIZED].length
+            while (i--) {
+              error = ref.oneOf[index][OPTIMIZED][i](value, ref.oneOf[index])
               if (error) break
             }
             if (!error) count++

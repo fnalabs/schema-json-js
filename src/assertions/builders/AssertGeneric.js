@@ -36,9 +36,10 @@ export default class AssertGeneric {
     }
 
     return (value, ref) => {
-      for (let enumVal of ref.enum) {
-        if (enumVal && typeof enumVal === 'object' && deepEqual(value, enumVal)) return
-        else if (!(value && typeof value === 'object') && value === enumVal) return
+      let index = ref.enum.length
+      while (index--) {
+        if (ref.enum[index] && typeof ref.enum[index] === 'object' && deepEqual(value, ref.enum[index])) return
+        else if (!(value && typeof value === 'object') && value === ref.enum[index]) return
       }
       return new Error('#enum: value does not match anything in the enum')
     }
