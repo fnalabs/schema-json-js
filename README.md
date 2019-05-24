@@ -160,8 +160,8 @@ We are currently drafting our contributing guide!
 [circle-image]: https://img.shields.io/circleci/project/github/fnalabs/schema-json-js.svg
 [circle-url]: https://circleci.com/gh/fnalabs/schema-json-js
 
-[browserstack-image]: https://www.browserstack.com/automate/badge.svg?badge_key=RUZSc0g2YjdmNmloS2FtTmU5NE81bFhHL3ByOFFXUThCNldqckJ6djBjVT0tLWxSWFkrbDI5amk4TXFzSXUzSWM5Unc9PQ==--0cea82a7d3fa758f89cbb9ad0e5fa21377131b4e
-[browserstack-url]: https://www.browserstack.com/automate/public-build/RUZSc0g2YjdmNmloS2FtTmU5NE81bFhHL3ByOFFXUThCNldqckJ6djBjVT0tLWxSWFkrbDI5amk4TXFzSXUzSWM5Unc9PQ==--0cea82a7d3fa758f89cbb9ad0e5fa21377131b4e
+[browserstack-image]: https://www.browserstack.com/automate/badge.svg?badge_key=eDlQNTJyWmtKUGY4dUVkUE1KU0xYdlhsWEQ1RmhtUVhCb285NWpla2picz0tLVBUZ0orditWQXNFWS9tNnNPNUVQREE9PQ==--7be9058ed16408dc5a4ee811336e7c48e21631d7
+[browserstack-url]: https://www.browserstack.com/automate/public-build/eDlQNTJyWmtKUGY4dUVkUE1KU0xYdlhsWEQ1RmhtUVhCb285NWpla2picz0tLVBUZ0orditWQXNFWS9tNnNPNUVQREE9PQ==--7be9058ed16408dc5a4ee811336e7c48e21631d7
 
 [codecov-image]: https://img.shields.io/codecov/c/github/fnalabs/schema-json-js.svg
 [codecov-url]: https://codecov.io/gh/fnalabs/schema-json-js
