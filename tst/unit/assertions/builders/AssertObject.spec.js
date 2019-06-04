@@ -10,7 +10,7 @@ import { assertOptimized } from '../../../utils'
 chai.use(dirtyChai)
 
 describe('AssertObject', () => {
-  const typeSchema = { type: 'object', maxProperties: 2, [OPTIMIZED]: AssertObject.optimize({ type: 'object', maxProperties: 1 }) }
+  const typeSchema = { type: 'object', maxProperties: 2, [OPTIMIZED]: AssertObject.optimize({ type: 'object', maxProperties: 1 }).pop() }
   let assertions
 
   afterEach(() => {
@@ -243,7 +243,7 @@ describe('AssertObject', () => {
 
   describe('propertyNames keyword', () => {
     context('object JSON schema', () => {
-      const schema = { propertyNames: { minLength: 2, [OPTIMIZED]: AssertString.optimize({ minLength: 2 }) } }
+      const schema = { propertyNames: { minLength: 2, [OPTIMIZED]: AssertString.optimize({ minLength: 2 }).pop() } }
 
       beforeEach(() => (assertions = AssertObject.optimize(schema)))
 
@@ -380,7 +380,7 @@ describe('AssertObject', () => {
 
   describe('complex object schemas', () => {
     context('with type defined', () => {
-      const schema = { type: 'object', maxProperties: 1, [OPTIMIZED]: AssertObject.optimize({ type: 'object', maxProperties: 1 }) }
+      const schema = { type: 'object', maxProperties: 1, [OPTIMIZED]: AssertObject.optimize({ type: 'object', maxProperties: 1 }).pop() }
 
       beforeEach(() => (assertions = AssertObject.optimize(schema)))
 
@@ -404,7 +404,7 @@ describe('AssertObject', () => {
     })
 
     context('without enforced type', () => {
-      const schema = { maxProperties: 1, [OPTIMIZED]: AssertObject.optimize({ maxProperties: 1 }) }
+      const schema = { maxProperties: 1, [OPTIMIZED]: AssertObject.optimize({ maxProperties: 1 }).pop() }
 
       beforeEach(() => (assertions = AssertObject.optimize(schema)))
 

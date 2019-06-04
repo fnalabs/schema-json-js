@@ -72,16 +72,8 @@ export default class AssertObject {
               return new Error('#properties: \'false\' Schema invalidates all values')
             }
             if (ref.properties[keys[index]][OPTIMIZED]) {
-              if (ref.properties[keys[index]][OPTIMIZED].length === 1) {
-                const error = ref.properties[keys[index]][OPTIMIZED][0](val, ref.properties[keys[index]])
-                if (error) return error
-              } else {
-                let i = ref.properties[keys[index]][OPTIMIZED].length
-                while (i--) {
-                  const error = ref.properties[keys[index]][OPTIMIZED][i](val, ref.properties[keys[index]])
-                  if (error) return error
-                }
-              }
+              const error = ref.properties[keys[index]][OPTIMIZED](val, ref.properties[keys[index]])
+              if (error) return error
             }
           }
 
@@ -98,18 +90,9 @@ export default class AssertObject {
                 }
                 /* istanbul ignore else */
                 if (ref.patternProperties[propKeys[i]][OPTIMIZED]) {
-                  if (ref.patternProperties[propKeys[i]][OPTIMIZED].length === 1) {
-                    const error =
-                      ref.patternProperties[propKeys[i]][OPTIMIZED][0](val, ref.patternProperties[propKeys[i]])
-                    if (error) return error
-                  } else {
-                    let j = ref.patternProperties[propKeys[i]][OPTIMIZED].length
-                    while (j--) {
-                      const error =
-                        ref.patternProperties[propKeys[i]][OPTIMIZED][j](val, ref.patternProperties[propKeys[i]])
-                      if (error) return error
-                    }
-                  }
+                  const error =
+                    ref.patternProperties[propKeys[i]][OPTIMIZED](val, ref.patternProperties[propKeys[i]])
+                  if (error) return error
                 }
               }
             }
@@ -121,16 +104,8 @@ export default class AssertObject {
               return new Error('#additionalProperties: additional properties not allowed')
             }
             if (ref.additionalProperties[OPTIMIZED]) {
-              if (ref.additionalProperties[OPTIMIZED].length === 1) {
-                const error = ref.additionalProperties[OPTIMIZED][0](val, ref.additionalProperties)
-                if (error) return error
-              } else {
-                let i = ref.additionalProperties[OPTIMIZED].length
-                while (i--) {
-                  const error = ref.additionalProperties[OPTIMIZED][i](val, ref.additionalProperties)
-                  if (error) return error
-                }
-              }
+              const error = ref.additionalProperties[OPTIMIZED](val, ref.additionalProperties)
+              if (error) return error
             }
           }
 
@@ -149,18 +124,9 @@ export default class AssertObject {
               }
               /* istanbul ignore else */
               if (ref.dependencies[keys[index]][OPTIMIZED]) {
-                if (ref.dependencies[keys[index]][OPTIMIZED].length === 1) {
-                  const error =
-                    ref.dependencies[keys[index]][OPTIMIZED][0](value, ref.dependencies[keys[index]])
-                  if (error) return error
-                } else {
-                  let i = ref.dependencies[keys[index]][OPTIMIZED].length
-                  while (i--) {
-                    const error =
-                      ref.dependencies[keys[index]][OPTIMIZED][i](value, ref.dependencies[keys[index]])
-                    if (error) return error
-                  }
-                }
+                const error =
+                  ref.dependencies[keys[index]][OPTIMIZED](value, ref.dependencies[keys[index]])
+                if (error) return error
               }
             }
           }
@@ -172,16 +138,8 @@ export default class AssertObject {
             }
             /* istanbul ignore else */
             if (ref.propertyNames[OPTIMIZED]) {
-              if (ref.propertyNames[OPTIMIZED].length === 1) {
-                const error = ref.propertyNames[OPTIMIZED][0](keys[index], ref.propertyNames)
-                if (error) return error
-              } else {
-                let i = ref.propertyNames[OPTIMIZED].length
-                while (i--) {
-                  const error = ref.propertyNames[OPTIMIZED][i](keys[index], ref.propertyNames)
-                  if (error) return error
-                }
-              }
+              const error = ref.propertyNames[OPTIMIZED](keys[index], ref.propertyNames)
+              if (error) return error
             }
           }
         }

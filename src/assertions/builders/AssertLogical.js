@@ -23,16 +23,8 @@ export default class AssertLogical {
         }
         /* istanbul ignore else */
         if (ref.allOf[index][OPTIMIZED]) {
-          if (ref.allOf[index][OPTIMIZED].length === 1) {
-            const error = ref.allOf[index][OPTIMIZED][0](value, ref.allOf[index])
-            if (error) return error
-          } else {
-            let i = ref.allOf[index][OPTIMIZED].length
-            while (i--) {
-              const error = ref.allOf[index][OPTIMIZED][i](value, ref.allOf[index])
-              if (error) return error
-            }
-          }
+          const error = ref.allOf[index][OPTIMIZED](value, ref.allOf[index])
+          if (error) return error
         }
       }
     }]
@@ -51,18 +43,8 @@ export default class AssertLogical {
         if (ref.anyOf[index] === true) return
         /* istanbul ignore else */
         if (ref.anyOf[index][OPTIMIZED]) {
-          if (ref.anyOf[index][OPTIMIZED].length === 1) {
-            const error = ref.anyOf[index][OPTIMIZED][0](value, ref.anyOf[index])
-            if (!error) return
-          } else {
-            let error
-            let i = ref.anyOf[index][OPTIMIZED].length
-            while (i--) {
-              error = ref.anyOf[index][OPTIMIZED][i](value, ref.anyOf[index])
-              if (error) break
-            }
-            if (!error) return
-          }
+          const error = ref.anyOf[index][OPTIMIZED](value, ref.anyOf[index])
+          if (!error) return
         }
       }
       return new Error('#anyOf: none of the defined Schemas match the value')
@@ -81,16 +63,8 @@ export default class AssertLogical {
       if (ref.not === false) return
       /* istanbul ignore else */
       if (ref.not[OPTIMIZED]) {
-        if (ref.not[OPTIMIZED].length === 1) {
-          const error = ref.not[OPTIMIZED][0](value, ref.not)
-          if (error) return
-        } else {
-          let index = ref.not[OPTIMIZED].length
-          while (index--) {
-            const error = ref.not[OPTIMIZED][index](value, ref.not)
-            if (error) return
-          }
-        }
+        const error = ref.not[OPTIMIZED](value, ref.not)
+        if (error) return
       }
       return new Error('#not: value validated successfully against the schema')
     }]
@@ -105,26 +79,16 @@ export default class AssertLogical {
     }
 
     return [(value, ref) => {
-      let count = 0
-      for (let index = 0, length = ref.oneOf.length; index < length; index++) {
-        if (ref.oneOf[index] === true) count++
-        if (ref.oneOf[index][OPTIMIZED]) {
-          if (ref.oneOf[index][OPTIMIZED].length === 1) {
-            const error = ref.oneOf[index][OPTIMIZED][0](value, ref.oneOf[index])
-            if (!error) count++
-          } else {
-            let error
-            let i = ref.oneOf[index][OPTIMIZED].length
-            while (i--) {
-              error = ref.oneOf[index][OPTIMIZED][i](value, ref.oneOf[index])
-              if (error) break
-            }
-            if (!error) count++
-          }
+      let count = 1
+      let length = ref.oneOf.length
+
+      for (let index = 0; index < length; index++) {
+        if (ref.oneOf[index] === false) count++
+        else if (ref.oneOf[index][OPTIMIZED]) {
+          if (ref.oneOf[index][OPTIMIZED](value, ref.oneOf[index])) count++
         }
-        if (count > 1) return new Error('#oneOf: value should be one of the listed schemas only')
       }
-      if (count !== 1) return new Error('#oneOf: value should be one of the listed schemas only')
+      if (count !== length) return new Error('#oneOf: value should be one of the listed schemas only')
     }]
   }
 }

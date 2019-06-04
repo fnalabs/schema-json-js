@@ -11,7 +11,7 @@ chai.use(chaiAsPromised)
 chai.use(dirtyChai)
 
 describe('AssertArray', () => {
-  const typeSchema = { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) }
+  const typeSchema = { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }).pop() }
   let assertions
 
   afterEach(() => {
@@ -348,8 +348,8 @@ describe('AssertArray', () => {
       })
     })
 
-    context('with iterative valitions', () => {
-      const schema = { type: 'array', items: { type: 'number', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) }, maxItems: 3, minItems: 1 }
+    context('with iterative validations', () => {
+      const schema = { type: 'array', items: { type: 'number', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }).pop() }, maxItems: 3, minItems: 1 }
 
       beforeEach(() => (assertions = AssertArray.optimize(schema)))
 

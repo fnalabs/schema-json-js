@@ -1,5 +1,10 @@
 import { isArray, isBoolean, isObject } from './primitive'
 
+const isGenericKeyRegex = /^(?:const|enum)$/
+const isObjKeyRegex = /^(?:properties|patternProperties|dependencies|definitions)$/
+const isSchemaTypeRegex = /^(?:array|boolean|integer|null|number|object|string)$/
+const isUrlRegex = /^(?:((?:(http|https):\/\/)(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9])(?:\.(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]))*(?::\d+)?\/)?((?:~(?=[01])|[^~])*)|#(?:~(?=[01])|[^~])*)$/
+
 /*
  * complex type assertions
  */
@@ -52,12 +57,12 @@ export function isParentKeyword (parents) {
   const len = parents.length
 
   let check = false
-  if (/^(?:properties|patternProperties|dependencies|definitions)$/.test(parents[len - 1])) check = true
+  if (isObjKeyRegex.test(parents[len - 1])) check = true
   if (parents[len - 2] === 'properties') check = false
 
   let index = parents.length
   while (index--) {
-    if (/^(?:const|enum)$/.test(parents[index])) check = true
+    if (isGenericKeyRegex.test(parents[index])) check = true
   }
   return check
 }
@@ -67,7 +72,7 @@ export function isPathFragment ($ref) {
 }
 
 export function isRef (ref) {
-  return /^(?:((?:(http|https):\/\/)(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9])(?:\.(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]))*(?::\d+)?\/)?((?:~(?=[01])|[^~])*)|#(?:~(?=[01])|[^~])*)$/.exec(decodeURI(ref))
+  return isUrlRegex.exec(decodeURI(ref))
 }
 
 export function isSchema (schema) {
@@ -75,7 +80,7 @@ export function isSchema (schema) {
 }
 
 export function isSchemaType (type) {
-  return /^(?:array|boolean|integer|null|number|object|string)$/.test(type)
+  return isSchemaTypeRegex.test(type)
 }
 
 export function isSubSchema ($id, path) {

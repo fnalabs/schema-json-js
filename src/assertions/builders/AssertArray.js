@@ -62,16 +62,8 @@ export default class AssertArray {
                 }
                 /* istanbul ignore else */
                 if (ref.items[index][OPTIMIZED]) {
-                  if (ref.items[index][OPTIMIZED].length === 1) {
-                    const error = ref.items[index][OPTIMIZED][0](value[index], ref.items[index])
-                    if (error) return error
-                  } else {
-                    let i = ref.items[index][OPTIMIZED].length
-                    while (i--) {
-                      const error = ref.items[index][OPTIMIZED][i](value[index], ref.items[index])
-                      if (error) return error
-                    }
-                  }
+                  const error = ref.items[index][OPTIMIZED](value[index], ref.items[index])
+                  if (error) return error
                 }
               } else if (ref.additionalItems || ref.additionalItems === false) {
                 if (ref.additionalItems === false) {
@@ -79,16 +71,8 @@ export default class AssertArray {
                 }
                 /* istanbul ignore else */
                 if (ref.additionalItems[OPTIMIZED]) {
-                  if (ref.additionalItems[OPTIMIZED].length === 1) {
-                    const error = ref.additionalItems[OPTIMIZED][0](value[index], ref.additionalItems)
-                    if (error) return error
-                  } else {
-                    let i = ref.additionalItems[OPTIMIZED].length
-                    while (i--) {
-                      const error = ref.additionalItems[OPTIMIZED][i](value[index], ref.additionalItems)
-                      if (error) return error
-                    }
-                  }
+                  const error = ref.additionalItems[OPTIMIZED](value[index], ref.additionalItems)
+                  if (error) return error
                 }
               }
             }
@@ -96,16 +80,8 @@ export default class AssertArray {
               return new Error('#items: \'false\' Schema invalidates all values')
             }
             if (ref.items[OPTIMIZED]) {
-              if (ref.items[OPTIMIZED].length === 1) {
-                const error = ref.items[OPTIMIZED][0](value[index], ref.items)
-                if (error) return error
-              } else {
-                let i = ref.items[OPTIMIZED].length
-                while (i--) {
-                  const error = ref.items[OPTIMIZED][i](value[index], ref.items)
-                  if (error) return error
-                }
-              }
+              const error = ref.items[OPTIMIZED](value[index], ref.items)
+              if (error) return error
             }
           }
 
@@ -116,16 +92,7 @@ export default class AssertArray {
               if (ref.contains === false) {
                 error = new Error('#contains: \'false\' Schema invalidates all values')
               } else if (ref.contains[OPTIMIZED]) {
-                if (ref.contains[OPTIMIZED].length === 1) {
-                  error = ref.contains[OPTIMIZED][0](value[index], ref.contains)
-                } else {
-                  let i = ref.contains[OPTIMIZED].length
-                  while (i--) {
-                    error = ref.contains[OPTIMIZED][i](value[index], ref.contains)
-                    /* istanbul ignore else */
-                    if (!error) break
-                  }
-                }
+                error = ref.contains[OPTIMIZED](value[index], ref.contains)
               }
 
               if (error) {

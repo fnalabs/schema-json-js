@@ -1,5 +1,7 @@
 import { isBoolean, isInteger, isNumber, isUndefined } from '../types'
 
+const isNumberTypeRegex = /^(?:integer|number)$/
+
 // private methods
 const ASSERT_MAX = Symbol('validates Number maximum')
 const ASSERT_MIN = Symbol('validates Number minimum')
@@ -27,7 +29,7 @@ export default class AssertNumber {
     if (isNumber(maximum) || isNumber(exclusiveMaximum) || isNumber(minimum) || isNumber(exclusiveMinimum) || isNumber(multipleOf)) {
       return [(value, ref) => {
         if (!assertion(value)) {
-          if (/^(?:integer|number)$/.test(ref.type)) return new Error(`#type: value is not a(n) ${ref.type}`)
+          if (isNumberTypeRegex.test(ref.type)) return new Error(`#type: value is not a(n) ${ref.type}`)
           return
         }
         if (typeof ref.maximum === 'number' && ((ref.exclusiveMaximum && value >= ref.maximum) || value > ref.maximum)) {

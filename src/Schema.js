@@ -85,19 +85,8 @@ class Schema {
 
     if (schema === false) this[ERRORS].push('\'false\' Schema invalidates all values')
     else if (schema[OPTIMIZED]) {
-      if (schema[OPTIMIZED].length === 1) {
-        const error = schema[OPTIMIZED][0](data, schema)
-        if (error) this[ERRORS].push(error.message)
-      } else {
-        let index = schema[OPTIMIZED].length
-        while (index--) {
-          const error = schema[OPTIMIZED][index](data, schema)
-          if (error) {
-            this[ERRORS].push(error.message)
-            break
-          }
-        }
-      }
+      const error = schema[OPTIMIZED](data, schema)
+      if (error) this[ERRORS].push(error.message)
     }
 
     return !this[ERRORS].length
@@ -138,38 +127,67 @@ class Schema {
     assign(root, schema)
   }
 
+  /**
+   * Assigns an in-memory reference to a `ref` using its JSON Schema URL.
+   * @param {String} schemaUrl - The JSON Schema URL to associate the `ref` with.
+   * @param {Object} ref - A valid JSON Schema.
+   * @private
+   */
   async [ASSIGN_REF] (schemaUrl, ref) {
     Object.defineProperty(this[REFS], schemaUrl, { value: {}, enumerable })
     this[ASSIGN_SCHEMA](this[REFS][schemaUrl], ref)
     return this[ASSIGN_OPTIMIZED](this[REFS][schemaUrl])
   }
 
+  /**
+   * Iterates over a `refs` object literal to assign a cached reference to all JSON Schema `refs` for this Schema.
+   * @param {Object} refs - An object literal containing the schemaUrl and matching JSON Schemas for all refs.
+   * @private
+   */
   async [ASSIGN_REFS] (refs) {
     const keys = Object.keys(refs)
     let index = keys.length
     while (index--) await this[ASSIGN_REF](keys[index], refs[keys[index]])
   }
 
+  /**
+   * Iterates over the Schema object to add optimized cached assertions to each layer of a valid JSON Schema.
+   * @param {Object} schema - A valid JSON Schema instance.
+   * @private
+   */
   async [ASSIGN_OPTIMIZED] (schema) {
     const schemaId = schema.$id || schema.id
 
     const assign = async (source, path = []) => {
       if (isObject(source) && !isParentKeyword(path)) {
         const { $id, $ref, id } = source
-        let value = []
+        let list = []
+        let value
 
-        if (!isUndefined($ref)) value.push(...(await this[ASSERT_REF]($ref, schema, path)))
+        if (!isUndefined($ref)) list.push(...(await this[ASSERT_REF]($ref, schema, path)))
         else {
-          value.push(...this[ASSERT_SCHEMA](source))
+          list.push(this[ASSERT_SCHEMA](source))
 
           const tempId = $id || id
           if (!isUndefined(tempId) && tempId !== schemaId) {
-            value.push(...(await this[ASSERT_REF](tempId, schema, path)))
+            list.push(...(await this[ASSERT_REF](tempId, schema, path)))
           }
         }
 
-        Object.defineProperty(source, OPTIMIZED, { value })
-        Object.freeze(source[OPTIMIZED])
+        if (list.length) {
+          value = list.length === 1
+            ? list.pop()
+            : (data, schema) => {
+              let i = list.length
+              while (i--) {
+                const error = list[i](data, schema)
+                if (error) return error
+              }
+            }
+
+          Object.defineProperty(source, OPTIMIZED, { value })
+          Object.freeze(source[OPTIMIZED])
+        }
       }
 
       const keys = Object.keys(source)
@@ -198,19 +216,11 @@ class Schema {
     else if (match[1] && match[2]) assertion = await this[ASSERT_REF_ABSOLUTE](match)
     else assertion = await this[ASSERT_REF_RELATIVE](match, root, path)
 
-    const { referred, list } = assertion
-    if (list.length && isObject(referred)) {
+    const { referred, fn } = assertion
+    if (fn && isObject(referred)) {
       return [value => {
-        if (list.length === 1) {
-          const error = list[0](value, referred)
-          if (error) return error
-        } else {
-          let index = list.length
-          while (index--) {
-            const error = list[index](value, referred)
-            if (error) return error
-          }
-        }
+        const error = fn(value, referred)
+        if (error) return error
       }]
     } else if (referred === false) {
       return [() => { return new Error('\'false\' Schema invalidates all values') }]
@@ -232,8 +242,8 @@ class Schema {
       return this[ASSERT_REF_POINTER](match[3].split('#')[1], referred)
     }
 
-    const list = this[ASSERT_SCHEMA](referred)
-    return { referred, list }
+    const fn = this[ASSERT_SCHEMA](referred)
+    return { referred, fn }
   }
 
   async [ASSERT_REF_RELATIVE] (match, root, path) {
@@ -275,8 +285,8 @@ class Schema {
     }
 
     const referred = traverse(pointer)
-    const list = this[ASSERT_SCHEMA](referred)
-    return { referred, list }
+    const fn = this[ASSERT_SCHEMA](referred)
+    return { referred, fn }
   }
 
   /*
@@ -305,7 +315,15 @@ class Schema {
     list.push(...builders.AssertLogical.optimizeNot(schema))
     list.push(...builders.AssertLogical.optimizeOneOf(schema))
 
-    return list
+    return list.length === 1
+      ? list.pop()
+      : (data, schema) => {
+        let i = list.length
+        while (i--) {
+          const error = list[i](data, schema)
+          if (error) return error
+        }
+      }
   }
 
   /*
@@ -321,7 +339,7 @@ class Schema {
     } else if (isArray(type)) {
       if (!isEnum(type, isSchemaType)) throw new TypeError('#type: type arrays must contain only string')
 
-      const list = type.map(val => this[ASSERT_SCHEMA]({ type: val })[0])
+      const list = type.map(val => this[ASSERT_SCHEMA]({ type: val }))
       return [(value, ref) => {
         let index = list.length
         while (index--) if (!list[index](value, ref)) return
