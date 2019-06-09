@@ -11,8 +11,8 @@ const isUriTplRegex = /^(?:(?:[^\x00-\x20"'<>%\\^`{|}]|%[0-9a-f]{2})|\{[+#./;?&=
 const isJsonPtrRegex = /^$|^\/(?:~(?=[01])|[^~])*$/i
 
 // private methods
-const ASSERT_FORMAT = Symbol('validates String format')
-const ASSERT_PATTERN = Symbol('validates String pattern')
+const ASSERT_FORMAT = Symbol('validates string format')
+const ASSERT_PATTERN = Symbol('validates string pattern')
 
 function stringLength (str) {
   let length = 0
@@ -48,26 +48,27 @@ export default class AssertString {
     if (assertFormat || patternRegExp || isInteger(maxLength) || isInteger(minLength)) {
       return [(value, ref) => {
         if (!isString(value)) {
-          if (ref.type === 'string') return new Error('#type: value is not a string')
+          if (ref.type === 'string') return '#type: value is not a string'
           return
         }
+
         if (assertFormat) {
           const error = assertFormat(value)
           if (error) return error
         }
         if (typeof ref.maxLength === 'number' && !(value.length <= ref.maxLength || stringLength(value) <= ref.maxLength)) {
-          return new Error('#maxLength: value maximum exceeded')
+          return '#maxLength: value maximum exceeded'
         }
         if (typeof ref.minLength === 'number' && (value.length < ref.minLength || stringLength(value) < ref.minLength)) {
-          return new Error('#minLength: value minimum not met')
+          return '#minLength: value minimum not met'
         }
         if (patternRegExp && !patternRegExp.test(value)) {
-          return new Error(`#pattern: value does not match pattern '${ref.pattern}'`)
+          return `#pattern: value does not match pattern '${ref.pattern}'`
         }
       }]
     } else if (type === 'string') {
       return [(value, ref) => {
-        if (!isString(value)) return new Error('#type: value is not a string')
+        if (!isString(value)) return '#type: value is not a string'
       }]
     }
     return []
@@ -83,60 +84,60 @@ export default class AssertString {
       case 'date-time':
         return (value, ref) => {
           if (isNaN(Date.parse(value)) || ~value.indexOf('/')) {
-            return new Error('#format: value does not match date-time format')
+            return '#format: value does not match "date-time" format'
           }
         }
       case 'email':
         return (value, ref) => {
           if (!isEmailRegex.test(value)) {
-            return new Error('#format: value does not match email format')
+            return '#format: value does not match "email" format'
           }
         }
       case 'hostname':
         return (value, ref) => {
           if (value.length > 255 || !isHostnameRegex.test(value)) {
-            return new Error('#format: value does not match hostname format')
+            return '#format: value does not match "hostname" format'
           }
         }
       case 'ipv4':
         return (value, ref) => {
           if (!isIpv4Regex.test(value) || value.split('.')[3] > 255) {
-            return new Error('#format: value does not match ipv4 format')
+            return '#format: value does not match "ipv4" format'
           }
         }
       case 'ipv6':
         return (value, ref) => {
           if (!isIpv6Regex.test(value)) {
-            return new Error('#format: value does not match ipv6 format')
+            return '#format: value does not match "ipv6" format'
           }
         }
       case 'regex':
         return (value, ref) => {
-          if (isRegex.test(value)) return new Error('#format: ECMA 262 has no support for \\Z anchor from .NET')
-          try { new RegExp(value) } catch (e) { return new Error('#format: value is not a valid regex format') } // eslint-disable-line no-new
+          if (isRegex.test(value)) return '#format: ECMA 262 has no support for \\Z anchor from .NET'
+          try { new RegExp(value) } catch (e) { return '#format: value is not a valid "regex" format' } // eslint-disable-line no-new
         }
       case 'uri':
         return (value, ref) => {
           if (!isUriRegex.test(value)) {
-            return new Error('#format: value does not match uri format')
+            return '#format: value does not match "uri" format'
           }
         }
       case 'uri-reference':
         return (value, ref) => {
           if (!isUriRefRegex.test(value)) {
-            return new Error('#format: value does not match uri-reference format')
+            return '#format: value does not match "uri-reference" format'
           }
         }
       case 'uri-template':
         return (value, ref) => {
           if (!isUriTplRegex.test(value)) {
-            return new Error('#format: value does not match uri-template format')
+            return '#format: value does not match "uri-template" format'
           }
         }
       case 'json-pointer':
         return (value, ref) => {
           if (!isJsonPtrRegex.test(value)) {
-            return new Error('#format: value does not match json-pointer format')
+            return '#format: value does not match "json-pointer" format'
           }
         }
       default:

@@ -32,10 +32,10 @@ describe('AssertNumber', () => {
 
       it('should assert optimized with invalid values unsuccessfully', () => {
         let error = assertOptimized(1.1, schema, assertions)
-        expect(error.message).to.equal('#type: value is not a(n) integer')
+        expect(error).to.equal('#type: value is not a(n) integer')
 
         error = assertOptimized(null, schema, assertions)
-        expect(error.message).to.equal('#type: value is not a(n) integer')
+        expect(error).to.equal('#type: value is not a(n) integer')
       })
     })
 
@@ -84,7 +84,7 @@ describe('AssertNumber', () => {
 
     it('should assert optimized with invalid value unsuccessfully', () => {
       const error = assertOptimized(2, schema, assertions)
-      expect(error.message).to.equal('#maximum: value is greater than or equal to 1')
+      expect(error).to.equal('#maximum: 2 is greater than or equal to 1')
     })
 
     it('should throw an error on invalid type', () => {
@@ -115,7 +115,7 @@ describe('AssertNumber', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized(1, schema, assertions)
-        expect(error.message).to.equal('#exclusiveMaximum: value is greater than or equal to 1')
+        expect(error).to.equal('#exclusiveMaximum: 1 is greater than or equal to 1')
       })
     })
 
@@ -137,7 +137,7 @@ describe('AssertNumber', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized(1, schema, assertions)
-        expect(error.message).to.equal('#maximum: value is greater than or equal to 1')
+        expect(error).to.equal('#maximum: 1 is greater than or equal to 1')
       })
     })
 
@@ -177,7 +177,7 @@ describe('AssertNumber', () => {
 
     it('should assert optimized with invalid value unsuccessfully', () => {
       const error = assertOptimized(0, schema, assertions)
-      expect(error.message).to.equal('#minimum: value is less than or equal to 1')
+      expect(error).to.equal('#minimum: 0 is less than or equal to 1')
     })
 
     it('should throw an error on invalid type', () => {
@@ -208,7 +208,7 @@ describe('AssertNumber', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized(1, schema, assertions)
-        expect(error.message).to.equal('#exclusiveMinimum: value is less than or equal to 1')
+        expect(error).to.equal('#exclusiveMinimum: 1 is less than or equal to 1')
       })
     })
 
@@ -230,7 +230,7 @@ describe('AssertNumber', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized(1, schema, assertions)
-        expect(error.message).to.equal('#minimum: value is less than or equal to 1')
+        expect(error).to.equal('#minimum: 1 is less than or equal to 1')
       })
     })
 
@@ -269,7 +269,7 @@ describe('AssertNumber', () => {
 
     it('should assert optimized with invalid value unsuccessfully', () => {
       const error = assertOptimized(3, schema, assertions)
-      expect(error.message).to.equal('#multipleOf: value is not a multiple of 2')
+      expect(error).to.equal('#multipleOf: 3 is not a multiple of 2')
     })
 
     it('should throw an error on invalid type', () => {
@@ -299,10 +299,10 @@ describe('AssertNumber', () => {
 
     it('should assert optimized with invalid values unsuccessfully', () => {
       let error = assertOptimized(2, schema, assertions)
-      expect(error.message).to.equal('#maximum: value is greater than or equal to 1')
+      expect(error).to.equal('#maximum: 2 is greater than or equal to 1')
 
       error = assertOptimized(null, schema, assertions)
-      expect(error.message).to.equal('#type: value is not a(n) number')
+      expect(error).to.equal('#type: value is not a(n) number')
     })
   })
 })

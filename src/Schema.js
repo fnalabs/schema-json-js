@@ -83,10 +83,10 @@ class Schema {
   validate (data, schema = this) {
     this[ERRORS].length = 0
 
-    if (schema === false) this[ERRORS].push('\'false\' Schema invalidates all values')
+    if (schema === false) this[ERRORS].push('\'false\' JSON Schema invalidates all values')
     else if (schema[OPTIMIZED]) {
-      const error = schema[OPTIMIZED](data, schema)
-      if (error) this[ERRORS].push(error.message)
+      this[ERRORS].push(schema[OPTIMIZED](data, schema))
+      if (!this[ERRORS][this[ERRORS].length - 1]) this[ERRORS].pop()
     }
 
     return !this[ERRORS].length
@@ -99,7 +99,7 @@ class Schema {
    * @private
    */
   [ASSIGN_SCHEMA] (root, schema) {
-    if (!isObject(schema)) throw new TypeError('JSON Schemas must be an Object at root')
+    if (!isObject(schema)) throw new TypeError('JSON Schemas must be an object at root')
 
     // iterate over object/array passed as source schema
     const assign = (object, source, path = []) => {
@@ -179,8 +179,9 @@ class Schema {
             ? list.pop()
             : (data, schema) => {
               let i = list.length
+              let error
               while (i--) {
-                const error = list[i](data, schema)
+                error = list[i](data, schema)
                 if (error) return error
               }
             }
@@ -218,12 +219,9 @@ class Schema {
 
     const { referred, fn } = assertion
     if (fn && isObject(referred)) {
-      return [value => {
-        const error = fn(value, referred)
-        if (error) return error
-      }]
+      return [value => fn(value, referred)]
     } else if (referred === false) {
-      return [() => { return new Error('\'false\' Schema invalidates all values') }]
+      return [() => '\'false\' JSON Schema invalidates all values']
     }
     return []
   }
@@ -319,8 +317,9 @@ class Schema {
       ? list.pop()
       : (data, schema) => {
         let i = list.length
+        let error
         while (i--) {
-          const error = list[i](data, schema)
+          error = list[i](data, schema)
           if (error) return error
         }
       }
@@ -343,7 +342,7 @@ class Schema {
       return [(value, ref) => {
         let index = list.length
         while (index--) if (!list[index](value, ref)) return
-        return new Error('#type: value does not match the List of types')
+        return '#type: value does not match the List of types'
       }]
     } else throw new TypeError('#type: must be either a valid type string or list of strings')
   }

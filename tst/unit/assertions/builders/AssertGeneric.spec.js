@@ -31,10 +31,10 @@ describe('AssertGeneric', () => {
 
       it('should assert optimized with invalid values unsuccessfully', () => {
         let error = assertOptimized(2, schema, assertions)
-        expect(error.message).to.equal('#const: value does not match the defined const')
+        expect(error).to.equal('#const: value does not match the defined const')
 
         error = assertOptimized(null, schema, assertions)
-        expect(error.message).to.equal('#const: value does not match the defined const')
+        expect(error).to.equal('#const: value does not match the defined const')
       })
     })
 
@@ -54,10 +54,10 @@ describe('AssertGeneric', () => {
 
       it('should assert optimized with invalid values unsuccessfully', () => {
         let error = assertOptimized({ another: 'object' }, schema, assertions)
-        expect(error.message).to.equal('#const: value does not match the defined const')
+        expect(error).to.equal('#const: value does not match the defined const')
 
         error = assertOptimized(null, schema, assertions)
-        expect(error.message).to.equal('#const: value does not match the defined const')
+        expect(error).to.equal('#const: value does not match the defined const')
       })
     })
   })
@@ -79,10 +79,10 @@ describe('AssertGeneric', () => {
 
     it('should assert optimized with invalid values unsuccessfully', () => {
       let error = assertOptimized({ another: 'object' }, schema, assertions)
-      expect(error.message).to.equal('#enum: value does not match anything in the enum')
+      expect(error).to.equal('#enum: value does not match anything in the enum')
 
       error = assertOptimized(null, schema, assertions)
-      expect(error.message).to.equal('#enum: value does not match anything in the enum')
+      expect(error).to.equal('#enum: value does not match anything in the enum')
     })
 
     it('should throw an error on invalid enum', () => {

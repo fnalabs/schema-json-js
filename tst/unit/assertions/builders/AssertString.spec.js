@@ -31,7 +31,7 @@ describe('AssertString', () => {
 
     it('should assert optimized with invalid value unsuccessfully', () => {
       const error = assertOptimized(null, schema, assertions)
-      expect(error.message).to.equal('#type: value is not a string')
+      expect(error).to.equal('#type: value is not a string')
     })
   })
 
@@ -53,7 +53,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('06/19/1963 08:30:06 PST', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match date-time format')
+        expect(error).to.equal('#format: value does not match "date-time" format')
       })
     })
 
@@ -74,7 +74,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('2962', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match email format')
+        expect(error).to.equal('#format: value does not match "email" format')
       })
     })
 
@@ -95,7 +95,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('127.0', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match ipv4 format')
+        expect(error).to.equal('#format: value does not match "ipv4" format')
       })
     })
 
@@ -116,7 +116,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('12345::', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match ipv6 format')
+        expect(error).to.equal('#format: value does not match "ipv6" format')
       })
     })
 
@@ -137,7 +137,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('-a-host-name-that-starts-with--', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match hostname format')
+        expect(error).to.equal('#format: value does not match "hostname" format')
       })
     })
 
@@ -158,7 +158,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('/foo/bar~', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match json-pointer format')
+        expect(error).to.equal('#format: value does not match "json-pointer" format')
       })
     })
 
@@ -179,10 +179,10 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         let error = assertOptimized('[', schema, assertions)
-        expect(error.message).to.equal('#format: value is not a valid regex format')
+        expect(error).to.equal('#format: value is not a valid "regex" format')
 
         error = assertOptimized('^\\S(|(.|\\n)*\\S)\\Z', schema, assertions)
-        expect(error.message).to.equal('#format: ECMA 262 has no support for \\Z anchor from .NET')
+        expect(error).to.equal('#format: ECMA 262 has no support for \\Z anchor from .NET')
       })
     })
 
@@ -203,7 +203,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('//foo.bar/?baz=qux#quux', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match uri format')
+        expect(error).to.equal('#format: value does not match "uri" format')
       })
     })
 
@@ -224,7 +224,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('\\\\WINDOWS\\fileshare', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match uri-reference format')
+        expect(error).to.equal('#format: value does not match "uri-reference" format')
       })
     })
 
@@ -245,7 +245,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized('http://example.com/dictionary/{term:1}/{term', schema, assertions)
-        expect(error.message).to.equal('#format: value does not match uri-template format')
+        expect(error).to.equal('#format: value does not match "uri-template" format')
       })
     })
 
@@ -285,10 +285,10 @@ describe('AssertString', () => {
 
     it('should assert optimized with invalid values unsuccessfully', () => {
       let error = assertOptimized('123', schema, assertions)
-      expect(error.message).to.equal('#maxLength: value maximum exceeded')
+      expect(error).to.equal('#maxLength: value maximum exceeded')
 
       error = assertOptimized('\uD83D\uDCA9\uD83D\uDCA9\uD83D\uDCA9', schema, assertions)
-      expect(error.message).to.equal('#maxLength: value maximum exceeded')
+      expect(error).to.equal('#maxLength: value maximum exceeded')
     })
 
     it('should throw an error on invalid type', () => {
@@ -320,10 +320,10 @@ describe('AssertString', () => {
 
     it('should assert optimized with invalid values unsuccessfully', () => {
       let error = assertOptimized('1', schema, assertions)
-      expect(error.message).to.equal('#minLength: value minimum not met')
+      expect(error).to.equal('#minLength: value minimum not met')
 
       error = assertOptimized('\uD83D\uDCA9', schema, assertions)
-      expect(error.message).to.equal('#minLength: value minimum not met')
+      expect(error).to.equal('#minLength: value minimum not met')
     })
 
     it('should throw an error on invalid type', () => {
@@ -352,7 +352,7 @@ describe('AssertString', () => {
 
     it('should assert optimized with invalid value unsuccessfully', () => {
       const error = assertOptimized('abc', schema, assertions)
-      expect(error.message).to.equal('#pattern: value does not match pattern \'^a*$\'')
+      expect(error).to.equal('#pattern: value does not match pattern \'^a*$\'')
     })
 
     it('should throw an error on invalid type', () => {
@@ -382,7 +382,7 @@ describe('AssertString', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized(null, schema, assertions)
-        expect(error.message).to.equal('#type: value is not a string')
+        expect(error).to.equal('#type: value is not a string')
       })
     })
 

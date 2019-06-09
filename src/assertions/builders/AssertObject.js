@@ -4,10 +4,10 @@ import {
 } from '../types'
 
 // private methods
-const ASSERT_DEPENDENCIES = Symbol('valiates Object dependencies')
-const ASSERT_KEYS = Symbol('validates Object keys')
-const ASSERT_PROPERTIES = Symbol('validates Object properties')
-const ASSERT_REQUIRED = Symbol('validates Object required')
+const ASSERT_DEPENDENCIES = Symbol('valiates object dependencies')
+const ASSERT_KEYS = Symbol('validates object keys')
+const ASSERT_PROPERTIES = Symbol('validates object properties')
+const ASSERT_REQUIRED = Symbol('validates object required')
 
 export default class AssertObject {
   constructor () {
@@ -40,22 +40,23 @@ export default class AssertObject {
     if (properties || patternProperties || additionalProperties || additionalProperties === false || dependencies || propertyNames || propertyNames === false || (required && required.length)) {
       return [(value, ref) => {
         if (!isObject(value)) {
-          if (ref.type === 'object') return new Error('#type: value is not an object')
+          if (ref.type === 'object') return '#type: value is not an object'
           return
         }
 
-        const keys = Object.keys(value)
+        let keys = Object.keys(value)
         let index = keys.length
         let reqCount = 0
         let patternMatch = false
         let propertiesMatch = false
+        let error
 
         // asserts [required, maxProperties, minProperties]
         if (typeof ref.maxProperties === 'number' && index > ref.maxProperties) {
-          return new Error('#maxProperties: value maximum exceeded')
+          return '#maxProperties: value maximum exceeded'
         }
         if (typeof ref.minProperties === 'number' && index < ref.minProperties) {
-          return new Error('#minProperties: value minimum not met')
+          return '#minProperties: value minimum not met'
         }
 
         // loop runs assertions for [properties, patternProperties, additionalProperties, etc.]
@@ -69,10 +70,9 @@ export default class AssertObject {
           if (ref.properties && (ref.properties[keys[index]] || ref.properties[keys[index]] === false)) {
             propertiesMatch = true
             if (ref.properties[keys[index]] === false) {
-              return new Error('#properties: \'false\' Schema invalidates all values')
-            }
-            if (ref.properties[keys[index]][OPTIMIZED]) {
-              const error = ref.properties[keys[index]][OPTIMIZED](val, ref.properties[keys[index]])
+              return '#properties: \'false\' JSON Schema invalidates all values'
+            } else if (ref.properties[keys[index]][OPTIMIZED]) {
+              error = ref.properties[keys[index]][OPTIMIZED](val, ref.properties[keys[index]])
               if (error) return error
             }
           }
@@ -86,11 +86,9 @@ export default class AssertObject {
               if (patternProps[propKeys[i]].test(keys[index])) {
                 patternMatch = true
                 if (ref.patternProperties[propKeys[i]] === false) {
-                  return new Error('#patternProperties: \'false\' Schema invalidates all values')
-                }
-                /* istanbul ignore else */
-                if (ref.patternProperties[propKeys[i]][OPTIMIZED]) {
-                  const error =
+                  return '#patternProperties: \'false\' JSON Schema invalidates all values'
+                } else if (ref.patternProperties[propKeys[i]][OPTIMIZED]) {
+                  error =
                     ref.patternProperties[propKeys[i]][OPTIMIZED](val, ref.patternProperties[propKeys[i]])
                   if (error) return error
                 }
@@ -101,10 +99,9 @@ export default class AssertObject {
           // asserts [additionalProperties]
           if ((ref.additionalProperties || ref.additionalProperties === false) && !(propertiesMatch || patternMatch)) {
             if (ref.additionalProperties === false) {
-              return new Error('#additionalProperties: additional properties not allowed')
-            }
-            if (ref.additionalProperties[OPTIMIZED]) {
-              const error = ref.additionalProperties[OPTIMIZED](val, ref.additionalProperties)
+              return '#additionalProperties: additional properties not allowed'
+            } else if (ref.additionalProperties[OPTIMIZED]) {
+              error = ref.additionalProperties[OPTIMIZED](val, ref.additionalProperties)
               if (error) return error
             }
           }
@@ -115,30 +112,24 @@ export default class AssertObject {
               let i = ref.dependencies[keys[index]].length
               while (i--) {
                 if (typeof value[ref.dependencies[keys[index]][i]] === 'undefined') {
-                  return new Error(`#dependencies: value does not have '${keys[index]}' dependency`)
+                  return `#dependencies: value does not have '${keys[index]}' dependency`
                 }
               }
-            } else {
-              if (ref.dependencies[keys[index]] === false) {
-                return new Error('#dependencies: \'false\' Schema invalidates all values')
-              }
-              /* istanbul ignore else */
-              if (ref.dependencies[keys[index]][OPTIMIZED]) {
-                const error =
-                  ref.dependencies[keys[index]][OPTIMIZED](value, ref.dependencies[keys[index]])
-                if (error) return error
-              }
+            } else if (ref.dependencies[keys[index]] === false) {
+              return '#dependencies: \'false\' JSON Schema invalidates all values'
+            } else if (ref.dependencies[keys[index]][OPTIMIZED]) {
+              error =
+                ref.dependencies[keys[index]][OPTIMIZED](value, ref.dependencies[keys[index]])
+              if (error) return error
             }
           }
 
           // asserts [propertyNames]
           if (ref.propertyNames || ref.propertyNames === false) {
             if (ref.propertyNames === false) {
-              return new Error('#propertyNames: \'false\' Schema invalidates all values')
-            }
-            /* istanbul ignore else */
-            if (ref.propertyNames[OPTIMIZED]) {
-              const error = ref.propertyNames[OPTIMIZED](keys[index], ref.propertyNames)
+              return '#propertyNames: \'false\' JSON Schema invalidates all values'
+            } else if (ref.propertyNames[OPTIMIZED]) {
+              error = ref.propertyNames[OPTIMIZED](keys[index], ref.propertyNames)
               if (error) return error
             }
           }
@@ -146,28 +137,28 @@ export default class AssertObject {
 
         // asserts [required, maxProperties, minProperties]
         if (ref.required && reqCount !== ref.required.length) {
-          return new Error('#required: value does not have all required properties')
+          return '#required: value does not have all required properties'
         }
       }]
     // return validations based on defined keywords that require only object validation
     } else if (maxProperties || minProperties) {
       return [(value, ref) => {
         if (!isObject(value)) {
-          if (ref.type === 'object') return new Error('#type: value is not an object')
+          if (ref.type === 'object') return '#type: value is not an object'
           return
         }
         const length = Object.keys(value).length
         if (typeof ref.maxProperties === 'number' && length > ref.maxProperties) {
-          return new Error('#maxProperties: value maximum exceeded')
+          return '#maxProperties: value maximum exceeded'
         }
         if (typeof ref.minProperties === 'number' && length < ref.minProperties) {
-          return new Error('#minProperties: value minimum not met')
+          return '#minProperties: value minimum not met'
         }
       }]
     // return validations based on only type keyword validation
     } else if (type === 'object') {
       return [(value, ref) => {
-        if (!isObject(value)) return new Error('#type: value is not an object')
+        if (!isObject(value)) return '#type: value is not an object'
       }]
     }
     return []
@@ -180,14 +171,14 @@ export default class AssertObject {
     while (index--) {
       const value = dependencies[keys[index]]
       if (!((isArray(value) && !value.length) || isEnum(value, isString) || isSchema(value))) {
-        throw new TypeError('#dependencies: all dependencies must either be Schemas|enums')
+        throw new TypeError('#dependencies: all dependencies must either be JSON Schemas|enums')
       }
     }
   }
 
   static [ASSERT_KEYS] (propertyNames) {
     if (!isSchema(propertyNames)) {
-      throw new TypeError('#propertyNames: must be a Schema')
+      throw new TypeError('#propertyNames: must be a JSON Schema')
     }
   }
 
@@ -197,7 +188,7 @@ export default class AssertObject {
 
     // validate properties keyword
     if (!isUndefined(properties) && !isObject(properties)) {
-      throw new TypeError('#properties: must be an Object')
+      throw new TypeError('#properties: must be an object')
     }
 
     // validate patternProperties keyword
@@ -208,12 +199,12 @@ export default class AssertObject {
         patternProps[keys[index]] = new RegExp(keys[index])
       }
     } else if (!isUndefined(patternProperties)) {
-      throw new TypeError('#patternProperties: must be an Object')
+      throw new TypeError('#patternProperties: must be an object')
     }
 
     // validate additionalProperties keyword
     if (!isUndefined(additionalProperties) && !isSchema(additionalProperties)) {
-      throw new TypeError('#additionalProperties: must be either a Schema or Boolean')
+      throw new TypeError('#additionalProperties: must be either a JSON Schema or boolean')
     }
 
     return patternProps
