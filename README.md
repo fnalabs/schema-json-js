@@ -8,7 +8,7 @@
 [![Dependency Status][depstat-image]][depstat-url]
 [![JavaScript Style Guide][style-image]][style-url]
 
-A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using thunks. It currently supports the `draft-04` and `draft-06` versions of the JSON Schema specification.
+A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using closures and thunks. It currently supports the `draft-04` and `draft-06` versions of the JSON Schema specification.
 
 Motivations behind the project:
 - implement a JSON Schema validator leveraging modern JS features
@@ -17,11 +17,13 @@ Motivations behind the project:
 - allow for partial validations for complex object properties
 - small and lightweight with no dependencies
 - universal support for the latest browsers and Node.js
+- no code generation
 
 #### Contents
 - [Installing](#installing)
-- [API](#api)
 - [Examples](#examples)
+- [API](#api)
+- [Benchmarks](#benchmarks)
 - [Future](#future)
 - [Contributing](#contributing)
 - [Changelog](#changelog)
@@ -29,13 +31,11 @@ Motivations behind the project:
 ## Installing
 Install using `npm`:
 ```sh
-$ npm install schema-json-js
+$ npm install --save schema-json-js
 ```
 
-### [API](https://fnalabs.github.io/schema-json-js/)
-Click on the link in the header above to go to the API page.
-
 ## Examples
+Below are numerous examples on how to use the Schema class.
 
 #### Initialized immediately:
 ---
@@ -119,9 +119,24 @@ Click on the link in the header above to go to the API page.
   // ...
   ```
 
+## API
+- [Schema](https://fnalabs.github.io/schema-json-js/Schema.html)
+
+## Benchmarks
+There is a small benchmark to showcase our performance against some similar solutions. One of the many ways `schema-json-js` stands apart from many other validators is its ability to perform partial schema validation.
+- Node.js
+    - [as cached Schema instance](https://fnalabs.github.io/schema-json-js/node.validate.html)
+    - [as serialized Schema instance](https://fnalabs.github.io/schema-json-js/node.serialize.html)
+- Browsers
+    - Chrome
+        - [as cached Schema instance](https://fnalabs.github.io/schema-json-js/chrome.validate.html)
+        - [as serialized Schema instance](https://fnalabs.github.io/schema-json-js/chrome.serialize.html)
+    - Firefox
+        - [as cached Schema instance](https://fnalabs.github.io/schema-json-js/firefox.validate.html)
+        - [as serialized Schema instance](https://fnalabs.github.io/schema-json-js/firefox.serialize.html)
+
 ## Future
 - finish documentation and contributing guide
-- benchmarks
 - implement support for the `draft-07` JSON Schema specification
 - feature requests via [issues](https://github.com/fnalabs/schema-json-js/issues)
 
