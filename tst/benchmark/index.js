@@ -7,10 +7,13 @@ const Benchmark = require('benchmark')
 const Mustache = require('mustache')
 const hrtime = require('browser-process-hrtime')
 
-// const jsck = require('jsck')
+const ajv = require('ajv')({ schemaId: 'auto' })
+const djv = require('djv')()
+const imjv = require('is-my-json-valid')
 const Schema = require('../../dist/Schema')
-const ZSchema = require('z-schema')
+const ZSchema = process.env.TEST_PLATFORM === 'node' ? require('z-schema') : window.ZSchema
 
+const draft04Schema = require('../refs/json-schema-draft-04.json')
 const primitiveData = require('./primitive_data.json')
 const primitiveSchema = require('./primitive_schema.json')
 const standardData = require('./standard_data.json')
@@ -18,75 +21,129 @@ const standardSchema = require('./standard_schema.json')
 const advancedData = require('./advanced_data.json')
 const advancedSchema = require('./advanced_schema.json')
 
-const browserTemplate = `Generated on {{currentDate}} in {{totalTime}} minutes
-<ul>
-    {{#tests}}
-    <li>
-        {{name}}
-        <ul>
-            <li class="green">passed: {{testsPassed}}</li>
-            <li {{#testsFailed}}class="red"{{/testsFailed}}>failed: {{testsFailed}}</li>
-            <li>times fastest: {{timesFastest}}</li>
-        </ul>
-    </li>
-    {{/tests}}
-</ul>
+const browserTemplate = `<p><a href="index.html">Home</a></p>
+<h1>schema-json-js benchmarks - </h1>
+<h2>Hardware</h2>
+<p>Run on the following hardware:</p>
+<dl>
+  <dt>CPU</dt>
+  <dd>Intel Core i7-7700K CPU @ 4.20GHz x 8</dd>
+  <dt>RAM</dt>
+  <dd>G.SKILL TridentZ Series 32GB DDR4 @ 3020 MHz</dd>
+  <dt>HDD</dt>
+  <dd>Samsung 960 EVO m.2 500GB</dd>
+  <dt>OS</dt>
+  <dd>Pop! OS 18.04 LTS</dd>
+  <dt>Browser</dt>
+  <dd>{{platform}}</dd>
+</dl>
+<h2>Tests</h2>
+<p>Generated on {{currentDate}} in {{totalTime}} minutes</p>
+<p><strong>NOTE:</strong> Validators marked with an asterisk (*) use code generation (eval and/or new Function) so performance may suffer in serialized use cases. Some of these validators work around it with caching but memory usage may suffer as a result.</p>
 <table>
-    <tr>
-        <th></th>
-        {{#tests}}
-        <th>
-            {{name}}
-        </th>
-        {{/tests}}
-    </tr>
+  <tr>
+    <th></th>
+    {{#tests}}
+    <th>
+      {{name}}
+    </th>
+    {{/tests}}
+  </tr>
+  {{#results}}
+  <tr>
+    <td>{{name}}</td>
     {{#results}}
-    <tr>
-        <td>{{name}}</td>
-        {{#results}}
-        <td {{#title}}title="{{title}}"{{/title}}
-            {{#failed}}class="failed"{{/failed}}
-            {{#fastest}}class="fastest"{{/fastest}}>
-            {{percentage}}% ({{hz}})
-        </td>
-        {{/results}}
-    </tr>
+    <td{{#title}} title="{{title}}"{{/title}}{{#failed}} class="failed"{{/failed}}{{#fastest}} class="fastest"{{/fastest}}>
+      {{percentage}}% ({{hz}})
+    </td>
     {{/results}}
-</table>`
+  </tr>
+  {{/results}}
+</table>
+<ul>
+  {{#tests}}
+  <li>
+    {{name}}
+    <ul>
+      <li class="green">passed: {{testsPassed}}</li>
+      <li{{#testsFailed}} class="red"{{/testsFailed}}>failed: {{testsFailed}}</li>
+      <li>times fastest: {{timesFastest}}</li>
+    </ul>
+  </li>
+  {{/tests}}
+</ul>`
 
 /**
  * define tests
  */
 global.Benchmark = Benchmark
+ajv._opts.defaultMeta = 'http://json-schema.org/draft-04/schema'
+ajv.addSchema(draft04Schema, 'http://json-schema.org/draft-04/schema')
+djv.useVersion('draft-04')
+djv.addSchema('http://json-schema.org/draft-04/schema', draft04Schema)
+
 let start, end
 const results = []
 const tests = [
-  // {
-  //   name: 'jsck',
-  //   setup: async (schema) => new jsck.draft4(schema), // eslint-disable-line new-cap
-  //   test: (instance, data) => instance.validate(data).valid,
-  //   all: async (instance, data, schema) => {
-  //     const obj = new jsck.draft4(schema) // eslint-disable-line new-cap
-  //     return obj.validate(data).valid
-  //   }
-  // },
   {
     name: 'schema-json-js',
-    setup: async (schema) => new Schema(schema),
+    setup: async (name, schema) => new Schema(schema),
     test: (instance, data) => instance.validate(data),
-    all: async (instance, data, schema) => {
-      const obj = await new Schema(schema)
-      return obj.validate(data)
-    }
+    serialize: async (name, data, schema) => {
+      const instance = await new Schema(schema)
+      return instance.validate(data)
+    },
+    testsPassed: 0,
+    testsFailed: 0,
+    timesFastest: 0
   },
   {
     name: 'z-schema',
-    setup: async (schema) => new ZSchema(),
+    setup: async () => new ZSchema(),
     test: (instance, data, schema) => instance.validate(data, schema),
-    all: async (instance, data, schema) => {
-      const obj = new ZSchema()
-      return obj.validate(data, schema)
-    }
+    serialize: async (name, data, schema) => {
+      const instance = new ZSchema()
+      return instance.validate(data, schema)
+    },
+    testsPassed: 0,
+    testsFailed: 0,
+    timesFastest: 0
+  },
+  {
+    name: 'ajv*',
+    setup: async (name, schema) => ajv.compile(schema),
+    test: (instance, data) => instance(data),
+    serialize: async (name, data, schema) => {
+      const instance = ajv.compile(schema)
+      return instance(data)
+    },
+    testsPassed: 0,
+    testsFailed: 0,
+    timesFastest: 0
+  },
+  {
+    name: 'djv*',
+    setup: async (name, schema) => djv.addSchema(name, schema).fn,
+    test: (instance, data) => instance(data) === undefined,
+    serialize: async (name, data, schema) => {
+      const instance = djv.addSchema(name, schema).fn
+      return instance(data) === undefined
+    },
+    testsPassed: 0,
+    testsFailed: 0,
+    timesFastest: 0
+  },
+  {
+    name: 'is-my-json-valid*',
+    setup: async (name, schema) => imjv(schema),
+    test: (instance, data) => instance(data),
+    serialize: async (name, data, schema) => {
+      const instance = imjv(schema)
+      return instance(data)
+    },
+    testsPassed: 0,
+    testsFailed: 0,
+    timesFastest: 0
   }
 ]
 
@@ -116,18 +173,20 @@ async function runOne (testName, testJson, testSchema, expectedResult) {
   const fails = {}
 
   for (let validatorObject of tests) {
-    const json = _.cloneDeep(testJson)
+    const data = _.cloneDeep(testJson)
     const schema = _.cloneDeep(testSchema)
-
-    // setup instance
-    const instance = await validatorObject.setup(schema)
-    // verify that validator really works
+    let instance
     let givenResult
+
     try {
-      givenResult = process.env.TEST_TYPE === 'all'
-        ? await validatorObject.all(instance, json, schema)
-        : validatorObject.test(instance, json, schema)
+      // setup instance
+      instance = await validatorObject.setup(testName, schema)
+      // verify that validator really works
+      givenResult = process.env.TEST_TYPE === 'serialize'
+        ? await validatorObject.serialize(testName, data, schema)
+        : validatorObject.test(instance, data, schema)
     } catch (e) {
+      console.log(e)
       fails[validatorObject.name] = e
       givenResult = e
     }
@@ -139,13 +198,13 @@ async function runOne (testName, testJson, testSchema, expectedResult) {
       }
     } else {
       // add it to benchmark
-      if (process.env.TEST_TYPE === 'all') {
+      if (process.env.TEST_TYPE === 'serialize') {
         suite.add(`${validatorObject.name}#${testName} (build & validate)`, async () => {
-          await validatorObject.all(instance, json, schema)
+          await validatorObject.serialize(testName, data, schema)
         })
       } else {
         suite.add(`${validatorObject.name}#${testName} (validate only)`, () => {
-          validatorObject.test(instance, json, schema)
+          validatorObject.test(instance, data, schema)
         })
       }
       validatorObject.testsPassed += 1
@@ -220,25 +279,26 @@ function saveResults (fileName, templateName) {
 
     const template = fs.readFileSync([__dirname, templateName].join(path.sep)).toString()
     const html = Mustache.render(template, {
-      tests,
-      results,
       currentDate,
-      totalTime: totalTimeInMinutes
+      results,
+      tests,
+      totalTime: totalTimeInMinutes,
+      type: process.env.TEST_TYPE
     })
 
     fs.writeFileSync(fileName, html)
   } else {
     const html = Mustache.render(browserTemplate, {
-      tests,
-      results,
       currentDate,
+      platform: process.env.TEST_PLATFORM,
+      results,
+      tests,
       totalTime: totalTimeInMinutes
     })
-
-    document.body.innerHTML = html
+    document.getElementById('results').innerHTML = html
   }
 
-  console.log(`${fileName} created on ${currentDate} in ${totalTimeInMinutes} minutes`)
+  console.log(`${process.env.TEST_PLATFORM} benchmark finished on ${currentDate} in ${totalTimeInMinutes} minutes`)
 }
 
 /**
@@ -251,5 +311,5 @@ function saveResults (fileName, templateName) {
   await runOne('standard data', standardData, standardSchema, true)
   await runOne('advanced data', advancedData, advancedSchema, true)
 
-  saveResults(`results/${process.env.TEST_PLATFORM}.${process.env.TEST_TYPE}.html`, 'results.mustache')
+  saveResults(`../../docs/${process.env.TEST_PLATFORM}.${process.env.TEST_TYPE}.html`, 'results.mustache')
 })()

@@ -7,14 +7,18 @@
     "browserify": "browserify -t babelify -t envify index.js -o bundle.js",
     "fix": "standard --fix",
     "test:node:validate": "TEST_PLATFORM=node TEST_TYPE=validate node --max-old-space-size=4096 index.js",
-    "test:node:all": "TEST_PLATFORM=node TEST_TYPE=all node --max-old-space-size=4096 index.js",
-    "test:browsers:validate": "TEST_PLATFORM=browsers TEST_TYPE=validate npm run browserify && google-chrome --new-window ./index.html",
-    "test:browsers:all": "TEST_PLATFORM=browsers TEST_TYPE=all npm run browserify && google-chrome --new-window ./index.html"
+    "test:node:serialize": "TEST_PLATFORM=node TEST_TYPE=serialize node --max-old-space-size=4096 index.js",
+    "test:chrome:validate": "TEST_PLATFORM=Chrome TEST_TYPE=validate npm run browserify && google-chrome --incognito --new-window ./index.html",
+    "test:chrome:serialize": "TEST_PLATFORM=Chrome TEST_TYPE=serialize npm run browserify && google-chrome --incognito --new-window ./index.html",
+    "test:firefox:validate": "TEST_PLATFORM=Firefox TEST_TYPE=validate npm run browserify && firefox --private-window ./index.html",
+    "test:firefox:serialize": "TEST_PLATFORM=Firefox TEST_TYPE=serialize npm run browserify && firefox --private-window ./index.html"
   },
   "author": "Adam Eilers",
   "license": "MIT",
   "dependencies": {
-    "jsck": "latest",
+    "ajv": "latest",
+    "djv": "latest",
+    "is-my-json-valid": "latest",
     "z-schema": "latest"
   },
   "devDependencies": {
