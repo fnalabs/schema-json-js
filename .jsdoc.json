@@ -18,6 +18,7 @@
     "encoding": "utf8",
     "pedantic": true,
     "private": false,
+    "readme": "./README.md",
     "recurse": true,
     "template": "./node_modules/minami"
   }
