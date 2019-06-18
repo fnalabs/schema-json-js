@@ -125,21 +125,21 @@ module.exports = function (config) {
       bs_firefox_mac_latest: {
         base: 'BrowserStack',
         browser: 'Firefox',
-        browser_version: '67.0',
+        browser_version: '66.0',
         os: 'OS X',
         os_version: 'Mojave'
       },
       'bs_firefox_mac_latest-1': {
         base: 'BrowserStack',
         browser: 'Firefox',
-        browser_version: '66.0',
+        browser_version: '65.0',
         os: 'OS X',
         os_version: 'Mojave'
       },
       'bs_firefox_mac_latest-2': {
         base: 'BrowserStack',
         browser: 'Firefox',
-        browser_version: '65.0',
+        browser_version: '64.0',
         os: 'OS X',
         os_version: 'Mojave'
       },
@@ -203,7 +203,7 @@ module.exports = function (config) {
       'bs_edge_win_latest', 'bs_edge_win_latest-1',
       'bs_firefox_mac_latest', 'bs_firefox_mac_latest-1', 'bs_firefox_mac_latest-2',
       'bs_firefox_win_latest', 'bs_firefox_win_latest-1', 'bs_firefox_win_latest-2',
-      'bs_iphone',
+      // 'bs_iphone',
       'bs_opera_mac', 'bs_opera_win',
       'bs_safari_mac'
     ],
