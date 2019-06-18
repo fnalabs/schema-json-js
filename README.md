@@ -152,6 +152,16 @@ We are currently drafting our contributing guide!
 <a href="https://browserstack.com"><img height="48" src="https://fnalabs.github.io/fnalabs-assets/assets/Browserstack-logo.svg" alt="BrowserStack logo"></a>
 
 ## Changelog
+#### v0.3.0
+- updated documentation
+- updated JSON Schema Test Suite
+- published benchmarks with similar solutions
+- improved error messaging
+- greatly improved performance by refactoring to:
+    - improve memory management in complex object validations
+    - reduce logic for strongly-typed schemas
+    - improve loops
+
 #### v0.2.0
 - updated documentation
 - implemented `sync` and `async` validation options
