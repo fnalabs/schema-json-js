@@ -1,7 +1,7 @@
 {
   "name": "schema-json-js",
-  "version": "0.2.0",
-  "description": "A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using promises and thunks.",
+  "version": "0.3.0",
+  "description": "A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using closures and thunks.",
   "keywords": [
     "json",
     "JSON",
@@ -18,18 +18,18 @@
   "scripts": {
     "prebuild": "del dist",
     "browserstack": "karma start karma.conf.bs.js",
-    "build": "NODE_ENV=production bash ./bin/build",
-    "coverage": "NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "build": "cross-env NODE_ENV=production bash ./bin/build",
+    "coverage": "cross-env NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "dev": "nodemon -e js,json -w src -w conf -x \"npm run build\" & nodemon -e js -w tst -x \"npm test\" & karma start",
     "document": "jsdoc --configure .jsdoc.json --verbose",
     "fix": "standard --fix",
     "prerelease": "del package.tar.gz",
-    "release": "NODE_ENV=production npm run test:all && npm test && npm run build && node ./bin/compress",
+    "release": "cross-env NODE_ENV=production npm run test:all && npm test && npm run build && node ./bin/compress",
     "postrelease": "npm run document",
     "pretest": "del coverage coverage.lcov .nyc_output",
     "test": "standard",
-    "posttest": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --recursive --exit 'tst/unit/**/*.spec.js'",
-    "test:all": "NODE_ENV=production mocha --require '@babel/register' --exit 'tst/**/*.spec.js'",
+    "posttest": "cross-env NODE_ENV=test nyc --reporter=html --reporter=text mocha --recursive --exit 'tst/unit/**/*.spec.js'",
+    "test:all": "cross-env NODE_ENV=production mocha --require '@babel/register' --exit 'tst/**/*.spec.js'",
     "version": "npm run release && git add --all",
     "postversion": "git push && git push --tags && npm publish"
   },
