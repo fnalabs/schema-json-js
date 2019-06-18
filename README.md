@@ -23,6 +23,7 @@ Motivations behind the project:
 - [Installing](#installing)
 - [Examples](#examples)
 - [API](#api)
+- [Environments](#environments)
 - [Benchmarks](#benchmarks)
 - [Future](#future)
 - [Contributing](#contributing)
@@ -121,6 +122,9 @@ Below are numerous examples on how to use the Schema class.
 
 ## API
 - [Schema](https://fnalabs.github.io/schema-json-js/Schema.html)
+
+## Environments
+- All modern browsers and Node 8+ without polyfills.
 
 ## Benchmarks
 There is a small benchmark to showcase our performance against some similar solutions. One of the many ways `schema-json-js` stands apart from many other validators is its ability to perform partial schema validation.
