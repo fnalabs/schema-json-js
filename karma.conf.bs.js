@@ -146,21 +146,21 @@ module.exports = function (config) {
       bs_firefox_win_latest: {
         base: 'BrowserStack',
         browser: 'Firefox',
-        browser_version: '67.0',
+        browser_version: '66.0',
         os: 'Windows',
         os_version: '10'
       },
       'bs_firefox_win_latest-1': {
         base: 'BrowserStack',
         browser: 'Firefox',
-        browser_version: '66.0',
+        browser_version: '65.0',
         os: 'Windows',
         os_version: '10'
       },
       'bs_firefox_win_latest-2': {
         base: 'BrowserStack',
         browser: 'Firefox',
-        browser_version: '65.0',
+        browser_version: '64.0',
         os: 'Windows',
         os_version: '10'
       },
