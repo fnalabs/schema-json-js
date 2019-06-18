@@ -165,7 +165,7 @@ describe('Schema', () => {
       try {
         schema = await new Schema(null)
       } catch (e) {
-        expect(e.message).to.equal('JSON Schemas must be an Object at root')
+        expect(e.message).to.equal('JSON Schemas must be an object at root')
       }
     })
 

@@ -19,8 +19,8 @@ describe('AssertLogical', () => {
   describe('optimizeAllOf', () => {
     context('object JSON schemas', () => {
       const schema = { allOf: [
-        { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) },
-        { minItems: 1, [OPTIMIZED]: AssertArray.optimize({ minItems: 1 }) }
+        { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }).pop() },
+        { minItems: 1, [OPTIMIZED]: AssertArray.optimize({ minItems: 1 }).pop() }
       ] }
 
       beforeEach(() => (assertions = AssertLogical.optimizeAllOf(schema)))
@@ -37,30 +37,30 @@ describe('AssertLogical', () => {
 
       it('should assert optimized with invalid values unsuccessfully', () => {
         let error = assertOptimized([], schema, assertions)
-        expect(error.message).to.equal('#minItems: value minimum not met')
+        expect(error).to.equal('#minItems: value minimum not met')
 
         error = assertOptimized(null, schema, assertions)
-        expect(error.message).to.equal('#type: value is not an array')
+        expect(error).to.equal('#type: value is not an array')
       })
 
       it('should throw an error on invalid type', () => {
         try {
           assertions = AssertLogical.optimizeAllOf({ allOf: null })
         } catch (e) {
-          expect(e.message).to.equal('#allOf: keyword should be an array of Schemas')
+          expect(e.message).to.equal('#allOf: keyword should be an array of JSON Schemas')
         }
 
         try {
           assertions = AssertLogical.optimizeAllOf({ allOf: [null] })
         } catch (e) {
-          expect(e.message).to.equal('#allOf: keyword should be an array of Schemas')
+          expect(e.message).to.equal('#allOf: keyword should be an array of JSON Schemas')
         }
       })
     })
 
     context('boolean JSON schemas', () => {
       const schema = { allOf: [
-        { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) },
+        { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }).pop() },
         false
       ] }
 
@@ -68,7 +68,7 @@ describe('AssertLogical', () => {
 
       it('should assert optimized with invalid values unsuccessfully', () => {
         const error = assertOptimized([], schema, assertions)
-        expect(error.message).to.equal('#allOf: \'false\' Schema invalidates all values')
+        expect(error).to.equal('#allOf: \'false\' JSON Schema invalidates all values')
       })
     })
   })
@@ -76,8 +76,8 @@ describe('AssertLogical', () => {
   describe('optimizeAnyOf', () => {
     context('object JSON schemas', () => {
       const schema = { anyOf: [
-        { type: 'array', maxItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', maxItems: 3 }) },
-        { type: 'array', minItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }) }
+        { type: 'array', maxItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', maxItems: 3 }).pop() },
+        { type: 'array', minItems: 1, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }).pop() }
       ] }
 
       beforeEach(() => (assertions = AssertLogical.optimizeAnyOf(schema)))
@@ -96,7 +96,7 @@ describe('AssertLogical', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized(null, schema, assertions)
-        expect(error.message).to.equal('#anyOf: none of the defined Schemas match the value')
+        expect(error).to.equal('#anyOf: none of the defined JSON Schemas match the value')
       })
     })
 
@@ -114,20 +114,20 @@ describe('AssertLogical', () => {
       try {
         assertions = AssertLogical.optimizeAnyOf({ anyOf: null })
       } catch (e) {
-        expect(e.message).to.equal('#anyOf: keyword should be an array of Schemas')
+        expect(e.message).to.equal('#anyOf: keyword should be an array of JSON Schemas')
       }
 
       try {
         assertions = AssertLogical.optimizeAnyOf({ anyOf: [null] })
       } catch (e) {
-        expect(e.message).to.equal('#anyOf: keyword should be an array of Schemas')
+        expect(e.message).to.equal('#anyOf: keyword should be an array of JSON Schemas')
       }
     })
   })
 
   describe('optimizeNot', () => {
     context('object JSON schema', () => {
-      const schema = { not: { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }) } }
+      const schema = { not: { type: 'array', [OPTIMIZED]: AssertArray.optimize({ type: 'array' }).pop() } }
 
       beforeEach(() => (assertions = AssertLogical.optimizeNot(schema)))
 
@@ -143,7 +143,7 @@ describe('AssertLogical', () => {
 
       it('should assert optimized with invalid value unsuccessfully', () => {
         const error = assertOptimized([], schema, assertions)
-        expect(error.message).to.equal('#not: value validated successfully against the schema')
+        expect(error).to.equal('#not: value validated successfully against the schema')
       })
     })
 
@@ -161,7 +161,7 @@ describe('AssertLogical', () => {
       try {
         assertions = AssertLogical.optimizeNot({ not: null })
       } catch (e) {
-        expect(e.message).to.equal('#not: keyword should be a Schema')
+        expect(e.message).to.equal('#not: keyword should be a JSON Schema')
       }
     })
   })
@@ -169,8 +169,8 @@ describe('AssertLogical', () => {
   describe('optimizeOneOf', () => {
     context('object JSON schemas', () => {
       const schema = { oneOf: [
-        { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }) },
-        { type: 'array', minItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }) }
+        { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }).pop() },
+        { type: 'array', minItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1 }).pop() }
       ] }
 
       beforeEach(() => (assertions = AssertLogical.optimizeOneOf(schema)))
@@ -189,19 +189,19 @@ describe('AssertLogical', () => {
 
       it('should assert optimized with invalid values unsuccessfully', () => {
         let error = assertOptimized([], schema, assertions)
-        expect(error.message).to.equal('#oneOf: value should be one of the listed schemas only')
+        expect(error).to.equal('#oneOf: value should match only one of the listed schemas')
 
         error = assertOptimized(['something', 'something', 'something'], schema, assertions)
-        expect(error.message).to.equal('#oneOf: value should be one of the listed schemas only')
+        expect(error).to.equal('#oneOf: value should match only one of the listed schemas')
 
         error = assertOptimized(null, schema, assertions)
-        expect(error.message).to.equal('#oneOf: value should be one of the listed schemas only')
+        expect(error).to.equal('#oneOf: value should match only one of the listed schemas')
       })
     })
 
     context('boolean JSON schemas', () => {
       const schema = { oneOf: [
-        { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }) },
+        { type: 'array', minItems: 1, maxItems: 3, [OPTIMIZED]: AssertArray.optimize({ type: 'array', minItems: 1, maxItems: 3 }).pop() },
         true,
         false
       ] }
@@ -217,13 +217,13 @@ describe('AssertLogical', () => {
       try {
         assertions = AssertLogical.optimizeOneOf({ oneOf: null })
       } catch (e) {
-        expect(e.message).to.equal('#oneOf: keyword should be an array of Schemas')
+        expect(e.message).to.equal('#oneOf: keyword should be an array of JSON Schemas')
       }
 
       try {
         assertions = AssertLogical.optimizeOneOf({ oneOf: [null] })
       } catch (e) {
-        expect(e.message).to.equal('#oneOf: keyword should be an array of Schemas')
+        expect(e.message).to.equal('#oneOf: keyword should be an array of JSON Schemas')
       }
     })
   })

@@ -13,25 +13,17 @@ export default class AssertLogical {
     if (isUndefined(allOf)) return []
 
     if (!isArray(allOf) || !isTypedArray(allOf, isSchema)) {
-      throw new TypeError('#allOf: keyword should be an array of Schemas')
+      throw new TypeError('#allOf: keyword should be an array of JSON Schemas')
     }
 
     return [(value, ref) => {
-      for (let refSchema of ref.allOf) {
-        if (refSchema === false) {
-          return new Error('#allOf: \'false\' Schema invalidates all values')
-        }
-        /* istanbul ignore else */
-        if (refSchema[OPTIMIZED]) {
-          if (refSchema[OPTIMIZED].length === 1) {
-            const error = refSchema[OPTIMIZED][0](value, refSchema)
-            if (error) return error
-          } else {
-            for (let fn of refSchema[OPTIMIZED]) {
-              const error = fn(value, refSchema)
-              if (error) return error
-            }
-          }
+      let error
+      for (let index = 0, length = ref.allOf.length; index < length; index++) {
+        if (ref.allOf[index] === false) {
+          return '#allOf: \'false\' JSON Schema invalidates all values'
+        } else if (ref.allOf[index][OPTIMIZED]) {
+          error = ref.allOf[index][OPTIMIZED](value, ref.allOf[index])
+          if (error) return error
         }
       }
     }]
@@ -42,28 +34,17 @@ export default class AssertLogical {
     if (isUndefined(anyOf)) return []
 
     if (!isArray(anyOf) || !isTypedArray(anyOf, isSchema)) {
-      throw new TypeError('#anyOf: keyword should be an array of Schemas')
+      throw new TypeError('#anyOf: keyword should be an array of JSON Schemas')
     }
 
     return [(value, ref) => {
-      for (let refSchema of ref.anyOf) {
-        if (refSchema === true) return
-        /* istanbul ignore else */
-        if (refSchema[OPTIMIZED]) {
-          if (refSchema[OPTIMIZED].length === 1) {
-            const error = refSchema[OPTIMIZED][0](value, refSchema)
-            if (!error) return
-          } else {
-            let error
-            for (let fn of refSchema[OPTIMIZED]) {
-              error = fn(value, refSchema)
-              if (error) break
-            }
-            if (!error) return
-          }
+      for (let index = 0, length = ref.anyOf.length; index < length; index++) {
+        if (ref.anyOf[index] === true) return
+        else if (ref.anyOf[index][OPTIMIZED] && !ref.anyOf[index][OPTIMIZED](value, ref.anyOf[index])) {
+          return
         }
       }
-      return new Error('#anyOf: none of the defined Schemas match the value')
+      return '#anyOf: none of the defined JSON Schemas match the value'
     }]
   }
 
@@ -72,24 +53,13 @@ export default class AssertLogical {
     if (isUndefined(not)) return []
 
     if (!isSchema(not)) {
-      throw new TypeError('#not: keyword should be a Schema')
+      throw new TypeError('#not: keyword should be a JSON Schema')
     }
 
     return [(value, ref) => {
       if (ref.not === false) return
-      /* istanbul ignore else */
-      if (ref.not[OPTIMIZED]) {
-        if (ref.not[OPTIMIZED].length === 1) {
-          const error = ref.not[OPTIMIZED][0](value, ref.not)
-          if (error) return
-        } else {
-          for (let fn of ref.not[OPTIMIZED]) {
-            const error = fn(value, ref.not)
-            if (error) return
-          }
-        }
-      }
-      return new Error('#not: value validated successfully against the schema')
+      else if (ref.not[OPTIMIZED] && ref.not[OPTIMIZED](value, ref.not)) return
+      return '#not: value validated successfully against the schema'
     }]
   }
 
@@ -98,29 +68,22 @@ export default class AssertLogical {
     if (isUndefined(oneOf)) return []
 
     if (!isArray(oneOf) || !isTypedArray(oneOf, isSchema)) {
-      throw new TypeError('#oneOf: keyword should be an array of Schemas')
+      throw new TypeError('#oneOf: keyword should be an array of JSON Schemas')
     }
 
     return [(value, ref) => {
-      let count = 0
-      for (let refSchema of ref.oneOf) {
-        if (refSchema === true) count++
-        if (refSchema[OPTIMIZED]) {
-          if (refSchema[OPTIMIZED].length === 1) {
-            const error = refSchema[OPTIMIZED][0](value, refSchema)
-            if (!error) count++
-          } else {
-            let error
-            for (let fn of refSchema[OPTIMIZED]) {
-              error = fn(value, refSchema)
-              if (error) break
-            }
-            if (!error) count++
-          }
+      let count = 1
+      let length = oneOf.length
+
+      for (let index = 0; index < length; index++) {
+        if (ref.oneOf[index] === false) count++
+        else if (ref.oneOf[index][OPTIMIZED] && ref.oneOf[index][OPTIMIZED](value, ref.oneOf[index])) {
+          count++
         }
-        if (count > 1) return new Error('#oneOf: value should be one of the listed schemas only')
       }
-      if (count !== 1) return new Error('#oneOf: value should be one of the listed schemas only')
+      if (count !== length) {
+        return '#oneOf: value should match only one of the listed schemas'
+      }
     }]
   }
 }

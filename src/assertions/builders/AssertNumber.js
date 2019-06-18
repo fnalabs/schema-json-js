@@ -1,5 +1,7 @@
 import { isBoolean, isInteger, isNumber, isUndefined } from '../types'
 
+const isNumberTypeRegex = /^(?:integer|number)$/
+
 // private methods
 const ASSERT_MAX = Symbol('validates Number maximum')
 const ASSERT_MIN = Symbol('validates Number minimum')
@@ -27,28 +29,28 @@ export default class AssertNumber {
     if (isNumber(maximum) || isNumber(exclusiveMaximum) || isNumber(minimum) || isNumber(exclusiveMinimum) || isNumber(multipleOf)) {
       return [(value, ref) => {
         if (!assertion(value)) {
-          if (/^(?:integer|number)$/.test(ref.type)) return new Error(`#type: value is not a(n) ${ref.type}`)
+          if (isNumberTypeRegex.test(ref.type)) return `#type: value is not a(n) ${ref.type}`
           return
         }
         if (typeof ref.maximum === 'number' && ((ref.exclusiveMaximum && value >= ref.maximum) || value > ref.maximum)) {
-          return new Error(`#maximum: value is greater than or equal to ${ref.maximum}`)
+          return `#maximum: ${value} is greater than or equal to ${ref.maximum}`
         }
         if (typeof ref.exclusiveMaximum === 'number' && value >= ref.exclusiveMaximum) {
-          return new Error(`#exclusiveMaximum: value is greater than or equal to ${ref.exclusiveMaximum}`)
+          return `#exclusiveMaximum: ${value} is greater than or equal to ${ref.exclusiveMaximum}`
         }
         if (typeof ref.minimum === 'number' && ((ref.exclusiveMinimum && value <= ref.minimum) || value < ref.minimum)) {
-          return new Error(`#minimum: value is less than or equal to ${ref.minimum}`)
+          return `#minimum: ${value} is less than or equal to ${ref.minimum}`
         }
         if (typeof ref.exclusiveMinimum === 'number' && value <= ref.exclusiveMinimum) {
-          return new Error(`#exclusiveMinimum: value is less than or equal to ${ref.exclusiveMinimum}`)
+          return `#exclusiveMinimum: ${value} is less than or equal to ${ref.exclusiveMinimum}`
         }
         if (typeof ref.multipleOf === 'number' && (value / ref.multipleOf) % 1 !== 0) {
-          return new Error(`#multipleOf: value is not a multiple of ${ref.multipleOf}`)
+          return `#multipleOf: ${value} is not a multiple of ${ref.multipleOf}`
         }
       }]
     } else if (type && assertion.name.search(new RegExp(type, 'i')) !== -1) {
       return [(value, ref) => {
-        if (!assertion(value)) return new Error(`#type: value is not a(n) ${ref.type}`)
+        if (!assertion(value)) return `#type: value is not a(n) ${ref.type}`
       }]
     }
     return []

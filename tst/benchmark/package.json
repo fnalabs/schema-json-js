@@ -1,0 +1,47 @@
+{
+  "name": "schema-benchmark",
+  "version": "0.2.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "browserify": "browserify -t babelify -t envify index.js -o bundle.js",
+    "fix": "standard --fix",
+    "test:node:validate": "TEST_PLATFORM=node TEST_TYPE=validate node --max-old-space-size=4096 index.js",
+    "test:node:serialize": "TEST_PLATFORM=node TEST_TYPE=serialize node --max-old-space-size=4096 index.js",
+    "test:chrome:validate": "TEST_PLATFORM=Chrome TEST_TYPE=validate npm run browserify && google-chrome --incognito --new-window ./index.html",
+    "test:chrome:serialize": "TEST_PLATFORM=Chrome TEST_TYPE=serialize npm run browserify && google-chrome --incognito --new-window ./index.html",
+    "test:firefox:validate": "TEST_PLATFORM=Firefox TEST_TYPE=validate npm run browserify && firefox --private-window ./index.html",
+    "test:firefox:serialize": "TEST_PLATFORM=Firefox TEST_TYPE=serialize npm run browserify && firefox --private-window ./index.html"
+  },
+  "author": "Adam Eilers",
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "latest",
+    "djv": "latest",
+    "is-my-json-valid": "latest",
+    "z-schema": "latest"
+  },
+  "devDependencies": {
+    "@babel/cli": "~7.4.4",
+    "@babel/core": "~7.4.5",
+    "@babel/plugin-syntax-object-rest-spread": "~7.2.0",
+    "@babel/plugin-transform-modules-commonjs": "~7.4.4",
+    "@babel/register": "~7.4.4",
+    "babel-plugin-add-module-exports": "~1.0.0",
+    "babel-plugin-istanbul": "~5.1.4",
+    "babelify": "~10.0.0",
+    "benchmark": "~2.1.4",
+    "browser-process-hrtime": "~1.0.0",
+    "browserify": "~16.2.3",
+    "envify": "~4.1.0",
+    "karma": "~4.1.0",
+    "karma-browserify": "~6.0.0",
+    "karma-browserstack-launcher": "~1.5.1",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-firefox-launcher": "~1.1.0",
+    "lodash": "~4.17.11",
+    "mustache": "~3.0.1",
+    "standard": "~12.0.1",
+    "watchify": "~3.11.1"
+  }
+}

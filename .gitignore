@@ -2,6 +2,7 @@
 dist
 tmp*
 package.tar.gz
+bundle.js
 
 # Logs
 logs

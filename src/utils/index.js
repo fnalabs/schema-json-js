@@ -1,6 +1,8 @@
 /* globals fetch */
 import { isFunction, isString } from '../assertions/types'
 
+const contentTypeRegex = /^application\/json/
+
 // verify execution environment
 let http, https
 if (!isFunction(global.fetch)) {
@@ -20,7 +22,7 @@ async function nodeFetch (url, secure) {
       if (statusCode !== 200) {
         error = new Error('Request Failed.\n' +
                           `Status Code: ${statusCode}`)
-      } else if (!/^application\/json/.test(contentType)) {
+      } else if (!contentTypeRegex.test(contentType)) {
         error = new Error('Invalid content-type.\n' +
                           `Expected application/json but received ${contentType}`)
       }

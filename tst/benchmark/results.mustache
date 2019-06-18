@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>schema-json-js benchmarks - Node.js ({{type}})</title>
+  <style type="text/css">
+    table {
+      border: 1px solid black;
+    }
+    td {
+      border: 1px solid black;
+      text-align: left;
+      padding: 3px 10px;
+    }
+    .failed {
+      background-color: #ff6e6e;
+    }
+    .fastest {
+      background-color: #6eff79;
+    }
+    .green {
+      color: green;
+    }
+    .red {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <p><a href="index.html">Home</a></p>
+  <h1>schema-json-js benchmarks - Node.js ({{type}})</h1>
+  <h2>Hardware</h2>
+  <p>Run on the following hardware:</p>
+  <dl>
+    <dt>CPU</dt>
+    <dd>Intel Core i7-7700K CPU @ 4.20GHz x 8</dd>
+    <dt>RAM</dt>
+    <dd>G.SKILL TridentZ Series 32GB DDR4 @ 3020 MHz</dd>
+    <dt>HDD</dt>
+    <dd>Samsung 960 EVO m.2 500GB</dd>
+    <dt>OS</dt>
+    <dd>Pop! OS 18.04 LTS</dd>
+    <dt>Node.js</dt>
+    <dd>v10.16.0</dd>
+  </dl>
+  <h2>Tests</h2>
+  <p>Generated on {{currentDate}} in {{totalTime}} minutes</p>
+  <p><strong>NOTE:</strong> Validators marked with an asterisk (*) use code generation (eval and/or new Function) so performance may suffer in serialized use cases. Some of these validators work around it with caching but memory usage may suffer as a result.</p>
+  <table>
+    <tr>
+      <th></th>
+      {{#tests}}
+      <th>
+        {{name}}
+      </th>
+      {{/tests}}
+    </tr>
+    {{#results}}
+    <tr>
+      <td>{{name}}</td>
+      {{#results}}
+      <td{{#title}} title="{{title}}"{{/title}}{{#failed}} class="failed"{{/failed}}{{#fastest}} class="fastest"{{/fastest}}>
+        {{percentage}}% ({{hz}})
+      </td>
+      {{/results}}
+    </tr>
+    {{/results}}
+  </table>
+  <ul>
+    {{#tests}}
+    <li>
+      {{name}}
+      <ul>
+        <li class="green">passed: {{testsPassed}}</li>
+        <li{{#testsFailed}} class="red"{{/testsFailed}}>failed: {{testsFailed}}</li>
+        <li>times fastest: {{timesFastest}}</li>
+      </ul>
+    </li>
+    {{/tests}}
+  </ul>
+</body>
+</html>

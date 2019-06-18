@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>schema-json-js benchmarks - Node.js (validate)</title>
+  <style type="text/css">
+    table {
+      border: 1px solid black;
+    }
+    td {
+      border: 1px solid black;
+      text-align: left;
+      padding: 3px 10px;
+    }
+    .failed {
+      background-color: #ff6e6e;
+    }
+    .fastest {
+      background-color: #6eff79;
+    }
+    .green {
+      color: green;
+    }
+    .red {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <p><a href="index.html">Home</a></p>
+  <h1>schema-json-js benchmarks - Node.js (validate)</h1>
+  <h2>Hardware</h2>
+  <p>Run on the following hardware:</p>
+  <dl>
+    <dt>CPU</dt>
+    <dd>Intel Core i7-7700K CPU @ 4.20GHz x 8</dd>
+    <dt>RAM</dt>
+    <dd>G.SKILL TridentZ Series 32GB DDR4 @ 3020 MHz</dd>
+    <dt>HDD</dt>
+    <dd>Samsung 960 EVO m.2 500GB</dd>
+    <dt>OS</dt>
+    <dd>Pop! OS 18.04 LTS</dd>
+    <dt>Node.js</dt>
+    <dd>v10.16.0</dd>
+  </dl>
+  <h2>Tests</h2>
+  <p>Generated on 6&#x2F;13&#x2F;2019 in 1.28 minutes</p>
+  <p><strong>NOTE:</strong> Validators marked with an asterisk (*) use code generation (eval and/or new Function) so performance may suffer in serialized use cases. Some of these validators work around it with caching but memory usage may suffer as a result.</p>
+  <table>
+    <tr>
+      <th></th>
+      <th>
+        schema-json-js
+      </th>
+      <th>
+        z-schema
+      </th>
+      <th>
+        ajv*
+      </th>
+      <th>
+        djv*
+      </th>
+      <th>
+        is-my-json-valid*
+      </th>
+    </tr>
+    <tr>
+      <td>primitive data</td>
+      <td>
+        12% (15006537)
+      </td>
+      <td>
+        1% (1800991)
+      </td>
+      <td>
+        86% (100359549)
+      </td>
+      <td class="fastest">
+        100% (115527779)
+      </td>
+      <td>
+        85% (98846842)
+      </td>
+    </tr>
+    <tr>
+      <td>standard data</td>
+      <td>
+        5% (535012)
+      </td>
+      <td>
+        1% (147212)
+      </td>
+      <td class="fastest">
+        100% (10659421)
+      </td>
+      <td>
+        0% (74662)
+      </td>
+      <td>
+        96% (10261467)
+      </td>
+    </tr>
+    <tr>
+      <td>advanced data</td>
+      <td>
+        15% (151298)
+      </td>
+      <td>
+        3% (30659)
+      </td>
+      <td class="fastest">
+        100% (964710)
+      </td>
+      <td title="expected was true but validator returned false" class="failed">
+        0% (-1)
+      </td>
+      <td>
+        88% (855161)
+      </td>
+    </tr>
+  </table>
+  <ul>
+    <li>
+      schema-json-js
+      <ul>
+        <li class="green">passed: 3</li>
+        <li>failed: 0</li>
+        <li>times fastest: 0</li>
+      </ul>
+    </li>
+    <li>
+      z-schema
+      <ul>
+        <li class="green">passed: 3</li>
+        <li>failed: 0</li>
+        <li>times fastest: 0</li>
+      </ul>
+    </li>
+    <li>
+      ajv*
+      <ul>
+        <li class="green">passed: 3</li>
+        <li>failed: 0</li>
+        <li>times fastest: 2</li>
+      </ul>
+    </li>
+    <li>
+      djv*
+      <ul>
+        <li class="green">passed: 2</li>
+        <li class="red">failed: 1</li>
+        <li>times fastest: 1</li>
+      </ul>
+    </li>
+    <li>
+      is-my-json-valid*
+      <ul>
+        <li class="green">passed: 3</li>
+        <li>failed: 0</li>
+        <li>times fastest: 0</li>
+      </ul>
+    </li>
+  </ul>
+</body>
+</html>
