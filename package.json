@@ -22,6 +22,7 @@
     "coverage": "cross-env NODE_ENV=test nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "dev": "nodemon -e js,json -w src -w conf -x \"npm run build\" & nodemon -e js -w tst -x \"npm test\" & karma start",
     "document": "jsdoc --configure .jsdoc.json --verbose",
+    "postdocument": "sed -i 's/Documentation/schema-json-js/g' docs/index.html docs/Schema.html",
     "fix": "standard --fix",
     "prerelease": "del package.tar.gz",
     "release": "cross-env NODE_ENV=production npm run test:all && npm test && npm run build && node ./bin/compress",

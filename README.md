@@ -1,4 +1,4 @@
-# schema(JSON)<sup>js</sup>
+# Schema(JSON)<sup>js</sup>
 
 [![NPM Version][npm-image]][npm-url]
 [![License][license-image]][license-url]
@@ -8,7 +8,7 @@
 [![Dependency Status][depstat-image]][depstat-url]
 [![JavaScript Style Guide][style-image]][style-url]
 
-A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization and optimized validations using closures and thunks. It currently supports the `draft-04` and `draft-06` versions of the JSON Schema specification.
+A JavaScript Schema class that implements the JSON Schema specification as immutable objects with lazy, async initialization. The class creates optimized validations using closures and thunks. It currently supports the `draft-04` and `draft-06` versions of the JSON Schema specification.
 
 Motivations behind the project:
 - implement a JSON Schema validator leveraging modern JS features
@@ -17,7 +17,7 @@ Motivations behind the project:
 - allow for partial validations for complex object properties
 - small and lightweight with no dependencies
 - universal support for the latest browsers and Node.js
-- no code generation
+- fastest JSON Schema validator without code generation
 
 #### Contents
 - [Installing](#installing)
@@ -140,7 +140,7 @@ There is a small benchmark to showcase our performance against some similar solu
         - [as serialized Schema instance](https://fnalabs.github.io/schema-json-js/firefox.serialize.html)
 
 ## Future
-- finish documentation and contributing guide
+- create documentation and contributing guide
 - implement support for the `draft-07` JSON Schema specification
 - feature requests via [issues](https://github.com/fnalabs/schema-json-js/issues)
 
