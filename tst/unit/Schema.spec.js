@@ -72,7 +72,12 @@ describe('Schema', () => {
       expect(schema.assign).to.be.a('function')
       expect(schema.validate).to.be.a('function')
 
-      expect(schema.validate(true)).to.eventually.be.ok()
+      expect(await schema.validate(true)).to.be.ok()
+
+      schema = await new Schema({ properties: { test: { type: 'string' }, another: { type: 'string' } } }, true)
+
+      expect(await schema.validate({ test: 'ing', another: 'object' })).to.be.ok()
+      expect(await schema.validate({ test: true, another: 'object' })).not.to.be.ok()
     })
   })
 

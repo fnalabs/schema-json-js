@@ -12,6 +12,8 @@ const ERRORS = Symbol('cache of all errors as they occurred during validation')
 const REFS = Symbol('cache of all referenced schemas in current schema')
 
 // "private" methods
+const VALIDATE = Symbol('validates schema')
+
 const ASSIGN_SCHEMA = Symbol('assigns schema definitions to the class instance')
 const ASSIGN_REF = Symbol('assigns a ref to ref cache')
 const ASSIGN_REFS = Symbol('assigns a Hash of refs to ref cache')
@@ -43,11 +45,13 @@ class Schema {
       [REFS]: { value: {} }
     })
 
-    if (isAsync) {
-      Object.defineProperty(this, 'validate', {
-        value: async (data, schema) => super.validate(data, schema)
+    isAsync
+      ? Object.defineProperty(this, 'validate', {
+        value: async (data, schema) => this[VALIDATE](data, schema)
       })
-    }
+      : Object.defineProperty(this, 'validate', {
+        value: (data, schema) => this[VALIDATE](data, schema)
+      })
   }
 
   get errors () {
@@ -81,7 +85,7 @@ class Schema {
    * @param {Schema} [schema=this] - Optionally pass nested JSON Schema definitions of the instance for partial schema validation or other instances of the JSON Schema class.
    * @returns {boolean} <code>true</code> if validation is successful, otherwise <code>false</code>.
    */
-  validate (data, schema = this) {
+  [VALIDATE] (data, schema = this) {
     this[ERRORS].length = 0
 
     if (schema === false) this[ERRORS].push('\'false\' JSON Schema invalidates all values')
