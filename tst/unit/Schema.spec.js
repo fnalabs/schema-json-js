@@ -3,6 +3,7 @@ import chai, { expect } from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import dirtyChai from 'dirty-chai'
 import nock from 'nock'
+import sinon from 'sinon'
 
 import Schema from '../../src/Schema'
 
@@ -13,12 +14,15 @@ chai.use(dirtyChai)
 
 describe('Schema', () => {
   const testSchema = { $id: 'http://json-schema.org/draft-04/schema', type: 'string' }
-  let endpoint, schema
+  let schema
 
-  afterEach(() => {
-    endpoint = null
-    schema = null
+  after(() => {
+    nock.enableNetConnect()
   })
+
+  afterEach(() => (schema = null))
+
+  before(() => (nock.disableNetConnect()))
 
   describe('constructor', () => {
     it('should create a Schema object successfully', async () => {
@@ -197,18 +201,20 @@ describe('Schema', () => {
   })
 
   describe('($)id|$ref keywords', () => {
-    after(() => {
+    afterEach(() => {
       nock.cleanAll()
-      nock.enableNetConnect()
+
+      if (global.fetch) global.fetch.restore()
     })
 
     beforeEach(() => {
-      nock.cleanAll()
-      nock.disableNetConnect()
-
-      endpoint = nock('http://json-schema.org')
+      nock('http://json-schema.org')
         .get('/draft-04/schema')
         .reply(200, testSchema)
+
+      if (global.fetch) {
+        sinon.stub(global, 'fetch').callsFake(async () => Promise.resolve({ json: () => testSchema }))
+      }
     })
 
     it('should assign with simple definitions successfully', async () => {
@@ -247,7 +253,6 @@ describe('Schema', () => {
       schema = await new Schema(testSchema)
 
       expect(schema).to.deep.equal(testSchema)
-      expect(endpoint.isDone()).to.be.false()
     })
 
     it('should assign with nested subSchema successfully', async () => {
@@ -263,7 +268,6 @@ describe('Schema', () => {
       schema = await new Schema(test, refs)
 
       expect(schema).to.deep.equal(test)
-      expect(endpoint.isDone()).to.be.false()
     })
 
     it('should assign nested path fragments successfully', async () => {

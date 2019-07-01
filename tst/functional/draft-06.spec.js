@@ -12,15 +12,13 @@ import folderSchema from '../JSON-Schema-Test-Suite/remotes/folder/folderInteger
 describe('functional tests for draft-06 specification', async () => {
   const draft6Tests = await getTests('./tst/JSON-Schema-Test-Suite/tests/draft6', ['boolean_schema.json'])
 
-  after(() => {
-    nock.cleanAll()
-    nock.enableNetConnect()
-  })
+  after(() => (nock.enableNetConnect()))
+
+  afterEach(() => (nock.cleanAll()))
+
+  before(() => (nock.disableNetConnect()))
 
   beforeEach(() => {
-    nock.cleanAll()
-    nock.disableNetConnect()
-
     nock('http://json-schema.org')
       .get('/draft-04/schema')
       .reply(200, draft04Schema)

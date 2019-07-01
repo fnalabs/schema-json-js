@@ -11,15 +11,13 @@ import folderSchema from '../JSON-Schema-Test-Suite/remotes/folder/folderInteger
 describe('functional tests for draft-04 specification', async () => {
   const draft4Tests = await getTests('./tst/JSON-Schema-Test-Suite/tests/draft4')
 
-  after(() => {
-    nock.cleanAll()
-    nock.enableNetConnect()
-  })
+  after(() => (nock.enableNetConnect()))
+
+  afterEach(() => (nock.cleanAll()))
+
+  before(() => (nock.disableNetConnect()))
 
   beforeEach(() => {
-    nock.cleanAll()
-    nock.disableNetConnect()
-
     nock('http://json-schema.org')
       .get('/draft-04/schema')
       .reply(200, draft04Schema)
