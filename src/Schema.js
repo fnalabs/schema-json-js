@@ -8,6 +8,7 @@ import {
 import { getSchema } from './utils'
 
 // "private" properties
+const ASYNC = Symbol('cache of async setting')
 const ERRORS = Symbol('cache of all errors as they occurred during validation')
 const REFS = Symbol('cache of all referenced schemas in current schema')
 
@@ -33,14 +34,16 @@ const enumerable = true
  * <p>Class representing the definition and assertion methods for JSON Schema validation. Creates an immutable instance of a JSON Schema either immediately or lazily depending on your needs. When assigning a JSON Schema, it first validates the JSON Schema definition. Then it creates optimized assertion methods for each verified JSON Schema defined either at the root of the Schema or nested within complex Schemas. This allows for faster validations and the ability to perform partial Schema validations for nested definitions to test a change to a Model.</p>
  * <p>There are many ways to create a Schema instance, either instantly or lazily. The Schema class also supports fetching remote referenced JSON Schemas on a supported web client or Node.js service. Be mindful of the argument order, if omitting <code>schema</code> and/or <code>refs</code>, the desired arguments need to maintain the order in which they are defined.</p>
  * @property {Array<string>} errors - A copy of the List of error strings from the last time {@link validate} ran.
+ * @property {boolean} isAsync=false - A copy of the <code>async</code> validation setting.
  * @param {Object} [schema] - Optional JSON Schema definition.
  * @param {Object} [refs] - Optional hash of cached JSON Schemas that are referenced in the main schema.
  * @param {boolean} [async=false] - Optional boolean flag to enable asynchronous validations.
  * @async
  */
 class Schema {
-  constructor (isAsync) {
+  constructor (isAsync = false) {
     Object.defineProperties(this, {
+      [ASYNC]: { value: isAsync },
       [ERRORS]: { value: [] },
       [REFS]: { value: {} }
     })
@@ -56,6 +59,10 @@ class Schema {
 
   get errors () {
     return [...this[ERRORS]]
+  }
+
+  get isAsync () {
+    return this[ASYNC]
   }
 
   /**
@@ -80,10 +87,12 @@ class Schema {
   }
 
   /**
-   * Method used to validate supplied data against the JSON Schema definition instance. Can be configured to be either synchronous or asynchronous (using a wrapping async function) during construction. It defaults to synchronous for better performance.
+   * Method used to validate supplied data against the JSON Schema definition instance. Can be configured to be either <code>synchronous</code> or <code>asynchronous</code> using a wrapping function during construction. It defaults to <code>synchronous</code> for better performance.
+   * @function Schema.prototype.validate
    * @param data - The data to validate against the JSON Schema definition instance.
    * @param {Schema} [schema=this] - Optionally pass nested JSON Schema definitions of the instance for partial schema validation or other instances of the JSON Schema class.
    * @returns {boolean} <code>true</code> if validation is successful, otherwise <code>false</code>.
+   * @async
    */
   [VALIDATE] (data, schema = this) {
     this[ERRORS].length = 0

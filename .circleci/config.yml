@@ -96,9 +96,9 @@ workflows:
       - test:
           requires:
             - install_dependencies
-      - browserstack:
-          requires:
-            - test
+      # - browserstack:
+      #     requires:
+      #       - test
       - build:
           requires:
-            - browserstack
+            - test
