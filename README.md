@@ -149,7 +149,7 @@ We are currently drafting our contributing guide!
 
 *Browser compatibility testing provided by:*
 
-<a href="https://browserstack.com"><img height="48" src="https://fnalabs.github.io/fnalabs-assets/assets/Browserstack-logo.svg" alt="BrowserStack logo"></a>
+<a href="https://browserstack.com"><img height="48" src="https://fnalabs.github.io/fnalabs-assets/assets/Browserstack-logo.svg" alt="BrowserStack"></a>
 
 ## Changelog
 #### v0.4.0

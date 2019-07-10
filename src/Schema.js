@@ -34,10 +34,10 @@ const enumerable = true
  * <p>Class representing the definition and assertion methods for JSON Schema validation. Creates an immutable instance of a JSON Schema either immediately or lazily depending on your needs. When assigning a JSON Schema, it first validates the JSON Schema definition. Then it creates optimized assertion methods for each verified JSON Schema defined either at the root of the Schema or nested within complex Schemas. This allows for faster validations and the ability to perform partial Schema validations for nested definitions to test a change to a Model.</p>
  * <p>There are many ways to create a Schema instance, either instantly or lazily. The Schema class also supports fetching remote referenced JSON Schemas on a supported web client or Node.js service. Be mindful of the argument order, if omitting <code>schema</code> and/or <code>refs</code>, the desired arguments need to maintain the order in which they are defined.</p>
  * @property {Array<string>} errors - A copy of the List of error strings from the last time {@link validate} ran.
- * @property {boolean} isAsync=false - A copy of the <code>async</code> validation setting.
+ * @property {Boolean} isAsync=false - A copy of the <code>async</code> validation setting.
  * @param {Object} [schema] - Optional JSON Schema definition.
  * @param {Object} [refs] - Optional hash of cached JSON Schemas that are referenced in the main schema.
- * @param {boolean} [async=false] - Optional boolean flag to enable asynchronous validations.
+ * @param {Boolean} [async=false] - Optional boolean flag to enable asynchronous validations.
  * @async
  */
 class Schema {
@@ -91,7 +91,7 @@ class Schema {
    * @function Schema.prototype.validate
    * @param data - The data to validate against the JSON Schema definition instance.
    * @param {Schema} [schema=this] - Optionally pass nested JSON Schema definitions of the instance for partial schema validation or other instances of the JSON Schema class.
-   * @returns {boolean} <code>true</code> if validation is successful, otherwise <code>false</code>.
+   * @returns {Boolean} <code>true</code> if validation is successful, otherwise <code>false</code>.
    * @async
    */
   [VALIDATE] (data, schema = this) {
