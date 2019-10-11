@@ -41,7 +41,7 @@ export function assertOptimized (value, schema, optimized = []) {
     const error = optimized[0](value, schema)
     if (error) return error
   }
-  for (let fn of optimized) {
+  for (const fn of optimized) {
     const error = fn(value, schema)
     if (error) return error
   }

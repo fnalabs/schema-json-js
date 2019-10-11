@@ -72,8 +72,8 @@ export default class AssertLogical {
     }
 
     return [(value, ref) => {
+      const length = oneOf.length
       let count = 1
-      let length = oneOf.length
 
       for (let index = 0; index < length; index++) {
         if (ref.oneOf[index] === false) count++

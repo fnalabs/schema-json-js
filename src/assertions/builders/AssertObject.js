@@ -44,7 +44,7 @@ export default class AssertObject {
           return
         }
 
-        let keys = Object.keys(value)
+        const keys = Object.keys(value)
         let index = keys.length
         let reqCount = 0
         let patternMatch = false
