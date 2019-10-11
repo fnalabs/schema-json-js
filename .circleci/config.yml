@@ -3,7 +3,7 @@ version: 2.0
 jobs:
   checkout_code:
     docker:
-      - image: circleci/node:10.16.0
+      - image: circleci/node:10.16.3
     working_directory: ~/schema-json-js
     steps:
       - checkout
@@ -15,7 +15,7 @@ jobs:
 
   install_dependencies:
     docker:
-      - image: circleci/node:10.16.0
+      - image: circleci/node:10.16.3
     working_directory: ~/schema-json-js
     steps:
       - restore_cache:
@@ -29,7 +29,7 @@ jobs:
 
   test:
     docker:
-      - image: circleci/node:10.16.0
+      - image: circleci/node:10.16.3
     working_directory: ~/schema-json-js
     steps:
       - restore_cache:
@@ -51,7 +51,7 @@ jobs:
 
   browserstack:
     docker:
-      - image: circleci/node:10.16.0
+      - image: circleci/node:10.16.3
     working_directory: ~/schema-json-js
     steps:
       - restore_cache:
@@ -66,7 +66,7 @@ jobs:
 
   build:
     docker:
-      - image: circleci/node:10.16.0
+      - image: circleci/node:10.16.3
     working_directory: ~/schema-json-js
     steps:
       - restore_cache:
@@ -77,13 +77,7 @@ jobs:
             - dependencies-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Build and compress code
-          command: npm run build && node ./bin/compress
-      - save_cache:
-          key: assets-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/schema-json-js/package.tar.gz
-      - store_artifacts:
-          path: ~/schema-json-js/package.tar.gz
+          command: npm run build
 
 workflows:
   version: 2

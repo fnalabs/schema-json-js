@@ -34,9 +34,9 @@ export default class AssertArray {
           return
         }
 
+        const length = value.length
+        const unique = new Set()
         let containsFlag = false
-        let length = value.length
-        let unique = new Set()
         let error
 
         // asserts [maxItems, minItems]

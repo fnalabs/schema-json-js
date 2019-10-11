@@ -175,7 +175,7 @@ class Schema {
     const assign = async (source, path = []) => {
       if (isObject(source) && !isParentKeyword(path)) {
         const { $id, $ref, id } = source
-        let list = []
+        const list = []
         let value
 
         if (!isUndefined($ref)) list.push(...(await this[ASSERT_REF]($ref, schema, path)))
