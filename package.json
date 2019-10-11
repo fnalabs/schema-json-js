@@ -24,7 +24,7 @@
     "document": "jsdoc --configure .jsdoc.json --verbose",
     "postdocument": "sed -i 's/Documentation/schema-json-js/g' docs/index.html docs/Schema.html",
     "fix": "standard --fix",
-    "release": "cross-env NODE_ENV=production npm run test:all && npm test && npm run build",
+    "release": "npm run test:all && npm test && npm run build",
     "postrelease": "npm run document",
     "pretest": "del coverage coverage.lcov .nyc_output",
     "test": "standard",
