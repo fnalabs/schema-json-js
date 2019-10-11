@@ -152,6 +152,9 @@ We are currently drafting our contributing guide!
 <a href="https://browserstack.com"><img height="48" src="https://fnalabs.github.io/fnalabs-assets/assets/Browserstack-logo.svg" alt="BrowserStack"></a>
 
 ## Changelog
+#### v0.4.1
+- updating dependencies
+
 #### v0.4.0
 - add `isAsync` property to Schema instance
 - updated documentation
