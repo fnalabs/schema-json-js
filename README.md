@@ -152,7 +152,7 @@ We are currently drafting our contributing guide!
 
 ## Changelog
 #### v0.4.1
-- updating dependencies
+- updated dependencies
 
 #### v0.4.0
 - add `isAsync` property to Schema instance
