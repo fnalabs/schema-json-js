@@ -123,7 +123,7 @@ Below are numerous examples on how to use the Schema class.
 - [Schema](https://fnalabs.github.io/schema-json-js/Schema.html)
 
 ## Environments
-- All modern browsers and Node 8+ without polyfills.
+- All modern browsers and Node 10+ without polyfills.
 
 ## Benchmarks
 There is a small benchmark to showcase our performance against some similar solutions. One of the many ways `schema-json-js` stands apart from many other validators is its ability to perform partial schema validation.
@@ -140,15 +140,11 @@ There is a small benchmark to showcase our performance against some similar solu
 
 ## Future
 - create documentation and contributing guide
-- implement support for the `draft-07` JSON Schema specification
+- implement support for the `draft-07` and `2019-09` JSON Schema specification
 - feature requests via [issues](https://github.com/fnalabs/schema-json-js/issues)
 
 ## Contributing
 We are currently drafting our contributing guide!
-
-*Browser compatibility testing provided by:*
-
-<a href="https://browserstack.com"><img height="48" src="https://fnalabs.github.io/fnalabs-assets/assets/Browserstack-logo.svg" alt="BrowserStack"></a>
 
 ## Changelog
 #### v0.4.1
