@@ -13,7 +13,6 @@ const imjv = require('is-my-json-valid')
 const Schema = require('../../dist/Schema')
 const ZSchema = process.env.TEST_PLATFORM === 'node' ? require('z-schema') : window.ZSchema
 
-const draft04Schema = require('../refs/json-schema-draft-04.json')
 const primitiveData = require('./primitive_data.json')
 const primitiveSchema = require('./primitive_schema.json')
 const standardData = require('./standard_data.json')
@@ -77,10 +76,8 @@ const browserTemplate = `<p><a href="index.html">Home</a></p>
  * define tests
  */
 global.Benchmark = Benchmark
-ajv._opts.defaultMeta = 'http://json-schema.org/draft-04/schema'
-ajv.addSchema(draft04Schema, 'http://json-schema.org/draft-04/schema')
+ajv.addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'))
 djv.useVersion('draft-04')
-djv.addSchema('http://json-schema.org/draft-04/schema', draft04Schema)
 
 let start, end
 const results = []
@@ -172,7 +169,7 @@ async function runOne (testName, testJson, testSchema, expectedResult) {
   const suite = new Benchmark.Suite()
   const fails = {}
 
-  for (let validatorObject of tests) {
+  for (const validatorObject of tests) {
     const data = _.cloneDeep(testJson)
     const schema = _.cloneDeep(testSchema)
     let instance
@@ -220,7 +217,7 @@ async function runOne (testName, testJson, testSchema, expectedResult) {
       console.log(`Fastest is ${this.filter('fastest').map('name')}`)
     })
     .run({
-      'async': false
+      async: false
     })
 
   console.log('-')
@@ -231,7 +228,7 @@ async function runOne (testName, testJson, testSchema, expectedResult) {
   }
   let fastest = 0
   let fastestValidator = null
-  for (let validatorObject of tests) {
+  for (const validatorObject of tests) {
     let ops
     const results = _.find(suite, obj =>
       validatorObject.name === obj.name.substring(0, obj.name.indexOf('#')))

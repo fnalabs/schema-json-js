@@ -46,10 +46,10 @@
     <dt>OS</dt>
     <dd>Pop! OS 18.04 LTS</dd>
     <dt>Browser</dt>
-    <dd>Chrome 75.0.3770.80</dd>
+    <dd>Chrome 78.0.3904.108</dd>
   </dl>
   <h2>Tests</h2>
-  <p>Generated on 6/13/2019 in 1.25 minutes</p>
+  <p>Generated on 12/4/2019 in 1.5 minutes</p>
   <p><strong>NOTE:</strong> Validators marked with an asterisk (*) use code generation (eval and/or new Function) so performance may suffer in serialized use cases. Some of these validators work around it with caching but memory usage may suffer as a result.</p>
   <table>
     <tbody><tr>
@@ -72,56 +72,56 @@
     </tr>
     <tr>
       <td>primitive data</td>
+      <td>
+        71% (157,295)
+      </td>
+      <td>
+        2% (4,722)
+      </td>
       <td class="fastest">
-        100% (171,992)
-      </td>
-      <td title="TypeError: ZSchema is not a constructor" class="failed">
-        0% (-1)
+        100% (219,781)
       </td>
       <td>
-        72% (124,336)
+        16% (37,064)
       </td>
       <td>
-        5% (9,645)
-      </td>
-      <td>
-        3% (5,395)
+        9% (21,741)
       </td>
     </tr>
     <tr>
       <td>standard data</td>
       <td>
-        61% (34,098)
+        59% (33,414)
       </td>
-      <td title="TypeError: ZSchema is not a constructor" class="failed">
-        0% (-1)
+      <td>
+        6% (3,470)
       </td>
       <td class="fastest">
-        100% (55,195)
+        100% (55,843)
       </td>
       <td>
-        7% (4,402)
+        7% (4,332)
       </td>
       <td>
-        6% (3,353)
+        6% (3,607)
       </td>
     </tr>
     <tr>
       <td>advanced data</td>
       <td>
-        73% (16,894)
+        81% (15,910)
       </td>
-      <td title="TypeError: ZSchema is not a constructor" class="failed">
-        0% (-1)
+      <td>
+        7% (1,456)
       </td>
       <td class="fastest">
-        100% (22,928)
+        100% (19,413)
       </td>
       <td title="expected was true but validator returned false" class="failed">
         0% (-1)
       </td>
       <td>
-        6% (1,534)
+        7% (1,374)
       </td>
     </tr>
   </tbody></table>
@@ -131,14 +131,14 @@
       <ul>
         <li class="green">passed: 3</li>
         <li>failed: 0</li>
-        <li>times fastest: 1</li>
+        <li>times fastest: 0</li>
       </ul>
     </li>
     <li>
       z-schema
       <ul>
-        <li class="green">passed: 0</li>
-        <li class="red">failed: 3</li>
+        <li class="green">passed: 3</li>
+        <li>failed: 0</li>
         <li>times fastest: 0</li>
       </ul>
     </li>
@@ -147,7 +147,7 @@
       <ul>
         <li class="green">passed: 3</li>
         <li>failed: 0</li>
-        <li>times fastest: 2</li>
+        <li>times fastest: 3</li>
       </ul>
     </li>
     <li>
