@@ -2,7 +2,6 @@
 
 [![NPM Version][npm-image]][npm-url]
 [![License][license-image]][license-url]
-[![Build Status][circle-image]][circle-url]
 [![Code Coverage][codecov-image]][codecov-url]
 [![Dependency Status][depstat-image]][depstat-url]
 [![JavaScript Style Guide][style-image]][style-url]
@@ -147,6 +146,10 @@ There is a small benchmark to showcase our performance against some similar solu
 We are currently drafting our contributing guide!
 
 ## Changelog
+#### v1.0.0
+- moving out of development phase for production use
+- removing build status badge since CircleCI is only used for PR temporary branches
+
 #### v0.4.1
 - updated dependencies
 
@@ -191,9 +194,6 @@ We are currently drafting our contributing guide!
 
 [license-image]: https://img.shields.io/badge/License-MIT-blue.svg
 [license-url]: https://github.com/fnalabs/schema-json-js/blob/master/LICENSE
-
-[circle-image]: https://img.shields.io/circleci/project/github/fnalabs/schema-json-js.svg
-[circle-url]: https://circleci.com/gh/fnalabs/schema-json-js
 
 [codecov-image]: https://img.shields.io/codecov/c/github/fnalabs/schema-json-js.svg
 [codecov-url]: https://codecov.io/gh/fnalabs/schema-json-js
