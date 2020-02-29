@@ -123,6 +123,7 @@ Below are numerous examples on how to use the Schema class.
 
 ## Environments
 - All modern browsers and Node 10+ without polyfills.
+- The build script is currently set to ECMA 9.
 
 ## Benchmarks
 There is a small benchmark to showcase our performance against some similar solutions. One of the many ways `schema-json-js` stands apart from many other validators is its ability to perform partial schema validation.
@@ -146,6 +147,10 @@ There is a small benchmark to showcase our performance against some similar solu
 We are currently drafting our contributing guide!
 
 ## Changelog
+#### v1.0.1
+- modified build script to ECMA 9
+- updated dependencies
+
 #### v1.0.0
 - moving out of development phase for production use
 - removing build status badge since CircleCI is only used for PR temporary branches
