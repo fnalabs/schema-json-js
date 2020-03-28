@@ -118,7 +118,7 @@ Below are numerous examples on how to use the Schema class.
   // ...
   ```
 
-## API
+## [API](https://fnalabs.github.io/schema-json-js/)
 - [Schema](https://fnalabs.github.io/schema-json-js/Schema.html)
 
 ## Environments
@@ -146,53 +146,7 @@ There is a small benchmark to showcase our performance against some similar solu
 ## Contributing
 We are currently drafting our contributing guide!
 
-## Changelog
-#### v1.0.1
-- modified build script to ECMA 9
-- updated dependencies
-
-#### v1.0.0
-- moving out of development phase for production use
-- removing build status badge since CircleCI is only used for PR temporary branches
-
-#### v0.4.1
-- updated dependencies
-
-#### v0.4.0
-- add `isAsync` property to Schema instance
-- updated documentation
-
-#### v0.3.2
-- fix for `async` validation
-- updated documentation
-
-#### v0.3.0
-- updated documentation
-- updated JSON Schema Test Suite
-- published benchmarks with similar solutions
-- improved error messaging
-- greatly improved performance by refactoring to:
-    - improve memory management in complex object validations
-    - reduce logic for strongly-typed schemas
-    - improve loops
-
-#### v0.2.0
-- updated documentation
-- implemented `sync` and `async` validation options
-- performance updates:
-    - removed nested `async` functions
-    - removed all try...catch statements from loops
-    - comparison and structural improvements
-
-#### v0.1.1
-- added browser unit test coverage for `Schema` in all evergreen browsers, desktop and mobile
-- updated dev dependencies
-
-#### v0.1.0
-- added browser tests for most recent Chrome and Firefox
-
-#### v0.0.0-beta.1
-- added documentation
+## [Changelog](https://github.com/fnalabs/schema-json-js/releases)
 
 [npm-image]: https://img.shields.io/npm/v/schema-json-js.svg
 [npm-url]: https://www.npmjs.com/package/schema-json-js
