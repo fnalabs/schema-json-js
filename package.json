@@ -59,7 +59,7 @@
     "browserify": "~16.5.0",
     "chai": "~4.2.0",
     "chai-as-promised": "~7.1.1",
-    "codecov": "~3.6.5",
+    "codecov": "~3.7.1",
     "cross-env": "~7.0.2",
     "del-cli": "~3.0.0",
     "dirty-chai": "~2.0.1",
